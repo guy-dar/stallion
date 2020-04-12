@@ -23,6 +23,10 @@ class PDFSuperFindBar {
     this.caseSensitive = false;
     this.entireWord = false;
 
+    this.findResultsCount = null;
+    this.findPreviousButton =  null;
+    this.findNextButton = null;
+
     this.findField.addEventListener("input", () => {
       this.dispatchEvent("");
     });

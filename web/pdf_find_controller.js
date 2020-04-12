@@ -73,6 +73,7 @@ class PDFFindController {
 
     this._reset();
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
+    eventBus._on("superfindbarclose", this._onFindBarClose.bind(this));
   }
 
   get highlightMatches() {
