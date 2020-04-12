@@ -62,6 +62,7 @@ import { PasswordPrompt } from "./password_prompt.js";
 import { PDFAttachmentViewer } from "./pdf_attachment_viewer.js";
 import { PDFDocumentProperties } from "./pdf_document_properties.js";
 import { PDFFindBar } from "./pdf_find_bar.js";
+import { PDFSuperFindBar } from "./pdf_super_find_bar.js";
 import { PDFFindController } from "./pdf_find_controller.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFLinkService } from "./pdf_link_service.js";
@@ -416,6 +417,7 @@ const PDFViewerApplication = {
 
     if (!this.supportsIntegratedFind) {
       this.findBar = new PDFFindBar(appConfig.findBar, eventBus, this.l10n);
+      this.superFindBar = new PDFSuperFindBar(appConfig.superFindBar,eventBus, this.l10n);
     }
 
     this.pdfDocumentProperties = new PDFDocumentProperties(
@@ -2506,6 +2508,12 @@ function webViewerKeyDown(evt) {
   if (cmd === 1 || cmd === 8 || cmd === 5 || cmd === 12) {
     // either CTRL or META key with optional SHIFT.
     switch (evt.keyCode) {
+      case 69: // e
+        if (!PDFViewerApplication.supportsIntegratedFind) {
+          PDFViewerApplication.superFindBar.open();
+          handled = true;
+        }
+        break;
       case 70: // f
         if (!PDFViewerApplication.supportsIntegratedFind) {
           PDFViewerApplication.findBar.open();

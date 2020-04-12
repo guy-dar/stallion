@@ -1,28 +1,9 @@
-/* Copyright 2012 Mozilla Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView } from "./ui_utils.js";
+import {normalize, FindState} from "./pdf_find_controller.js"
 
-const FindState = {
-  FOUND: 0,
-  NOT_FOUND: 1,
-  WRAPPED: 2,
-  PENDING: 3,
-};
 
 const FIND_TIMEOUT = 250; // ms
 const MATCH_SCROLL_OFFSET_TOP = -50; // px
@@ -43,16 +24,6 @@ const CHARACTERS_TO_NORMALIZE = {
 };
 
 let normalizationRegex = null;
-function normalize(text) {
-  if (!normalizationRegex) {
-    // Compile the regular expression for text normalization once.
-    const replace = Object.keys(CHARACTERS_TO_NORMALIZE).join("");
-    normalizationRegex = new RegExp(`[${replace}]`, "g");
-  }
-  return text.replace(normalizationRegex, function(ch) {
-    return CHARACTERS_TO_NORMALIZE[ch];
-  });
-}
 
 /**
  * @typedef {Object} PDFFindControllerOptions
@@ -63,7 +34,7 @@ function normalize(text) {
 /**
  * Provides search functionality to find a given string in a PDF document.
  */
-class PDFFindController {
+class PDFSuperFindController {
   /**
    * @param {PDFFindControllerOptions} options
    */
@@ -72,7 +43,7 @@ class PDFFindController {
     this._eventBus = eventBus;
 
     this._reset();
-    eventBus._on("findbarclose", this._onFindBarClose.bind(this));
+    eventBus._on("superfindbarclose", this._onFindBarClose.bind(this));
   }
 
   get highlightMatches() {
@@ -740,4 +711,4 @@ class PDFFindController {
   }
 }
 
-export { FindState, PDFFindController, normalize };
+export {PDFSuperFindController };

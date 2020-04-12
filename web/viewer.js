@@ -142,6 +142,12 @@ function getViewerConfiguration() {
       findPreviousButton: document.getElementById("findPrevious"),
       findNextButton: document.getElementById("findNext"),
     },
+    superFindBar: {
+      bar: document.getElementById("superfindbar"),
+      // toggleButton: document.getElementById("viewFind"),
+      findField: document.getElementById("superfindInput"),
+      findMsg: document.getElementById("superfindMsg")
+    },
     passwordOverlay: {
       overlayName: "passwordOverlay",
       container: document.getElementById("passwordOverlay"),

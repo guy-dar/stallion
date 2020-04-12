@@ -53,7 +53,7 @@ class PDFFindBar {
     this.bar.addEventListener("keydown", e => {
       switch (e.keyCode) {
         case 13: // Enter
-          if (e.target === this.findField) {
+        if (e.target === this.findField) {
             this.dispatchEvent("again", e.shiftKey);
           }
           break;
@@ -267,4 +267,4 @@ class PDFFindBar {
   }
 }
 
-export { PDFFindBar };
+export { PDFFindBar};
