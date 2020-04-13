@@ -55,6 +55,34 @@ select {
   display: none !important;
 }
 
+#peekBox{
+  position: absolute;
+  top:500px;
+  left:300px;
+  width:400px;
+  height:200px;
+  overflow:hidden;
+  border:1px solid black;
+  box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.25);
+  background-image: url(images/texture.png),
+                    linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85));
+}
+
+
+.superfindbar{
+  width:90%;
+  top:90% !important;
+}
+#superfindInput{
+  width: 100%;
+}
+#superfindbarInputContainer{
+  width: 97%;
+}
+
+
+
+
 .pdfViewer.enablePermissions .textLayer > span {
   user-select: none !important;
   cursor: not-allowed;
@@ -1497,6 +1525,25 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 #PDFBug table {
   font-size: 10px;
 }
+
+#peekBox .textLayer {
+  opacity: 1.0;
+}
+
+#peekBox .canvasWrapper {
+  background-color: rgba(128, 255, 128, 1);
+}
+
+#peekBox .textLayer > span {
+  background-color: rgba(255, 255, 0, 0.1);
+  color: rgba(0, 0, 0, 1);
+  border: solid 1px rgba(255, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+#peekBox .canvasWrapper canvas {
+  mix-blend-mode: screen;
+}
+
 
 #viewer.textLayer-visible .textLayer {
   opacity: 1.0;

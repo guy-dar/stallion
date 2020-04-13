@@ -58,6 +58,8 @@ See https://github.com/adobe-type-tools/cmap-resources
 <!--#else-->
 <!--#include viewer-snippet-minified.html-->
 <!--#endif-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+
 
   </head>
 
@@ -120,16 +122,6 @@ See https://github.com/adobe-type-tools/cmap-resources
             <span id="findMsg" class="toolbarLabel"></span>
           </div>
         </div>  <!-- findbar -->
-
-        <div class="findbar hidden doorHanger" id="superfindbar">
-          <div id="superfindbarInputContainer">
-            <input id="superfindInput" class="toolbarField" title="Find" placeholder="Find in document…" tabindex="91" data-l10n-id="find_input">
-          </div>
-
-          <div id="superfindbarMessageContainer">
-            <span id="superfindMsg" class="toolbarLabel"></span>
-          </div>
-        </div>  <!-- superfindbar -->
 
         <div id="secondaryToolbar" class="secondaryToolbar hidden doorHangerRight">
           <div id="secondaryToolbarButtonContainer">
@@ -333,6 +325,18 @@ See https://github.com/adobe-type-tools/cmap-resources
           <textarea id="errorMoreInfo" hidden='true' readonly="readonly"></textarea>
         </div>
       </div> <!-- mainContainer -->
+      <div id="peekBox" class="hidden">
+      </div><!-- peekBox -->
+
+      <div class="findbar hidden doorHanger superfindbar" id="superfindbar">
+        <div id="superfindbarInputContainer">
+          <input id="superfindInput" class="toolbarField" title="Find" placeholder="Find in document…" data-l10n-id="superfind_input">
+        </div>
+
+        <div id="superfindbarMessageContainer">
+          <span id="superfindMsg" class="toolbarLabel"></span>
+        </div>
+      </div>  <!-- superfindbar -->
 
       <div id="overlayContainer" class="hidden">
         <div id="passwordOverlay" class="container hidden">

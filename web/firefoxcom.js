@@ -174,6 +174,8 @@ class MozL10n {
   const events = [
     "find",
     "findagain",
+    "findpeek",
+    "findbaropened",
     "findhighlightallchange",
     "findcasesensitivitychange",
     "findentirewordchange",
@@ -184,6 +186,10 @@ class MozL10n {
       return;
     }
     if (type === "findbarclose") {
+      PDFViewerApplication.eventBus.dispatch(type, { source: window });
+      return;
+    }
+    if (type === "findbaropened") {
       PDFViewerApplication.eventBus.dispatch(type, { source: window });
       return;
     }
@@ -203,6 +209,42 @@ class MozL10n {
     window.addEventListener(event, handleEvent);
   }
 })();
+
+(function listenSuperFindEvents() {
+  const events = [
+    "superfind",
+    "superfindagain",
+    "superfindhighlightallchange",
+    "superfindcasesensitivitychange",
+    "superfindentirewordchange",
+    "superfindbarclose",
+  ];
+  const handleEvent = function({ type, detail }) {
+    if (!PDFViewerApplication.initialized) {
+      return;
+    }
+    if (type === "superfindbarclose") {
+      PDFViewerApplication.eventBus.dispatch(type, { source: window });
+      return;
+    }
+    PDFViewerApplication.eventBus.dispatch("superfind", {
+      source: window,
+      type: type.substring("superfind".length),
+      query: detail.query,
+      phraseSearch: true,
+      caseSensitive: !!detail.caseSensitive,
+      entireWord: !!detail.entireWord,
+      highlightAll: !!detail.highlightAll,
+      findPrevious: !!detail.findPrevious,
+    });
+  };
+
+  for (const event of events) {
+    window.addEventListener(event, handleEvent);
+  }
+})();
+
+
 
 (function listenZoomEvents() {
   const events = ["zoomin", "zoomout", "zoomreset"];

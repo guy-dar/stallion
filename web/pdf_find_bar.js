@@ -216,6 +216,8 @@ class PDFFindBar {
       this.toggleButton.classList.add("toggled");
       this.bar.classList.remove("hidden");
     }
+    this.eventBus.dispatch("findbaropened", { source: this });
+
     this.findField.select();
     this.findField.focus();
 

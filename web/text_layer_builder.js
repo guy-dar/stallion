@@ -253,7 +253,7 @@ class TextLayerBuilder {
       }
       div.appendChild(node);
     }
-
+    
     let i0 = selectedMatchIdx,
       i1 = i0 + 1;
     if (highlightAll) {
@@ -270,7 +270,6 @@ class TextLayerBuilder {
       const end = match.end;
       const isSelected = isSelectedPage && i === selectedMatchIdx;
       const highlightSuffix = isSelected ? " selected" : "";
-
       if (isSelected) {
         // Attempt to scroll the selected match into view.
         findController.scrollMatchIntoView({
@@ -278,6 +277,13 @@ class TextLayerBuilder {
           pageIndex: pageIdx,
           matchIndex: selectedMatchIdx,
         });
+
+        findController.peekMatchView({
+          element: textDivs[begin.divIdx],
+          pageIndex: pageIdx,
+          matchIndex: selectedMatchIdx,
+        });
+
       }
 
       // Match inside new div.
@@ -352,7 +358,6 @@ class TextLayerBuilder {
     // used for the textLayer.
     const pageMatches = findController.pageMatches[pageIdx] || null;
     const pageMatchesLength = findController.pageMatchesLength[pageIdx] || null;
-
     this.matches = this._convertMatches(pageMatches, pageMatchesLength);
     this._renderMatches(this.matches);
   }

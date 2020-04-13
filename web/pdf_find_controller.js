@@ -15,7 +15,7 @@
 
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
-import { scrollIntoView } from "./ui_utils.js";
+import { scrollIntoView, peekView } from "./ui_utils.js";
 
 const FindState = {
   FOUND: 0,
@@ -73,7 +73,8 @@ class PDFFindController {
 
     this._reset();
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
-    eventBus._on("superfindbarclose", this._onFindBarClose.bind(this));
+    eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
+    eventBus._on("scroll", this._handleScroll);
   }
 
   get highlightMatches() {
@@ -119,6 +120,7 @@ class PDFFindController {
     }
     const pdfDocument = this._pdfDocument;
 
+    this._peekMatches = false;
     if (this._state === null || this._shouldDirtyMatch(cmd, state)) {
       this._dirtyMatch = true;
     }
@@ -126,7 +128,6 @@ class PDFFindController {
     if (cmd !== "findhighlightallchange") {
       this._updateUIState(FindState.PENDING);
     }
-
     this._firstPageCapability.promise.then(() => {
       // If the document was closed before searching began, or if the search
       // operation was relevant for a previously opened document, do nothing.
@@ -152,13 +153,19 @@ class PDFFindController {
           this._nextMatch();
           this._findTimeout = null;
         }, FIND_TIMEOUT);
+      }else if (cmd === "findpeek") {       
+        this._peekPosTop = $("#viewerContainer").scrollTop(); 
+        this._peekPosLeft = $("#viewerContainer").scrollLeft(); 
+        this._peekMatches = true;
+        this._nextMatch();
+        this._updateAllPages();
+      
       } else if (this._dirtyMatch) {
         // Immediately trigger searching for non-'find' operations, when the
         // current state needs to be reset and matches re-calculated.
         this._nextMatch();
       } else if (cmd === "findagain") {
         this._nextMatch();
-
         // When the findbar was previously closed, and `highlightAll` is set,
         // ensure that the matches on all active pages are highlighted again.
         if (findbarClosed && this._state.highlightAll) {
@@ -177,7 +184,9 @@ class PDFFindController {
         this._nextMatch();
       }
     });
+
   }
+
 
   scrollMatchIntoView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if (!this._scrollMatches || !element) {
@@ -194,9 +203,34 @@ class PDFFindController {
       left: MATCH_SCROLL_OFFSET_LEFT,
     };
     scrollIntoView(element, spot, /* skipOverflowHiddenElements = */ true);
+    this._eventBus.dispatch("scroll", {source: this});
+
   }
 
+  peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
+    if(!this._peekMatches){
+      document.getElementById('peekBox').classList.add("hidden");
+    }
+
+    if (!this._peekMatches  || !element) {
+      return;
+    } else if (matchIndex === -1 || matchIndex !== this._selected.matchIdx) {
+      return;
+    } else if (pageIndex === -1 || pageIndex !== this._selected.pageIdx) {
+      return;
+    }
+
+    const spot = {
+      top: MATCH_SCROLL_OFFSET_TOP,
+      left: MATCH_SCROLL_OFFSET_LEFT,
+    };
+    peekView(element, spot, pageIndex, /* skipOverflowHiddenElements = */ true);
+  }
+
+
+
   _reset() {
+    this._peekMatches = false;
     this._highlightMatches = false;
     this._scrollMatches = false;
     this._pdfDocument = null;
@@ -523,7 +557,6 @@ class PDFFindController {
     const numPages = this._linkService.pagesCount;
 
     this._highlightMatches = true;
-
     if (this._dirtyMatch) {
       // Need to recalculate the matches, reset everything.
       this._dirtyMatch = false;
@@ -666,9 +699,21 @@ class PDFFindController {
     if (this._selected.pageIdx !== -1) {
       // Ensure that the match will be scrolled into view.
       this._scrollMatches = true;
-
       this._updatePage(this._selected.pageIdx);
     }
+  }
+
+  _handleScroll(evt){
+    if(evt.source._peekMatches){
+      $("#viewerContainer").scrollTop(evt.source._peekPosTop);
+      $("#viewerContainer").scrollLeft(evt.source._peekPosLeft);
+      
+    }
+  }
+
+  _onFindBarOpened(evt) {
+    const pdfDocument = this._pdfDocument;
+    document.getElementById("peekBox").classList.add("hidden");
   }
 
   _onFindBarClose(evt) {

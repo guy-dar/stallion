@@ -157,7 +157,37 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
     }
   }
   parent.scrollTop = offsetY;
+
 }
+
+
+function peekView(element, spot, pageIdx, skipOverflowHiddenElements) {
+  // Now given the offset - get bounding box elements
+  var peekBox = document.getElementById("peekBox");
+  peekBox.innerHTML = '';
+  peekBox.classList.remove("hidden");
+  peekBox.style.position = 'absolute';
+  $("div.page[data-page-number='"+(pageIdx+1)+"']").clone().appendTo($("#peekBox")); 
+  $("#peekBox").find(".textLayer, .canvasWrapper").css({'position':'absolute', 'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});     
+  // peekBox
+  var top = offsetY;
+  var bottom = offsetY + 100//peekBox.offsetHeight;
+  var left = offsetX;
+  var right = offsetX + 100//peekBox.offsetWidth;
+  // console.log(right)
+  // var items = document.getElementsByTagName("*");
+  // for (let i = items.length-1; i >= 0; i--) {
+  //   var rect = items[i].getBoundingClientRect();
+  //   if(rect.top < bottom && rect.right > left){
+  //           peekBox.innerText=items[i].textContent;
+  //   }
+    
+  // }
+
+}
+
+
+
 
 /**
  * Helper function to start monitoring the scroll event and converting them into
@@ -1014,6 +1044,7 @@ export {
   getPageSizeInches,
   approximateFraction,
   getOutputScale,
+  peekView,
   scrollIntoView,
   watchScroll,
   binarySearchFirstItem,

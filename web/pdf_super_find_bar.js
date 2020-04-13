@@ -19,7 +19,7 @@ class PDFSuperFindBar {
     this.findField = options.findField || null;
     this.findMsg = options.findMsg || null;
     
-    this.highlightAll = false;
+    this.highlightAll = true;
     this.caseSensitive = false;
     this.entireWord = false;
 
@@ -28,14 +28,14 @@ class PDFSuperFindBar {
     this.findNextButton = null;
 
     this.findField.addEventListener("input", () => {
-      this.dispatchEvent("");
     });
 
     this.bar.addEventListener("keydown", e => {
       switch (e.keyCode) {
         case 13: // Enter
         if (e.target === this.findField) {
-            this.dispatchEvent("again");
+            this.dispatchEvent("peek");
+            this.close();
           }
           break;
         case 27: // Escape
@@ -53,7 +53,7 @@ class PDFSuperFindBar {
   }
 
   dispatchEvent(type) {
-    this.eventBus.dispatch("super_find", {
+    this.eventBus.dispatch("find", {
       source: this,
       type,
       query: this.findField.value
@@ -92,6 +92,7 @@ class PDFSuperFindBar {
 
 
   open() {
+    this.eventBus.dispatch("findbaropened", { source: this });
     if (!this.opened) {
       this.opened = true;
       this.bar.classList.remove("hidden");
@@ -107,8 +108,8 @@ class PDFSuperFindBar {
       return;
     }
     this.opened = false;
+    this.findField.value = '';
     this.bar.classList.add("hidden");
-    this.eventBus.dispatch("superfindbarclose", { source: this });
   }
 
 
