@@ -147,7 +147,6 @@ class PDFFindController {
         return;
       }
       this._extractText();
-      this._extractSpans();
 
       const findbarClosed = !this._highlightMatches;
       const pendingTimeout = !!this._findTimeout;
@@ -163,11 +162,11 @@ class PDFFindController {
           this._nextMatch();
           this._findTimeout = null;
         }, FIND_TIMEOUT);
-      }else if (cmd === "findpeek") {
+      }else if (cmd === "findsuper") {
         this._peekPosTop = $("#viewerContainer").scrollTop(); 
         this._peekPosLeft = $("#viewerContainer").scrollLeft(); 
-        this._peekMatches = true;
-        this._nextMatch();
+        // this._peekMatches = true;
+        this._nextMatch(true);
         this._updateAllPages();
       
       } else if (this._dirtyMatch) {
@@ -259,8 +258,6 @@ class PDFFindController {
       wrapped: false,
     };
     this._extractTextPromises = [];
-    this._extractSpanPromises = null;
-    this._allSpans = []; 
     this._pageContents = []; // Stores the normalized text for each page.
     this._matchesCountTotal = 0;
     this._pagesToSearch = null;
@@ -283,7 +280,9 @@ class PDFFindController {
     }
     return this._normalizedQuery;
   }
-
+  set _query(value){
+    this._state.query = value;
+  }
   _shouldDirtyMatch(cmd, state) {
     // When the search query changes, regardless of the actual search command
     // used, always re-calculate matches to avoid errors (fixes bug 1030622).
@@ -457,9 +456,74 @@ class PDFFindController {
     );
   }
 
-  _calculateMatch(pageIndex) {
+  _preprocessSuperMatch(query){
+
+    // Regular expressions
+    let re_simple =  /^(back)|(toolbar)|(outline)$/
+    let re_page = /^page (?<query>\d+)$/;
+    let re_fpeek = /^fpeek (?<query>.*)$/
+    let re_fgoto = /^fgoto (?<query>.*)$/
+    // Try match
+    var re;
+    if((re = re_simple.exec(query)) != null){
+      this._query ="";
+      switch(query){
+        case "back":
+          window.history.go(-1);
+        break;
+        case "toolbar":
+          document.getElementById("toolbarContainer").classList.toggle("hidden");
+        break;
+        case "outline":
+          document.getElementById("sidebarToggle").click();
+          document.getElementById("viewOutline").click();
+        break;
+      }
+      return "";
+    }
+
+    if((re = re_fpeek.exec(query)) != null){
+      this._peekMatches = true;
+      this._query = re.groups.query;
+      return  "find";
+    }
+    
+    if((re = re_fgoto.exec(query)) != null){
+      this._peekMatches = false;
+      this._query = re.groups.query;
+      return "find";
+    }
+
+
+    if((re = re_page.exec(query)) != null){
+      document.getElementById("pageNumber").value = re.groups.query;
+      document.getElementById("pageNumber").dispatchEvent(new Event("change"));
+      this._query = "";
+      return "";
+    }
+    
+    alert("Cannot understand command. Are you stupid?");
+    this._query = "";
+    return "";
+
+
+  }
+  _calculateSuperMatch(pageIndex, queryType) {
+    var query = this._query;
+
+    if(queryType == "find"){
+      this._calculateMatch(pageIndex);
+      return;
+    }
+    
+    
+  }
+
+
+
+  _calculateMatch(pageIndex, q = null) {
     let pageContent = this._pageContents[pageIndex];
-    let query = this._query;
+    let query = (q == null) ? this._query : q;
     const { caseSensitive, entireWord, phraseSearch } = this._state;
 
     if (query.length === 0) {
@@ -542,28 +606,6 @@ class PDFFindController {
     }
   }
 
-  _extractSpans() {
-    if (this._extractSpanPromises != null) {
-      return;
-    }
-
-    let promise = Promise.resolve();
-    for (let i = 0, ii = this._linkService.pagesCount; i < ii; i++) {
-      const extractSpanCapability = createPromiseCapability();
-      this._extractSpanPromises = extractSpanCapability.promise;
-
-
-      promise = promise.then(() => {
-                  return this._pdfDocument
-                    .getPage(i + 1)
-                    .then(pdfPage =>{
-                              this._allSpans = this._allSpans.concat(pdfPage);
-                              extractSpanCapability.resolve(this._allSpans);
-                    })
-                });
-    }
-  }
-
 
 
 
@@ -588,7 +630,7 @@ class PDFFindController {
     });
   }
 
-  _nextMatch() {
+  _nextMatch(isSuperMatch = false) {
     const previous = this._state.findPrevious;
     const currentPageIndex = this._linkService.page - 1;
     const numPages = this._linkService.pagesCount;
@@ -605,7 +647,9 @@ class PDFFindController {
       this._pageMatches.length = 0;
       this._pageMatchesLength.length = 0;
       this._matchesCountTotal = 0;
-
+      if(isSuperMatch)
+        var superQueryType = this._preprocessSuperMatch(this._query);
+      
       this._updateAllPages(); // Wipe out any previously highlighted matches.
 
       for (let i = 0; i < numPages; i++) {
@@ -616,7 +660,10 @@ class PDFFindController {
         this._pendingFindMatches[i] = true;
         this._extractTextPromises[i].then(pageIdx => {
           delete this._pendingFindMatches[pageIdx];
-          this._calculateMatch(pageIdx);
+          if(isSuperMatch)
+            this._calculateSuperMatch(pageIdx, superQueryType);
+          else
+            this._calculateMatch(pageIdx);
         });
       }
     }

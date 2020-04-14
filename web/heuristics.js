@@ -8,7 +8,7 @@ class HeuristicsHelper{
         elArr.addClass('highlight');    
     }
 
-    arr_counts(arr){
+    arrCounts(arr){
         ///
         var counts = {}
         arr.forEach(function(e) {
@@ -38,22 +38,36 @@ class HeuristicsHelper{
     }
 
     maj(arr){
-        var sorted_items = this.sort_dict(this.arr_counts(arr));
+        var sorted_items = this.sort_dict(this.arrCounts(arr));
         return sorted_items[0][0];
     }
+
+    incrementDict(dict, val){
+        if(dict[val]==undefined) 
+            dict[val] = 0;
+
+        dict[val]++; 
+    }  
 }
 class FinderHeuristics{
     constructor(){
-        this._fonts = [];
+        this.helper = new HeuristicsHelper()
+        this._fonts = {};
+        this.idx = 0;
     }
 
     reportTextAction(ctx, font, x, y){
         var fillStyle = ctx.fillStyle;
-        ctx.fillStyle = 'rgba(225,0,0,0.2)';
-        ctx.fillRect(x,y, 20,20)
-        ctx.fillStyle = fillStyle;
+        this.helper.incrementDict(this._fonts, font.name);
+        if((font.name.indexOf('+CM') != -1)){    // GUY TODO: Fix to regexp
+            ctx.fillStyle = 'rgba(0,0,225,0.2)';
+            ctx.fillRect(x,y, 10,-10)       //Guy TODO: though works marvelously, 10 is just a heuristic. FIX  
+            ctx.fillStyle = fillStyle;
+        }
 
+        this.idx++;
     }
+
 
 
     // constructor(){

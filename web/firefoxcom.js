@@ -174,7 +174,7 @@ class MozL10n {
   const events = [
     "find",
     "findagain",
-    "findpeek",
+    "findsuper",
     "findbaropened",
     "findhighlightallchange",
     "findcasesensitivitychange",
@@ -210,39 +210,6 @@ class MozL10n {
   }
 })();
 
-(function listenSuperFindEvents() {
-  const events = [
-    "superfind",
-    "superfindagain",
-    "superfindhighlightallchange",
-    "superfindcasesensitivitychange",
-    "superfindentirewordchange",
-    "superfindbarclose",
-  ];
-  const handleEvent = function({ type, detail }) {
-    if (!PDFViewerApplication.initialized) {
-      return;
-    }
-    if (type === "superfindbarclose") {
-      PDFViewerApplication.eventBus.dispatch(type, { source: window });
-      return;
-    }
-    PDFViewerApplication.eventBus.dispatch("superfind", {
-      source: window,
-      type: type.substring("superfind".length),
-      query: detail.query,
-      phraseSearch: true,
-      caseSensitive: !!detail.caseSensitive,
-      entireWord: !!detail.entireWord,
-      highlightAll: !!detail.highlightAll,
-      findPrevious: !!detail.findPrevious,
-    });
-  };
-
-  for (const event of events) {
-    window.addEventListener(event, handleEvent);
-  }
-})();
 
 
 

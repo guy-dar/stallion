@@ -1697,9 +1697,10 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
           }
         }
 
-        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
+
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
+        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
             // common case

@@ -34,7 +34,7 @@ class PDFSuperFindBar {
       switch (e.keyCode) {
         case 13: // Enter
         if (e.target === this.findField) {
-            this.dispatchEvent("peek");
+            this.dispatchEvent("super");
             this.close();
           }
           break;

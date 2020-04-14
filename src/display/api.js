@@ -2650,9 +2650,7 @@ class PDFObjects {
    * Resolves the object `objId` with optional `data`.
    */
   resolve(objId, data) {
-    console.log(objId)
-    console.log(data.data)
-    
+
     const obj = this._ensureObj(objId);
 
     obj.resolved = true;
