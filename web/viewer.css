@@ -54,10 +54,16 @@ select {
 [hidden] {
   display: none !important;
 }
-
+#peekBoxOptions{
+  float: left;
+}
 #peekBox{
+  float: left;
+  clear: left;
+}
+#peekBoxContainer{
   position: absolute;
-  top:500px;
+  top:550px;
   left:300px;
   width:400px;
   height:200px;
@@ -70,14 +76,14 @@ select {
 
 
 .superfindbar{
-  width:90%;
+  width:85%;
   top:90% !important;
 }
 #superfindInput{
-  width: 100%;
+  width: 98.5%;
 }
 #superfindbarInputContainer{
-  width: 97%;
+  width: 100%;
 }
 
 
@@ -1527,6 +1533,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 }
 
 #peekBox .textLayer {
+  zoom: 0.8;
   opacity: 1.0;
 }
 
@@ -1537,7 +1544,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 #peekBox .textLayer > span {
   background-color: rgba(255, 255, 0, 0.1);
   color: rgba(0, 0, 0, 1);
-  border: solid 1px rgba(255, 0, 0, 0.5);
+  /*border: solid 1px rgba(255, 0, 0, 0.5);*/
   box-sizing: border-box;
 }
 #peekBox .canvasWrapper canvas {

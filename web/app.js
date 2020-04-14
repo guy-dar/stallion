@@ -2503,17 +2503,26 @@ function webViewerKeyDown(evt) {
   const isViewerInPresentationMode =
     pdfViewer && pdfViewer.isInPresentationMode;
 
+  if(evt.keyCode == 191){
+    if (!PDFViewerApplication.supportsIntegratedFind) {
+      PDFViewerApplication.superFindBar.open();
+      handled = true;
+    }
+
+  }
+
+
   // First, handle the key bindings that are independent whether an input
   // control is selected or not.
   if (cmd === 1 || cmd === 8 || cmd === 5 || cmd === 12) {
     // either CTRL or META key with optional SHIFT.
     switch (evt.keyCode) {
-      case 69: // e
-        if (!PDFViewerApplication.supportsIntegratedFind) {
-          PDFViewerApplication.superFindBar.open();
-          handled = true;
-        }
-        break;
+      // case 69: // e
+      //   if (!PDFViewerApplication.supportsIntegratedFind) {
+      //     PDFViewerApplication.superFindBar.open();
+      //     handled = true;
+      //   }
+      //   break;
       case 70: // f
         if (!PDFViewerApplication.supportsIntegratedFind) {
           PDFViewerApplication.findBar.open();

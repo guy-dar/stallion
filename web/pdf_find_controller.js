@@ -16,6 +16,7 @@
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView, peekView } from "./ui_utils.js";
+import { HeuristicsHelper, FinderHeuristics } from "./heuristics.js";
 
 const FindState = {
   FOUND: 0,
@@ -70,13 +71,19 @@ class PDFFindController {
   constructor({ linkService, eventBus }) {
     this._linkService = linkService;
     this._eventBus = eventBus;
-
+    
     this._reset();
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
+    window.onkeydown = function(e){
+      // console.log(e.keyCode)
+      if(e.keyCode == 27){
+        document.getElementById("peekBoxContainer").classList.add('hidden');
+      }
+    };
   }
-
+  
   get highlightMatches() {
     return this._highlightMatches;
   }
@@ -111,6 +118,8 @@ class PDFFindController {
       return;
     }
     this._pdfDocument = pdfDocument;
+        
+
     this._firstPageCapability.resolve();
   }
 
@@ -138,6 +147,7 @@ class PDFFindController {
         return;
       }
       this._extractText();
+      this._extractSpans();
 
       const findbarClosed = !this._highlightMatches;
       const pendingTimeout = !!this._findTimeout;
@@ -153,7 +163,10 @@ class PDFFindController {
           this._nextMatch();
           this._findTimeout = null;
         }, FIND_TIMEOUT);
-      }else if (cmd === "findpeek") {       
+      }else if (cmd === "findpeek") {
+        this.heuristics = new FinderHeuristics(this._pdfDocument, this);   
+        this.heuristics.helper.select(this.heuristics.allSpans().filter(this.heuristics._isHeadline()))
+
         this._peekPosTop = $("#viewerContainer").scrollTop(); 
         this._peekPosLeft = $("#viewerContainer").scrollLeft(); 
         this._peekMatches = true;
@@ -209,7 +222,7 @@ class PDFFindController {
 
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
-      document.getElementById('peekBox').classList.add("hidden");
+      document.getElementById('peekBoxContainer').classList.add("hidden");
     }
 
     if (!this._peekMatches  || !element) {
@@ -249,6 +262,8 @@ class PDFFindController {
       wrapped: false,
     };
     this._extractTextPromises = [];
+    this._extractSpanPromises = null;
+    this._allSpans = []; 
     this._pageContents = []; // Stores the normalized text for each page.
     this._matchesCountTotal = 0;
     this._pagesToSearch = null;
@@ -530,6 +545,31 @@ class PDFFindController {
     }
   }
 
+  _extractSpans() {
+    if (this._extractSpanPromises != null) {
+      return;
+    }
+
+    let promise = Promise.resolve();
+    for (let i = 0, ii = this._linkService.pagesCount; i < ii; i++) {
+      const extractSpanCapability = createPromiseCapability();
+      this._extractSpanPromises = extractSpanCapability.promise;
+
+
+      promise = promise.then(() => {
+                  return this._pdfDocument
+                    .getPage(i + 1)
+                    .then(pdfPage =>{
+                              this._allSpans = this._allSpans.concat(pdfPage);
+                              extractSpanCapability.resolve(this._allSpans);
+                    })
+                });
+    }
+  }
+
+
+
+
   _updatePage(index) {
     if (this._scrollMatches && this._selected.pageIdx === index) {
       // If the page is selected, scroll the page into view, which triggers
@@ -713,7 +753,7 @@ class PDFFindController {
 
   _onFindBarOpened(evt) {
     const pdfDocument = this._pdfDocument;
-    document.getElementById("peekBox").classList.add("hidden");
+    document.getElementById("peekBoxContainer").classList.add("hidden");
   }
 
   _onFindBarClose(evt) {
