@@ -161,8 +161,7 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
-function peekView(element, spot, pageIdx, skipOverflowHiddenElements) {
-  // Now given the offset - get bounding box elements
+function peekView(element, spot, pageIdx, pdfDocument) {
   var peekBoxContainer = document.getElementById("peekBoxContainer");
 
   $("#peekBox").html('');
@@ -172,7 +171,25 @@ function peekView(element, spot, pageIdx, skipOverflowHiddenElements) {
 
   $("#peekBox").find(".textLayer, .canvasWrapper")
               .css({'position':'absolute', 'width': '','height': '',
-                    'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});     
+                    'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});   
+                    
+                    
+  // Render the PDF
+  pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
+      // Display page on the existing canvas with 100% scale.
+      var viewport = pdfPage.getViewport({ scale: 2.5 });   //GUY TODO: Understand what's the right scale
+      var canvas = $("#peekBox canvas")[0];
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      var ctx = canvas.getContext("2d");
+      var renderTask = pdfPage.render({
+        canvasContext: ctx,
+        viewport: viewport,
+      });
+      return renderTask.promise;
+    }).catch(function(reason) {
+    console.error("Error: " + reason);
+  });
 }
 
 

@@ -9,7 +9,10 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:8888/web/viewer.html?file=%2Fweb%2Fcompressed.tracemonkey-pldi-09.pdf",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
+            // "sourceMapPathOverrides": {
+            //     "/source/*": "${workspaceFolder}/*"
+            // }
         }
     ]
 }

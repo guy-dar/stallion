@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {FinderHeuristics} from "../../web/heuristics.js"
 
 import {
   FONT_IDENTITY_MATRIX,
@@ -809,7 +810,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       // transparent canvas when we have blend modes.
       var width = this.ctx.canvas.width;
       var height = this.ctx.canvas.height;
-
+      this.heuristics = new FinderHeuristics();
       this.ctx.save();
       this.ctx.fillStyle = background || "rgb(255, 255, 255)";
       this.ctx.fillRect(0, 0, width, height);
@@ -1577,6 +1578,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     showText: function CanvasGraphics_showText(glyphs) {
       var current = this.current;
       var font = current.font;
+        
       if (font.isType3Font) {
         return this.showType3Text(glyphs);
       }
@@ -1695,6 +1697,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
           }
         }
 
+        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
         if (glyph.isInFont || font.missingFile) {

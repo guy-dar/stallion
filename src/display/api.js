@@ -1214,6 +1214,7 @@ class PDFPageProxy {
   getTextContent(params = {}) {
     const readableStream = this.streamTextContent(params);
 
+
     return new Promise(function(resolve, reject) {
       function pump() {
         reader.read().then(function({ value, done }) {
@@ -1222,7 +1223,9 @@ class PDFPageProxy {
             return;
           }
           Object.assign(textContent.styles, value.styles);
+
           textContent.items.push(...value.items);
+
           pump();
         }, reject);
       }
@@ -2647,6 +2650,9 @@ class PDFObjects {
    * Resolves the object `objId` with optional `data`.
    */
   resolve(objId, data) {
+    console.log(objId)
+    console.log(data.data)
+    
     const obj = this._ensureObj(objId);
 
     obj.resolved = true;

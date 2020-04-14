@@ -164,9 +164,6 @@ class PDFFindController {
           this._findTimeout = null;
         }, FIND_TIMEOUT);
       }else if (cmd === "findpeek") {
-        this.heuristics = new FinderHeuristics(this._pdfDocument, this);   
-        this.heuristics.helper.select(this.heuristics.allSpans().filter(this.heuristics._isHeadline()))
-
         this._peekPosTop = $("#viewerContainer").scrollTop(); 
         this._peekPosLeft = $("#viewerContainer").scrollLeft(); 
         this._peekMatches = true;
@@ -237,7 +234,7 @@ class PDFFindController {
       top: MATCH_SCROLL_OFFSET_TOP,
       left: MATCH_SCROLL_OFFSET_LEFT,
     };
-    peekView(element, spot, pageIndex, /* skipOverflowHiddenElements = */ true);
+    peekView(element, spot, pageIndex, this._pdfDocument);
   }
 
 

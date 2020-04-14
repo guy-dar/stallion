@@ -1,4 +1,4 @@
-import { PDFFindController } from "./pdf_find_controller.js";
+//import { PDFFindController } from "./pdf_find_controller.js";
 
 class HeuristicsHelper{
     constructor(){
@@ -43,23 +43,36 @@ class HeuristicsHelper{
     }
 }
 class FinderHeuristics{
-    constructor(pdfDocument, findController){
-        this.pdfDocument = pdfDocument;
-        this.helper = new HeuristicsHelper();
-        this.findController = findController;
-        this._digestFontBehavior();
-        // this.findController._extractSpanPromises.then(() =>{
-        //     this._digestFontBehavior();
-        //     this._decideStrategy();
-        // })
+    constructor(){
+        this._fonts = [];
     }
+
+    reportTextAction(ctx, font, x, y){
+        var fillStyle = ctx.fillStyle;
+        ctx.fillStyle = 'rgba(225,0,0,0.2)';
+        ctx.fillRect(x,y, 20,20)
+        ctx.fillStyle = fillStyle;
+
+    }
+
+
+    // constructor(){
+    //     // this.pdfDocument = pdfDocument;
+    //     // this.helper = new HeuristicsHelper();
+    //     // this.findController = findController;
+    //     // this._digestFontBehavior();
+    //     // this.findController._extractSpanPromises.then(() =>{
+    //     //     this._digestFontBehavior();
+    //     //     this._decideStrategy();
+    //     // })
+    // }
     d(q){   //TODO: fix
         return $(q)//, this.pdfDocument);
     }
 
-    allSpans(){
-        return $('#viewer span');
-    }
+    // allSpans(){
+    //     return $('#viewer span');
+    // }
 
     _digestFontBehavior(){
       var fontSizes = this.allSpans()

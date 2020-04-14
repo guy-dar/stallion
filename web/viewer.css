@@ -1532,39 +1532,40 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   font-size: 10px;
 }
 
-#peekBox .textLayer {
+/* #peekBox .textLayer {
   zoom: 0.8;
   opacity: 1.0;
-}
-
-#peekBox .canvasWrapper {
-  background-color: rgba(128, 255, 128, 1);
-}
-
-#peekBox .textLayer > span {
-  background-color: rgba(255, 255, 0, 0.1);
-  color: rgba(0, 0, 0, 1);
-  /*border: solid 1px rgba(255, 0, 0, 0.5);*/
-  box-sizing: border-box;
-}
-#peekBox .canvasWrapper canvas {
-  mix-blend-mode: screen;
-}
+} */
 
 
 #viewer.textLayer-visible .textLayer {
+  opacity: 1.0;
+}
+#peekBox.textLayer-visible .textLayer {
   opacity: 1.0;
 }
 
 #viewer.textLayer-visible .canvasWrapper {
   background-color: rgba(128, 255, 128, 1);
 }
+#peekBox.textLayer-visible .canvasWrapper {
+  background-color: rgba(128, 255, 128, 1);
+}
 
 #viewer.textLayer-visible .canvasWrapper canvas {
   mix-blend-mode: screen;
 }
+#peekBox.textLayer-visible .canvasWrapper canvas {
+  mix-blend-mode: screen;
+}
 
 #viewer.textLayer-visible .textLayer > span {
+  background-color: rgba(255, 255, 0, 0.1);
+  color: rgba(0, 0, 0, 1);
+  border: solid 1px rgba(255, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+#peekBox.textLayer-visible .textLayer > span {
   background-color: rgba(255, 255, 0, 0.1);
   color: rgba(0, 0, 0, 1);
   border: solid 1px rgba(255, 0, 0, 0.5);
@@ -1575,8 +1576,16 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   background-color: rgba(255, 255, 255, 1);
   color: rgba(0, 0, 0, 1);
 }
+#peekBox.textLayer-hover .textLayer > span:hover {
+  background-color: rgba(255, 255, 255, 1);
+  color: rgba(0, 0, 0, 1);
+}
 
 #viewer.textLayer-shadow .textLayer > span {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: rgba(0, 0, 0, 1);
+}
+#peekBox.textLayer-shadow .textLayer > span {
   background-color: rgba(255, 255, 255, 0.6);
   color: rgba(0, 0, 0, 1);
 }
