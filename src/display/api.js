@@ -18,6 +18,7 @@
  * @module pdfjsLib
  */
 
+import {FinderHeuristics} from "../../web/heuristics.js"
 import {
   AbortException,
   assert,
@@ -1130,6 +1131,7 @@ class PDFPageProxy {
         internalRenderTask.operatorListChanged();
       })
       .catch(complete);
+
 
     return renderTask;
   }
@@ -2784,21 +2786,28 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
         imageLayer,
         background,
       } = this.params;
-
+      
+      this.heuristics = new FinderHeuristics();
       this.gfx = new CanvasGraphics(
         canvasContext,
         this.commonObjs,
         this.objs,
         this.canvasFactory,
         this.webGLContext,
-        imageLayer
-      );
-      this.gfx.beginDrawing({
+        imageLayer, 
+        this.heuristics
+        );
+        this.gfx.beginDrawing({
         transform,
         viewport,
         transparency,
-        background,
+        background
       });
+
+      this.capability.promise.then(() =>{
+              this.heuristics.finishedRenderingContext(this._canvas);
+              console.log("Rendered!")});
+
       this.operatorListIdx = 0;
       this.graphicsReady = true;
       if (this.graphicsReadyCallback) {

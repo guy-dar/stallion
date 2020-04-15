@@ -30,7 +30,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 <!--#if GENERIC-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <!--#endif-->
-    <title>PDF.js viewer</title>
+    <title>Stallion viewer over PDF.js</title>
 
 <!--#if MOZCENTRAL-->
 <!--#include viewer-snippet-firefox-extension.html-->
@@ -325,15 +325,19 @@ See https://github.com/adobe-type-tools/cmap-resources
           <textarea id="errorMoreInfo" hidden='true' readonly="readonly"></textarea>
         </div>
       </div> <!-- mainContainer -->
-      <div id="peekBoxContainer" class="hidden">
-        <div id="peekBoxOptions">
-          Hi
-        </div>
-        <div id="peekBox">
-          
-        </div>
+      <table id="peekBoxContainer" class="hidden">
+        <tr>
+          <td id="peekBoxOptions">
+            Hi
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div id="peekBox"></div>            
+          </td>
+        </tr>
 
-       </div> 
+      </table> 
         <!-- peekBox -->
 
       <div class="findbar hidden doorHanger superfindbar" id="superfindbar">

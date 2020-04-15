@@ -75,6 +75,8 @@ import { SecondaryToolbar } from "./secondary_toolbar.js";
 import { Toolbar } from "./toolbar.js";
 import { ViewHistory } from "./view_history.js";
 
+var _slashKeyTimeout = null;
+
 const DEFAULT_SCALE_DELTA = 1.1;
 const DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT = 5000; // ms
 const FORCE_PAGES_LOADED_TIMEOUT = 10000; // ms
@@ -2505,7 +2507,18 @@ function webViewerKeyDown(evt) {
 
   if(evt.keyCode == 191){
     if (!PDFViewerApplication.supportsIntegratedFind) {
-      PDFViewerApplication.superFindBar.open();
+      var delta = 300;
+      if(!_slashKeyTimeout){
+        
+        _slashKeyTimeout = setTimeout(()=>{
+                  PDFViewerApplication.superFindBar.open();
+                  _slashKeyTimeout = null;
+                }, delta);
+      }else{
+        clearTimeout(_slashKeyTimeout);
+        PDFViewerApplication.superFindBar.dblSlash();
+      }
+      
       handled = true;
     }
 

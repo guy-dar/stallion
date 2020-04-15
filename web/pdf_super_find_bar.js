@@ -27,8 +27,6 @@ class PDFSuperFindBar {
     this.findPreviousButton =  null;
     this.findNextButton = null;
 
-    this.findField.addEventListener("input", () => {
-    });
 
     this.bar.addEventListener("keydown", e => {
       switch (e.keyCode) {
@@ -55,9 +53,21 @@ class PDFSuperFindBar {
   dispatchEvent(type) {
     this.eventBus.dispatch("find", {
       source: this,
-      type,
+      phraseSearch: true,
+      type,//: type.substring("find".length),
       query: this.findField.value
     });
+  }
+
+  dblSlash(){
+    if (window.getSelection) {
+      var selection = window.getSelection().toString();
+      if (window.getSelection().empty) {  // Chrome
+        window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) {  // Firefox
+        window.getSelection().removeAllRanges();
+      }
+    }
   }
 
   updateUIState(state, previous, matchesCount) {

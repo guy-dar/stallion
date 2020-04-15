@@ -1,4 +1,3 @@
-//import { PDFFindController } from "./pdf_find_controller.js";
 
 class HeuristicsHelper{
     constructor(){
@@ -49,11 +48,20 @@ class HeuristicsHelper{
         dict[val]++; 
     }  
 }
+
+
+
+
 class FinderHeuristics{
     constructor(){
         this.helper = new HeuristicsHelper()
         this._fonts = {};
+        this._images = [];
         this.idx = 0;
+        this._maxImgDim = 1000;
+    }
+    setMainCtx(mainCtx){
+        this.mainCtx = mainCtx;
     }
 
     reportTextAction(ctx, font, x, y){
@@ -68,40 +76,26 @@ class FinderHeuristics{
         this.idx++;
     }
 
-
-
-    // constructor(){
-    //     // this.pdfDocument = pdfDocument;
-    //     // this.helper = new HeuristicsHelper();
-    //     // this.findController = findController;
-    //     // this._digestFontBehavior();
-    //     // this.findController._extractSpanPromises.then(() =>{
-    //     //     this._digestFontBehavior();
-    //     //     this._decideStrategy();
-    //     // })
-    // }
-    d(q){   //TODO: fix
-        return $(q)//, this.pdfDocument);
+    reportImageAction(ctx,x, y, w, h, type){
+        if(w >= this._maxImgDim || w>= this._maxImgDim){
+            return;
+        }
+        var rect = [x,y,w,h];
+        this._images.push({'ctx':ctx, 'rect': rect, 'type': type})
     }
 
-    // allSpans(){
-    //     return $('#viewer span');
-    // }
-
-    _digestFontBehavior(){
-      var fontSizes = this.allSpans()
-                            .map(function(i){
-                            return parseFloat($(this).css('font-size'));
-                        }).get();
-      this._regularFontSize = this.helper.maj(fontSizes);
-     
-    }
-
-    _isHeadline(){
-        return (i, el)=>(parseInt($(el).css('font-size')) > this._regularFontSize);
-    }
-
-    _decideStrategy(){
+    finishedRenderingContext(curCtx){
+        var ctx = curCtx.getContext('2d')
+        this._images.forEach((img) =>{
+            var rect = img['rect'];
+            // if(ctx != curCtx)   
+            //     return;
+            var fillStyle = ctx.fillStyle;
+            ctx.fillStyle = "rgba(225, 0, 0, 0.2)";
+            ctx.fillRect(rect[0], rect[1], rect[2], rect[3]);
+            console.log(rect);
+            ctx.fillStyle = fillStyle;
+        });
 
     }
 

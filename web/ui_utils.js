@@ -161,19 +161,91 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
-function peekView(element, spot, pageIdx, pdfDocument) {
-  var peekBoxContainer = document.getElementById("peekBoxContainer");
 
+
+function peekView(element, spot, pageIdx, pdfDocument) {
+
+  
+  var peekBoxContainer = document.getElementById("peekBoxContainer");
+  
   $("#peekBox").html('');
   peekBoxContainer.classList.remove("hidden");
-  peekBoxContainer.style.position='absolute';
-  $("div.page[data-page-number='"+(pageIdx+1)+"']").clone().appendTo($("#peekBox")); 
+  
+  var width =  document.getElementById("peekBox").clientWidth;
+  var height =  document.getElementById("peekBox").clientHeight;
 
+  $(".page[data-page-number='"+(pageIdx+1)+"']").clone().appendTo($("#peekBox")); 
+  
+  $("#peekBox .page")[0].onmousedown = dragMouseDown;
+  $("#peekBox").find(".page")
+  .css({'position':'absolute', 'clip': 'rect(0px '+ width +'px '+ height +'px 0px)'})
+  
   $("#peekBox").find(".textLayer, .canvasWrapper")
-              .css({'position':'absolute', 'width': '','height': '',
-                    'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});   
-                    
-                    
+  .css({'position':'absolute', 'width': '','height': '',
+  'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});
+
+  /////  From W3Schools /////
+  var elmnt = $("#peekBox .page")[0];
+  var pos1 = 0, pos2= 0, pos3 = 0 ,pos4 = 0;
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    elmnt.onmouseup = closeDragElement;
+    elmnt.onmouseout = closeDragElement;
+    // call a function whenever the cursor moves:
+    elmnt.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    var top = (elmnt.offsetTop - pos2)
+    var left = (elmnt.offsetLeft - pos1)
+    // assert not outside frame
+    var maxLeft = width - $("#peekBox").width()/2; //GUY TODO: Why /2. It is not even accuracte btw
+    var maxTop =  height;
+    var minTop = -$("#peekBox").height();
+    var minLeft = - $("#peekBox").width()/2;
+
+    if(left > maxLeft)
+      left = maxLeft;
+
+    if(top < minTop)
+      top = minTop;
+    
+     if(left < minLeft)
+      left = minLeft;
+
+
+    if(top > maxTop)
+      top = maxTop;
+
+    elmnt.style.top = top + "px";
+    elmnt.style.left = left + "px";
+    elmnt.style.clip ='rect('+ -top + 'px '+ (-left+width) +'px '+ (-top+height)
+                                   +'px '+-left+'px)';
+
+    elmnt.focus();
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    elmnt.onmouseup = null;
+    elmnt.onmousemove = null;
+    }
+
+  //// From W3Schools   /////
+  
+  
   // Render the PDF
   pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
       // Display page on the existing canvas with 100% scale.

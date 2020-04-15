@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {FinderHeuristics} from "../../web/heuristics.js"
 
 import {
   FONT_IDENTITY_MATRIX,
@@ -445,8 +444,10 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     objs,
     canvasFactory,
     webGLContext,
-    imageLayer
+    imageLayer,
+    heuristics
   ) {
+    this.heuristics = heuristics;
     this.ctx = canvasCtx;
     this.current = new CanvasExtraState();
     this.stateStack = [];
@@ -801,7 +802,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       transform,
       viewport,
       transparency = false,
-      background = null,
+      background = null
     }) {
       // For pdfs that use blend modes we have to clear the canvas else certain
       // blend modes can look wrong since we'd be blending with a white
@@ -810,7 +811,6 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       // transparent canvas when we have blend modes.
       var width = this.ctx.canvas.width;
       var height = this.ctx.canvas.height;
-      this.heuristics = new FinderHeuristics();
       this.ctx.save();
       this.ctx.fillStyle = background || "rgb(255, 255, 255)";
       this.ctx.fillRect(0, 0, width, height);
@@ -847,6 +847,8 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       if (this.imageLayer) {
         this.imageLayer.beginLayout();
       }
+
+
     },
 
     executeOperatorList: function CanvasGraphics_executeOperatorList(
@@ -921,6 +923,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     },
 
     endDrawing: function CanvasGraphics_endDrawing() {
+
       // Finishing all opened operations such as SMask group painting.
       if (this.current.activeSMask !== null) {
         this.endSMaskGroup();
@@ -1933,6 +1936,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         this.ctx.rect(bbox[0], bbox[1], width, height);
         this.clip();
         this.endPath();
+
       }
     },
 
@@ -1944,6 +1948,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     beginGroup: function CanvasGraphics_beginGroup(group) {
       this.save();
       var currentCtx = this.ctx;
+
       // TODO non-isolated groups - according to Rik at adobe non-isolated
       // group results aren't usually that different and they even have tools
       // that ignore this setting. Notes from Rik on implementing:
@@ -1995,6 +2000,8 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       var offsetY = Math.floor(bounds[1]);
       var drawnWidth = Math.max(Math.ceil(bounds[2]) - offsetX, 1);
       var drawnHeight = Math.max(Math.ceil(bounds[3]) - offsetY, 1);
+      
+
       var scaleX = 1,
         scaleY = 1;
       if (drawnWidth > MAX_GROUP_SIZE) {
@@ -2018,12 +2025,12 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         true
       );
       var groupCtx = scratchCanvas.context;
-
       // Since we created a new canvas that is just the size of the bounding box
       // we have to translate the group ctx.
       groupCtx.scale(1 / scaleX, 1 / scaleY);
       groupCtx.translate(-offsetX, -offsetY);
       groupCtx.transform.apply(groupCtx, currentTransform);
+      this.heuristics.reportImageAction(this.ctx, offsetX, offsetY , drawnWidth, drawnHeight, "paint"); 
 
       if (group.smask) {
         // Saving state and cached mask to be used in setGState.
@@ -2045,6 +2052,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         currentCtx.setTransform(1, 0, 0, 1, 0, 0);
         currentCtx.translate(offsetX, offsetY);
         currentCtx.scale(scaleX, scaleY);
+
       }
       // The transparency group inherits all off the current graphics state
       // except the blend mode, soft mask, and alpha constants.
@@ -2077,7 +2085,10 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         this.tempSMask = this.smaskStack.pop();
       } else {
         this.ctx.drawImage(groupCtx.canvas, 0, 0);
+
       }
+
+
       this.restore();
     },
 
@@ -2143,6 +2154,8 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         w,
         h
       );
+
+      reportImageAction(ctx, x, y, w, h, "jpeg")
       if (this.imageLayer) {
         var currentTransform = ctx.mozCurrentTransformInverse;
         var position = this.getCanvasPosition(0, 0);
@@ -2408,6 +2421,8 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         width,
         height
       );
+
+//      reportImageAction(ctx,x, y, w, h, "binary-inline")
 
       if (this.imageLayer) {
         var position = this.getCanvasPosition(0, -height);

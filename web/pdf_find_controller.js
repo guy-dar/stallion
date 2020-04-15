@@ -218,6 +218,7 @@ class PDFFindController {
 
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
+      $("#peekBox").html('');
       document.getElementById('peekBoxContainer').classList.add("hidden");
     }
 
@@ -460,9 +461,14 @@ class PDFFindController {
 
     // Regular expressions
     let re_simple =  /^(back)|(toolbar)|(outline)$/
+    let re_refer = /^\[([0-9a-zA-Z\-' ]+)\]$/;
+    let re_zoom =  /^zoom (?<dir>(out)|(in))(?<query>( \d|()))$/
     let re_page = /^page (?<query>\d+)$/;
     let re_fpeek = /^fpeek (?<query>.*)$/
     let re_fgoto = /^fgoto (?<query>.*)$/
+    let re_set_shortcut = /^(shortcut|name|dub) (?<query>.+)$/;
+    let re_jump_shortcut = /^jump (?<query>.+)$/;
+
     // Try match
     var re;
     if((re = re_simple.exec(query)) != null){
@@ -481,7 +487,11 @@ class PDFFindController {
       }
       return "";
     }
-
+    if((re = re_refer.exec(query)) != null){
+      this._peekMatches = true;
+      this._query = re.groups.query;
+      return  "refer";
+    }
     if((re = re_fpeek.exec(query)) != null){
       this._peekMatches = true;
       this._query = re.groups.query;
@@ -494,6 +504,18 @@ class PDFFindController {
       return "find";
     }
 
+    if((re = re_zoom.exec(query)) != null){
+      var zoomBtn = (re.groups.dir=='in')? document.getElementById("zoomIn") : document.getElementById("zoomOut");
+      query = re.groups.query;
+      query = (query == '') ? 1 : parseInt(query);
+
+      for(var i=0;i<query;i++)
+        zoomBtn.click();
+      this._query = "";
+      return "";
+    }
+
+    
 
     if((re = re_page.exec(query)) != null){
       document.getElementById("pageNumber").value = re.groups.query;
@@ -501,7 +523,26 @@ class PDFFindController {
       this._query = "";
       return "";
     }
+
+    if((re = re_set_shortcut.exec(query)) != null){
+      if(this.shortcutsDict == undefined)
+          this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
+
+      if(this.shortcutsDict[re.groups.query] == undefined)
+        this.shortcutsDict[re.groups.query] = [$("#viewerContainer").scrollTop()];
+      else
+        console.log("Cannot set shortcut. already exists.")
+      this._query = "";
+      return "";
+    }
     
+    if((re = re_jump_shortcut.exec(query)) != null){
+      $("#viewerContainer").scrollTop(this.shortcutsDict[re.groups.query]);
+      this._query = "";
+      return "";
+    }
+
+
     alert("Cannot understand command. Are you stupid?");
     this._query = "";
     return "";
@@ -515,8 +556,12 @@ class PDFFindController {
       this._calculateMatch(pageIndex);
       return;
     }
-    
-    
+    if(queryType == "refer"){
+        
+    }
+    if(queryType == "media"){
+        
+    }
   }
 
 
@@ -797,6 +842,7 @@ class PDFFindController {
 
   _onFindBarOpened(evt) {
     const pdfDocument = this._pdfDocument;
+    $("#peekBox").html('');
     document.getElementById("peekBoxContainer").classList.add("hidden");
   }
 
