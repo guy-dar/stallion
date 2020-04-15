@@ -2155,7 +2155,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         h
       );
 
-      reportImageAction(ctx, x, y, w, h, "jpeg")
+      // this.heuristics.reportImageAction(ctx, x, y, w, h, "jpeg")
       if (this.imageLayer) {
         var currentTransform = ctx.mozCurrentTransformInverse;
         var position = this.getCanvasPosition(0, 0);

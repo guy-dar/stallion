@@ -16,7 +16,6 @@
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView, peekView } from "./ui_utils.js";
-import { HeuristicsHelper, FinderHeuristics } from "./heuristics.js";
 
 const FindState = {
   FOUND: 0,

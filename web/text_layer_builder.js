@@ -42,7 +42,9 @@ class TextLayerBuilder {
     viewport,
     findController = null,
     enhanceTextSelection = false,
+    heuristics
   }) {
+    this.heuristics = heuristics;
     this.textLayerDiv = textLayerDiv;
     this.eventBus = eventBus;
     this.textContent = null;
@@ -67,13 +69,12 @@ class TextLayerBuilder {
    */
   _finishRendering() {
     this.renderingDone = true;
-
     if (!this.enhanceTextSelection) {
       const endOfContent = document.createElement("div");
       endOfContent.className = "endOfContent";
       this.textLayerDiv.appendChild(endOfContent);
     }
-
+    this.heuristics.analyzeTextLayer(this);
     this.eventBus.dispatch("textlayerrendered", {
       source: this,
       pageNumber: this.pageNumber,
@@ -456,7 +457,8 @@ class DefaultTextLayerFactory {
     pageIndex,
     viewport,
     enhanceTextSelection = false,
-    eventBus
+    eventBus,
+    heuristics
   ) {
     return new TextLayerBuilder({
       textLayerDiv,
@@ -464,6 +466,7 @@ class DefaultTextLayerFactory {
       viewport,
       enhanceTextSelection,
       eventBus,
+      heuristics
     });
   }
 }

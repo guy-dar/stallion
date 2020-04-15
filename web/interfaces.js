@@ -154,7 +154,8 @@ class IPDFTextLayerFactory {
     pageIndex,
     viewport,
     enhanceTextSelection = false,
-    eventBus
+    eventBus,
+    heuristics
   ) {}
 }
 

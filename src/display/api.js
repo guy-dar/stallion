@@ -18,7 +18,7 @@
  * @module pdfjsLib
  */
 
-import {FinderHeuristics} from "../../web/heuristics.js"
+import {PageHeuristics} from "../../web/heuristics.js"
 import {
   AbortException,
   assert,
@@ -926,6 +926,12 @@ class PDFPageProxy {
     this.destroyed = false;
   }
 
+  get heuristics(){
+    if(this._heuristics == undefined)
+      this._heuristics = new PageHeuristics();
+    return this._heuristics;
+    }
+
   /**
    * @type {number} Page number of the page. First page is 1.
    */
@@ -1110,6 +1116,7 @@ class PDFPageProxy {
       webGLContext,
       useRequestAnimationFrame: renderingIntent !== "print",
       pdfBug: this._pdfBug,
+      heuristics: this.heuristics
     });
 
     if (!intentState.renderTasks) {
@@ -2728,6 +2735,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       webGLContext,
       useRequestAnimationFrame = false,
       pdfBug = false,
+      heuristics
     }) {
       this.callback = callback;
       this.params = params;
@@ -2739,7 +2747,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       this.canvasFactory = canvasFactory;
       this.webGLContext = webGLContext;
       this._pdfBug = pdfBug;
-
+      this.heuristics = heuristics;
       this.running = false;
       this.graphicsReadyCallback = null;
       this.graphicsReady = false;
@@ -2787,7 +2795,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
         background,
       } = this.params;
       
-      this.heuristics = new FinderHeuristics();
+
       this.gfx = new CanvasGraphics(
         canvasContext,
         this.commonObjs,

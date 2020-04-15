@@ -47,22 +47,62 @@ class HeuristicsHelper{
 
         dict[val]++; 
     }  
+
+
+
+    htmlFeatures(elem){
+        var w = elem.offsetWidth,
+            h = elem.offsetHeight,
+            top = elem.offsetTop,
+            left = elem.offsetLeft;
+
+            return {
+                width : w,
+                height: h,
+                top: top,
+                left: left,
+                bottom: top + h,
+                right: left + w
+            }
+    }
 }
 
 
 
 
-class FinderHeuristics{
+class PageHeuristics{
     constructor(){
         this.debugMode = false;
         this.helper = new HeuristicsHelper()
         this._fonts = {};
         this._images = [];
         this.idx = 0;
+
+        // Set primary estimates
         this._maxImgDim = 1000;
+        this._blockJumpPctTol = 1.4;
     }
     setMainCtx(mainCtx){
         this.mainCtx = mainCtx;
+    }
+
+    analyzeTextLayer(textLayer){
+        var textDivs = textLayer.textDivs;
+        var blockBreaks = [];
+        var lastFeatures = null;
+        for (let n = 0; n < textDivs.length; n++) {
+            const curFeatures = this.helper.htmlFeatures(textDivs[n]);
+            if(lastFeatures){
+                var dominantFeatures = ( curFeatures.height >= lastFeatures.height) ? curFeatures : lastFeatures;
+                var jump = (Math.abs(curFeatures.top - lastFeatures.bottom));
+                if(jump >= dominantFeatures.height * this._blockJumpPctTol){
+                    blockBreaks.push(n);
+                    console.log(textDivs[n]);
+                }
+            }
+
+            lastFeatures = curFeatures;
+        }
     }
 
     reportTextAction(ctx, font, x, y){
@@ -107,4 +147,4 @@ class FinderHeuristics{
 }
 
 
-export {FinderHeuristics, HeuristicsHelper}
+export {PageHeuristics, HeuristicsHelper}

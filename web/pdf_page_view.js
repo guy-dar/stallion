@@ -121,6 +121,7 @@ class PDFPageView {
 
   setPdfPage(pdfPage) {
     this.pdfPage = pdfPage;
+    this.heuristics = pdfPage.heuristics;
     this.pdfPageRotate = pdfPage.rotate;
 
     const totalRotation = (this.rotation + this.pdfPageRotate) % 360;
@@ -448,7 +449,8 @@ class PDFPageView {
         this.id - 1,
         this.viewport,
         this.textLayerMode === TextLayerMode.ENABLE_ENHANCE,
-        this.eventBus
+        this.eventBus,
+        this.heuristics
       );
     }
     this.textLayer = textLayer;

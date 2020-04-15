@@ -1131,7 +1131,8 @@ class BaseViewer {
     pageIndex,
     viewport,
     enhanceTextSelection = false,
-    eventBus
+    eventBus,
+    heuristics
   ) {
     return new TextLayerBuilder({
       textLayerDiv,
@@ -1142,6 +1143,7 @@ class BaseViewer {
       enhanceTextSelection: this.isInPresentationMode
         ? false
         : enhanceTextSelection,
+        heuristics
     });
   }
 
