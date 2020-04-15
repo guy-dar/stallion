@@ -11,6 +11,12 @@ import { NullL10n } from "./ui_utils.js";
 class PDFSuperFindBar {
   constructor(options, eventBus, l10n = NullL10n) {
     this.opened = false;
+
+    this.findResultsCount = options.findResultsCount || null;
+    this.findPreviousButton = options.findPreviousButton || null;
+    this.findNextButton = options.findNextButton || null;
+
+
     this.eventBus = eventBus;
     this.l10n = l10n;
 
@@ -23,10 +29,14 @@ class PDFSuperFindBar {
     this.caseSensitive = false;
     this.entireWord = false;
 
-    this.findResultsCount = null;
-    this.findPreviousButton =  null;
-    this.findNextButton = null;
 
+    this.findPreviousButton.addEventListener("click", () => {
+      this.dispatchEvent("super", true);
+    });
+
+    this.findNextButton.addEventListener("click", () => {
+      this.dispatchEvent("super", false);
+    });
 
     this.bar.addEventListener("keydown", e => {
       switch (e.keyCode) {
@@ -60,6 +70,7 @@ class PDFSuperFindBar {
   }
 
   dblSlash(){
+    // De-select
     if (window.getSelection) {
       var selection = window.getSelection().toString();
       if (window.getSelection().empty) {  // Chrome
@@ -68,6 +79,13 @@ class PDFSuperFindBar {
         window.getSelection().removeAllRanges();
       }
     }
+
+    // Process Selection
+    var query = "fpeek " + selection;
+
+    // Run query
+    this.findField.value = query;
+    this.dispatchEvent("super");
   }
 
   updateUIState(state, previous, matchesCount) {
@@ -88,6 +106,21 @@ class PDFSuperFindBar {
         notFound = true;
         break;
 
+      case FindState.WRAPPED:
+        if (previous) {
+          findMsg = this.l10n.get(
+            "find_reached_top",
+            null,
+            "Reached top of document, continued from bottom"
+          );
+        } else {
+          findMsg = this.l10n.get(
+            "find_reached_bottom",
+            null,
+            "Reached end of document, continued from top"
+          );
+        }
+        break;
     }
 
     this.findField.classList.toggle("notFound", notFound);
@@ -98,6 +131,68 @@ class PDFSuperFindBar {
       this._adjustWidth();
     });
 
+    this.updateResultsCount(matchesCount);
+  }
+
+  updateResultsCount({ current = 0, total = 0 } = {}) {
+    if (!this.findResultsCount) {
+      return; // No UI control is provided.
+    }
+    const limit = MATCHES_COUNT_LIMIT;
+    let matchesCountMsg = "";
+
+    if (total > 0) {
+      if (total > limit) {
+        if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
+          // TODO: Remove this hard-coded `[other]` form once plural support has
+          // been implemented in the mozilla-central specific `l10n.js` file.
+          matchesCountMsg = this.l10n.get(
+            "find_match_count_limit[other]",
+            {
+              limit,
+            },
+            "More than {{limit}} matches"
+          );
+        } else {
+          matchesCountMsg = this.l10n.get(
+            "find_match_count_limit",
+            {
+              limit,
+            },
+            "More than {{limit}} match" + (limit !== 1 ? "es" : "")
+          );
+        }
+      } else {
+        if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
+          // TODO: Remove this hard-coded `[other]` form once plural support has
+          // been implemented in the mozilla-central specific `l10n.js` file.
+          matchesCountMsg = this.l10n.get(
+            "find_match_count[other]",
+            {
+              current,
+              total,
+            },
+            "{{current}} of {{total}} matches"
+          );
+        } else {
+          matchesCountMsg = this.l10n.get(
+            "find_match_count",
+            {
+              current,
+              total,
+            },
+            "{{current}} of {{total}} match" + (total !== 1 ? "es" : "")
+          );
+        }
+      }
+    }
+    Promise.resolve(matchesCountMsg).then(msg => {
+      this.findResultsCount.textContent = msg;
+      this.findResultsCount.classList.toggle("hidden", !total);
+      // Since `updateResultsCount` may be called from `PDFFindController`,
+      // ensure that the width of the findbar is always updated correctly.
+      this._adjustWidth();
+    });
   }
 
 
@@ -107,6 +202,7 @@ class PDFSuperFindBar {
       this.opened = true;
       this.bar.classList.remove("hidden");
     }
+    this.findField.value = '';
     this.findField.select();
     this.findField.focus();
 
@@ -118,7 +214,6 @@ class PDFSuperFindBar {
       return;
     }
     this.opened = false;
-    this.findField.value = '';
     this.bar.classList.add("hidden");
   }
 

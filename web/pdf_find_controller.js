@@ -137,6 +137,7 @@ class PDFFindController {
     if (cmd !== "findhighlightallchange") {
       this._updateUIState(FindState.PENDING);
     }
+
     this._firstPageCapability.promise.then(() => {
       // If the document was closed before searching began, or if the search
       // operation was relevant for a previously opened document, do nothing.
@@ -311,6 +312,7 @@ class PDFFindController {
           return true;
         }
         return false;
+      case "findsuper":
       case "findhighlightallchange":
         return false;
     }
@@ -399,7 +401,7 @@ class PDFFindController {
   _calculatePhraseMatch(query, pageIndex, pageContent, entireWord) {
     const matches = [];
     const queryLen = query.length;
-
+    this.queryLen = queryLen;
     let matchIdx = -queryLen;
     while (true) {
       matchIdx = pageContent.indexOf(query, matchIdx + queryLen);
@@ -457,8 +459,8 @@ class PDFFindController {
     );
   }
 
-  _preprocessSuperMatch(query){
-
+  _preprocessSuperMatch(){
+    var query = this._query;
     // Regular expressions
     let re_simple =  /^(back)|(toolbar)|(outline)$/
     let re_refer = /^\[([0-9a-zA-Z\-' ]+)\]$/;
@@ -472,7 +474,7 @@ class PDFFindController {
     // Try match
     var re;
     if((re = re_simple.exec(query)) != null){
-      this._query ="";
+
       switch(query){
         case "back":
           window.history.go(-1);
@@ -485,23 +487,23 @@ class PDFFindController {
           document.getElementById("viewOutline").click();
         break;
       }
-      return "";
+      return ["",""];
     }
     if((re = re_refer.exec(query)) != null){
       this._peekMatches = true;
-      this._query = re.groups.query;
-      return  "refer";
+      query = re.groups.query;
+      return  [query, "refer"];
     }
     if((re = re_fpeek.exec(query)) != null){
       this._peekMatches = true;
-      this._query = re.groups.query;
-      return  "find";
+      query = re.groups.query;
+      return  [query, "find"];
     }
     
     if((re = re_fgoto.exec(query)) != null){
       this._peekMatches = false;
-      this._query = re.groups.query;
-      return "find";
+      query = re.groups.query;
+      return [query, "find"];
     }
 
     if((re = re_zoom.exec(query)) != null){
@@ -511,8 +513,7 @@ class PDFFindController {
 
       for(var i=0;i<query;i++)
         zoomBtn.click();
-      this._query = "";
-      return "";
+      return ["",""];
     }
 
     
@@ -520,8 +521,7 @@ class PDFFindController {
     if((re = re_page.exec(query)) != null){
       document.getElementById("pageNumber").value = re.groups.query;
       document.getElementById("pageNumber").dispatchEvent(new Event("change"));
-      this._query = "";
-      return "";
+      return ["", ""];
     }
 
     if((re = re_set_shortcut.exec(query)) != null){
@@ -532,28 +532,24 @@ class PDFFindController {
         this.shortcutsDict[re.groups.query] = [$("#viewerContainer").scrollTop()];
       else
         console.log("Cannot set shortcut. already exists.")
-      this._query = "";
-      return "";
+      return ["",""];
     }
     
     if((re = re_jump_shortcut.exec(query)) != null){
       $("#viewerContainer").scrollTop(this.shortcutsDict[re.groups.query]);
-      this._query = "";
-      return "";
+      return ["",""];
     }
 
 
     alert("Cannot understand command. Are you stupid?");
-    this._query = "";
-    return "";
+    return ["",""];
 
 
   }
-  _calculateSuperMatch(pageIndex, queryType) {
-    var query = this._query;
+  _calculateSuperMatch(pageIndex, query, queryType) {
 
     if(queryType == "find"){
-      this._calculateMatch(pageIndex);
+      this._calculateMatch(pageIndex, query);
       return;
     }
     if(queryType == "refer"){
@@ -568,7 +564,8 @@ class PDFFindController {
 
   _calculateMatch(pageIndex, q = null) {
     let pageContent = this._pageContents[pageIndex];
-    let query = (q == null) ? this._query : q;
+    let query = (q == null) ? this._query : q; // GUY TODO: Text not normalized if it comes from superfind!!!
+    
     const { caseSensitive, entireWord, phraseSearch } = this._state;
 
     if (query.length === 0) {
@@ -681,6 +678,9 @@ class PDFFindController {
     const numPages = this._linkService.pagesCount;
 
     this._highlightMatches = true;
+    if(isSuperMatch){
+        var [newQuery, superQueryType] = this._preprocessSuperMatch();
+    }
     if (this._dirtyMatch) {
       // Need to recalculate the matches, reset everything.
       this._dirtyMatch = false;
@@ -692,9 +692,6 @@ class PDFFindController {
       this._pageMatches.length = 0;
       this._pageMatchesLength.length = 0;
       this._matchesCountTotal = 0;
-      if(isSuperMatch)
-        var superQueryType = this._preprocessSuperMatch(this._query);
-      
       this._updateAllPages(); // Wipe out any previously highlighted matches.
 
       for (let i = 0; i < numPages; i++) {
@@ -706,7 +703,7 @@ class PDFFindController {
         this._extractTextPromises[i].then(pageIdx => {
           delete this._pendingFindMatches[pageIdx];
           if(isSuperMatch)
-            this._calculateSuperMatch(pageIdx, superQueryType);
+            this._calculateSuperMatch(pageIdx, newQuery, superQueryType);
           else
             this._calculateMatch(pageIdx);
         });

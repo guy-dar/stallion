@@ -2516,6 +2516,7 @@ function webViewerKeyDown(evt) {
                 }, delta);
       }else{
         clearTimeout(_slashKeyTimeout);
+        _slashKeyTimeout = null;
         PDFViewerApplication.superFindBar.dblSlash();
       }
       

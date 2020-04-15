@@ -166,7 +166,7 @@ class TextLayerBuilder {
     let i = 0,
       iIndex = 0;
     const end = textContentItemsStr.length - 1;
-    const queryLen = findController.state.query.length;
+    const queryLen = findController.queryLen;
     const result = [];
 
     for (let m = 0, mm = matches.length; m < mm; m++) {

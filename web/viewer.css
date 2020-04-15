@@ -55,10 +55,6 @@ select {
   display: none !important;
 }
 
-#peekBox{
-  float: left;
-  clear: left;
-}
 #peekBoxContainer{
   position: absolute;
   bottom:10%;
@@ -71,17 +67,28 @@ select {
   background-image: url(images/texture.png),
                     linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85));
 }
-
+/* #peekBox .page{
+  zoom:0.8;
+} */
+canvas, .page, .canvasWrapper, .textLayer{
+  border-radius: 1%;
+}
 
 #peekBox{
+  position:absolute;
+  top:0px;
+  cursor:grab !important;
+  float: left;
+  clear: left;
   width:500px;
-  height:400px;
+  height:450px;
 
 }
 
 #peekBoxOptions{
   position: absolute;
-  height:100px;
+  top:450px;
+  height:50px;
 }
 
 
@@ -1548,11 +1555,6 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 } */
 
 
-#peekBox{
-  position:absolute;
-  top:100px;
-  cursor:grab !important;
-}
 
 #viewer.textLayer-visible .textLayer {
   opacity: 1.0;

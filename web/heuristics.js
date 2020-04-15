@@ -54,6 +54,7 @@ class HeuristicsHelper{
 
 class FinderHeuristics{
     constructor(){
+        this.debugMode = false;
         this.helper = new HeuristicsHelper()
         this._fonts = {};
         this._images = [];
@@ -68,9 +69,11 @@ class FinderHeuristics{
         var fillStyle = ctx.fillStyle;
         this.helper.incrementDict(this._fonts, font.name);
         if((font.name.indexOf('+CM') != -1)){    // GUY TODO: Fix to regexp
-            ctx.fillStyle = 'rgba(0,0,225,0.2)';
-            ctx.fillRect(x,y, 10,-10)       //Guy TODO: though works marvelously, 10 is just a heuristic. FIX  
-            ctx.fillStyle = fillStyle;
+            if(this.debugMode){
+                ctx.fillStyle = 'rgba(0,0,225,0.2)';
+                ctx.fillRect(x,y, 10,-10)       //Guy TODO: though works marvelously, 10 is just a heuristic. FIX  
+                ctx.fillStyle = fillStyle;
+            }
         }
 
         this.idx++;
@@ -85,6 +88,8 @@ class FinderHeuristics{
     }
 
     finishedRenderingContext(curCtx){
+        if(!this.debugMode)
+            return;
         var ctx = curCtx.getContext('2d')
         this._images.forEach((img) =>{
             var rect = img['rect'];

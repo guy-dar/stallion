@@ -30,7 +30,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 <!--#if GENERIC-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <!--#endif-->
-    <title>Stallion viewer over PDF.js</title>
+    <title>Stallion</title>
 
 <!--#if MOZCENTRAL-->
 <!--#include viewer-snippet-firefox-extension.html-->
@@ -94,7 +94,7 @@ See https://github.com/adobe-type-tools/cmap-resources
       <div id="mainContainer">
         <div class="findbar hidden doorHanger" id="findbar">
           <div id="findbarInputContainer">
-            <input id="findInput" class="toolbarField" title="Find" placeholder="Find in document…" tabindex="91" data-l10n-id="find_input">
+            <input id="findInput" autocomplete="off" class="toolbarField" title="Find" placeholder="Find in document…" tabindex="91" data-l10n-id="find_input">
             <div class="splitToolbarButton">
               <button id="findPrevious" class="toolbarButton findPrevious" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="find_previous">
                 <span data-l10n-id="find_previous_label">Previous</span>
@@ -327,13 +327,26 @@ See https://github.com/adobe-type-tools/cmap-resources
       </div> <!-- mainContainer -->
       <table id="peekBoxContainer" class="hidden">
         <tr>
-          <td id="peekBoxOptions">
-            Hi
+          <td>
+            <div id="peekBox"></div>            
           </td>
         </tr>
         <tr>
-          <td>
-            <div id="peekBox"></div>            
+          <td id="peekBoxOptions">
+            <div class="splitToolbarButton">
+              <button id="superFindPrevious" class="toolbarButton findPrevious" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="super_find_previous">
+                <span data-l10n-id="super_find_previous_label">Previous</span>
+              </button>
+              <div class="splitToolbarButtonSeparator"></div>
+              <button id="superFindNext" class="toolbarButton findNext" title="Find the next occurrence of the phrase" tabindex="93" data-l10n-id="super_find_next">
+                <span data-l10n-id="super_find_next_label">Next</span>
+              </button>
+            </div>
+            <div id="findbarOptionsOneContainer">
+              <span id="superFindResultsCount" class="toolbarLabel hidden"></span>
+            </div>
+  
+
           </td>
         </tr>
 
@@ -342,7 +355,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       <div class="findbar hidden doorHanger superfindbar" id="superfindbar">
         <div id="superfindbarInputContainer">
-          <input id="superfindInput" class="toolbarField" title="Find" placeholder="Find in document…" data-l10n-id="superfind_input">
+          <input id="superfindInput"  autocomplete="off" class="toolbarField" title="Find" placeholder="Find in document…" data-l10n-id="superfind_input">
         </div>
       </div>  <!-- superfindbar -->
 
