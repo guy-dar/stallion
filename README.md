@@ -1,5 +1,39 @@
 # Stallion - Extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/) 
 
+## Features
+In addition to all the amazing features in PDF.js, here are some more.
+
+### The Slash Bar
+With simplicity as a core principle in Stallion, we introduce the (*soon to be famous*) **Slash Bar** (triggered by pressing `/` anywhere in the document). 
+The slash bar allows you to type commands instead of using on-screen buttons. 
+
+#### Basic
+
+* `outline` - Toggle document's outline (if exists).
+* `toolbar` - Toggle PDF.js-derived toolbar (hidden by default).
+
+* `back` - Go back.
+* `page *number*` - Go to page.
+* `zoom in/out [*digit*]` - Zoom. *digit* is optional. If specified, determines iterates the operation *digit* times.
+
+#### Navigation
+* `shortcut`/`name`/`dub` `*name*` - Set shortcut to specific location in document.
+* `jump *name*` - Go to shortcut.  
+* `fgoto *SearchPhrase*` - Find next occurence of the search phrase. You are advised to use the find bar instead (`Ctrl+F`).
+*  `fpeek *SearchPhrase*` - Opens a Peek Box for the search phrase.
+
+
+Note: Typing wrong commands can get offensive.
+
+### Peek Box
+the Peek Box is used as a substitute for the standard find operation. 
+It allows you peek at different locations without leaving current.
+Ideally, it should allow you to view definitions, references, theorems, and other parts of the document without the burden of context switching.
+
+### Double Slash
+Select text and double-click `/`. This will invoke a double slash operation. Naively it will just `fpeek` the selected text. With specific keywords, it is supposed to present some more advanced behavior (*intelligent peeking*) yet to be developed.
+
+
 
 ## Getting the Code
 
@@ -33,6 +67,27 @@ It is also possible to view all test PDF files on the right side by opening:
 
 + http://localhost:8888/test/pdfs/?frame
 
+## PDF.js
+[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
+
+PDF.js is community-driven and supported by Mozilla Labs. Their goal is to
+create a general-purpose, web standards-based platform for parsing and
+rendering PDFs.
+
+Please, visit their [repository](https://mozilla.github.io/pdf.js/) for additional information.
+
+## Future Goals
+There's plenty to be improved:
+* More features! Please! Send us feature requests.
+* Better heuristics!
+* Checking browser compatibility
+* Design choices (Peek Box design most notably)
+* Increasing speed is always important
+* Moving more to asynchronous routines
+* Mobile browsers - finding suitable design
+* Refactoring code. Making it as separate as possible from PDF.js for cleaner merges.
+* More verbose presentation of command failure to the user.
+ 
 
 ## Contributing
 
@@ -44,15 +99,6 @@ As for now, we keep the same contribution guidelines as PDF.js:
 + [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
 + [Projects](https://github.com/mozilla/pdf.js/projects)
 
-Feel free to stop by our [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org) for questions or guidance.
++ [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org).
 
 
-## PDF.js
-[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
-
-PDF.js is community-driven and supported by Mozilla Labs. Their goal is to
-create a general-purpose, web standards-based platform for parsing and
-rendering PDFs.
-
-Please, visit their [repository](https://mozilla.github.io/pdf.js/) for additional information.
- 
