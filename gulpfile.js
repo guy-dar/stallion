@@ -65,8 +65,8 @@ var DIST_DIR = BUILD_DIR + "dist/";
 var COMMON_WEB_FILES = ["web/images/*.{png,svg,gif,cur}", "web/debugger.js"];
 var MOZCENTRAL_DIFF_FILE = "mozcentral.diff";
 
-var REPO = "git@github.com:mozilla/pdf.js.git";
-var DIST_REPO_URL = "https://github.com/mozilla/pdfjs-dist";
+var REPO = "git@github.com:guyd1995/Stallion.git";
+var DIST_REPO_URL = "https://github.com/guyd1995/Stallion-dist";
 
 var builder = require("./external/builder/builder.js");
 
@@ -1619,8 +1619,8 @@ gulp.task(
       var DIST_NAME = "pdfjs-dist";
       var DIST_DESCRIPTION = "Generic build of Mozilla's PDF.js library.";
       var DIST_KEYWORDS = ["Mozilla", "pdf", "pdf.js"];
-      var DIST_HOMEPAGE = "http://mozilla.github.io/pdf.js/";
-      var DIST_BUGS_URL = "https://github.com/mozilla/pdf.js/issues";
+      var DIST_HOMEPAGE = "http://guyd1995.github.io/Stallion/";
+      var DIST_BUGS_URL = "https://github.com/guyd1995/Stallion/issues";
       var DIST_LICENSE = "Apache-2.0";
       var npmManifest = {
         name: DIST_NAME,
