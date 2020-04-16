@@ -462,13 +462,13 @@ class PDFFindController {
     var query = this._query;
     // Regular expressions
     let re_simple =  /^(back)|(toolbar)|(outline)$/
-    let re_refer = /^\[([0-9a-zA-Z\-' ]+)\]$/;
-    let re_zoom =  /^zoom (?<dir>(out)|(in))(?<query>( \d|()))$/
-    let re_page = /^page (?<query>\d+)$/;
-    let re_fpeek = /^fpeek (?<query>.*)$/
-    let re_fgoto = /^fgoto (?<query>.*)$/
-    let re_set_shortcut = /^(shortcut|name|dub) (?<query>.+)$/;
-    let re_jump_shortcut = /^jump (?<query>.+)$/;
+    let re_refer = /^hi$/ //^\[([0-9a-zA-Z\-' ]+)\]$/;
+    let re_page = /^hi$/ //^page (?<query>\d+)$/;
+    let re_zoom =  /^hi$/ //^zoom (?<dir>(out)|(in))(?<query>( \d|\b))$/
+    let re_fpeek = /^hi$/ //^fpeek (?<query>.*)$/
+    let re_fgoto = /^hi$/ //^fgoto (?<query>.*)$/
+    let re_set_shortcut = /^hi$/ //^(shortcut|name|dub) (?<query>.+)$/;
+    let re_jump_shortcut = /^hi$/ //^jump (?<query>.+)$/;
 
     // Try match
     var re;
