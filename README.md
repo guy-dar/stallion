@@ -1,4 +1,5 @@
 # Stallion - Extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/) 
+Please visit our [Demo](https://guyd1995.github.io/Stallion/web/viewer.html).
 
 ## Features
 In addition to all the amazing features in PDF.js, here are some more.
