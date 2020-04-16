@@ -26,9 +26,9 @@ The slash bar allows you to type commands instead of using on-screen buttons.
 Note: Typing wrong commands can get offensive.
 
 ### Peek Box
-the Peek Box is used as a substitute for the standard find operation. 
-It allows you peek at different locations without leaving current.
-Ideally, it should allow you to view definitions, references, theorems, and other parts of the document without the burden of context switching.
+The Peek Box is used as a substitute for the standard find operation. 
+It allows you to peek at different locations without leaving the current.
+Ideally, it should allow you to review definitions, references, theorems, and other parts of the document without the burden of context switching.
 
 ### Double Slash
 Select text and double-click `/`. This will invoke a double slash operation. Naively it will just `fpeek` the selected text. With specific keywords, it is supposed to present some more advanced behavior (*intelligent peeking*) yet to be developed.
@@ -78,15 +78,19 @@ Please, visit their [repository](https://mozilla.github.io/pdf.js/) for addition
 
 ## Future Goals
 There's plenty to be improved:
-* More features! Please! Send us feature requests.
+* More features! Please! *Send us feature requests*.
 * Better heuristics!
+* Debugging (code was written in an ad-hoc manner, which potentially result in bugs)
 * Checking browser compatibility
 * Design choices (Peek Box design most notably)
-* Increasing speed is always important
-* Moving more to asynchronous routines
-* Mobile browsers - finding suitable design
-* Refactoring code. Making it as separate as possible from PDF.js for cleaner merges.
-* More verbose presentation of command failure to the user.
+* Speed
+* Moving to asynchronous routines
+* Design for Mobile browsers
+* Refactoring code. 
+	* Separating from PDF.js for cleaner merges.
+	* More documentation
+	* Better practice code
+* Vebosity in non-"happy flow" scenarios.
  
 
 ## Contributing
