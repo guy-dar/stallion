@@ -1553,36 +1553,36 @@ gulp.task("wintersmith", function(done) {
   });
 });
 
-gulp.task("gh-pages-git", function(done) {
-  var VERSION = getVersionJSON().version;
-  var reason = process.env["PDFJS_UPDATE_REASON"];
+// gulp.task("gh-pages-git", function(done) {
+//   var VERSION = getVersionJSON().version;
+//   var reason = process.env["PDFJS_UPDATE_REASON"];
 
-  // safeSpawnSync("git", ["init"], { cwd: GH_PAGES_DIR });
-  // safeSpawnSync("git", ["remote", "add", "origin", HTTPS_REPO], {
-  //   cwd: GH_PAGES_DIR,
-  // });
-  safeSpawnSync("git", ["checkout", "gh-pages"], { cwd: GH_PAGES_DIR });
+//   // safeSpawnSync("git", ["init"], { cwd: GH_PAGES_DIR });
+//   // safeSpawnSync("git", ["remote", "add", "origin", HTTPS_REPO], {
+//   //   cwd: GH_PAGES_DIR,
+//   // });
+//   safeSpawnSync("git", ["checkout", "gh-pages"], { cwd: GH_PAGES_DIR });
 
-  safeSpawnSync("git", ["add", "-A"], { cwd: GH_PAGES_DIR });
-  safeSpawnSync(
-    "git",
-    [
-      "commit",
-      "-am",
-      "gh-pages site created via gulpfile.js script",
-      "-m",
-      "PDF.js version " + VERSION + (reason ? " - " + reason : ""),
-    ],
-    { cwd: GH_PAGES_DIR }
-  );
+//   safeSpawnSync("git", ["add", "-A"], { cwd: GH_PAGES_DIR });
+//   safeSpawnSync(
+//     "git",
+//     [
+//       "commit",
+//       "-am",
+//       "gh-pages site created via gulpfile.js script",
+//       "-m",
+//       "PDF.js version " + VERSION + (reason ? " - " + reason : ""),
+//     ],
+//     { cwd: GH_PAGES_DIR }
+//   );
 
-  safeSpawnSync("git", ["push"], { cwd: GH_PAGES_DIR });
-  // safeSpawnSync("git", ["branch", "-m", "gh-pages"], { cwd: GH_PAGES_DIR });
+//   safeSpawnSync("git", ["push"], { cwd: GH_PAGES_DIR });
+//   // safeSpawnSync("git", ["branch", "-m", "gh-pages"], { cwd: GH_PAGES_DIR });
 
-  console.log();
-  console.log("Website built in " + GH_PAGES_DIR);
-  done();
-});
+//   console.log();
+//   console.log("Website built in " + GH_PAGES_DIR);
+//   done();
+// });
 
 gulp.task(
   "web",
