@@ -17,7 +17,7 @@ The slash bar allows you to type commands instead of using on-screen buttons.
 * `zoom in/out [`*`digit`*`]` - Zoom. *digit* is optional. If specified, determines iterates the operation *digit* times.
 
 #### Navigation
-* `shortcut/name/dub` *`name`* - Set shortcut to current location in document.
+* `shortcut/name/dub`*`name`* - Set shortcut to current location in document.
 * `jump`*`name`* - Go to shortcut.  
 * `fgoto`*`SearchPhrase`* - Find next occurence of the search phrase. You are advised to use the find bar instead (`Ctrl+F`).
 *  `fpeek`*`SearchPhrase`* - Opens a Peek Box for the search phrase.
