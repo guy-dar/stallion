@@ -57,7 +57,7 @@ select {
 
 #peekBoxContainer{
   position: absolute;
-  top:20%;
+  bottom:10%;
   left:10%;
   width:500px;
   height:500px;

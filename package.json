@@ -1,6 +1,6 @@
 {
-  "name": "Stallion",
-  "version": "0.0.1",
+  "name": "pdf.js",
+  "version": "2.0.0",
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-transform-modules-commonjs": "^7.9.0",
@@ -59,7 +59,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/guyd1995/Stallion.git"
+    "url": "git://github.com/mozilla/pdf.js.git"
   },
   "license": "Apache-2.0"
 }
