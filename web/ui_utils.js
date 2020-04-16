@@ -161,9 +161,14 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
-function makeDraggable(elmnt){
+function makeDraggable(elmnt, dragElements = null){
     /////  From W3Schools /////
-    elmnt.onmousedown = dragMouseDown;
+    if(!dragElements)
+        dragElements = [elmnt];
+    
+    for(var i=0; i < dragElements.length; i++){
+        dragElements[i].onmousedown = dragMouseDown;
+    }
     var pos1 = 0, pos2= 0, pos3 = 0, pos4 = 0;
     
     function dragMouseDown(e) {
@@ -175,7 +180,9 @@ function makeDraggable(elmnt){
       elmnt.onmouseup = closeDragElement;
       elmnt.onmouseout = closeDragElement;
       // call a function whenever the cursor moves:
-      elmnt.onmousemove = elementDrag;
+      for(var i=0; i < dragElements.length; i++)
+          dragElements[i].onmousemove = elementDrag;
+      
     }
   
     function elementDrag(e) {
@@ -197,8 +204,8 @@ function makeDraggable(elmnt){
   
     function closeDragElement() {
       // stop moving when mouse button is released:
-      elmnt.onmouseup = null;
-      elmnt.onmousemove = null;
+      for(var i=0; i < dragElements.length; i++)
+          dragElements[i].onmousemove = null;
       }
   
     //// From W3Schools   /////
@@ -243,7 +250,8 @@ function peekView(element, spot, pageIdx, pdfDocument) {
       newPage.appendTo(iframeDoc);
       newPage[0].style.top = (-spot.top) + "px";
       newPage[0].style.left = (-spot.left) + "px";
-      makeDraggable(newPage[0]);
+      makeDraggable(newPage[0]); //, $(iframeDoc).find(".page, .textLayer, canvas"));
+      newPage.find(".textLayer span:not(:has(*))").not(".highlight").remove(); // I don't like you.
       peekBoxContainer.classList.remove("hidden");
       makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
     })
