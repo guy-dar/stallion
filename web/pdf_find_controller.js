@@ -231,8 +231,8 @@ class PDFFindController {
     }
 
     const spot = {
-      top: MATCH_SCROLL_OFFSET_TOP,
-      left: MATCH_SCROLL_OFFSET_LEFT,
+      top: element.offsetTop - 50,
+      left: element.offsetLeft,
     };
     peekView(element, spot, pageIndex, this._pdfDocument);
   }

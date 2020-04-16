@@ -241,7 +241,8 @@ function peekView(element, spot, pageIdx, pdfDocument) {
       newCanvas[0].getContext('2d').drawImage(canvasOriginal[0], 0, 0);
       newPage[0].style.position = "absolute"; // GUY TODO: I'm going to HTMHell
       newPage.appendTo(iframeDoc);
-      newPage.scroll(spot);
+      newPage[0].style.top = (-spot.top) + "px";
+      newPage[0].style.left = (-spot.left) + "px";
       makeDraggable(newPage[0]);
       peekBoxContainer.classList.remove("hidden");
       makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
