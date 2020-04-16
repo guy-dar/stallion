@@ -218,14 +218,14 @@ function peekView(element, spot, pageIdx, pdfDocument) {
   var iframeDoc = $("#peekBox")[0].contentDocument.documentElement.getElementsByTagName("body")[0];
   iframeDoc.innerHTML = '<link rel="stylesheet" href="../../node_modules/pdfjs-dist/web/pdf_viewer.css"><link rel="stylesheet" type="text/css" href="viewer.css">';
   iframeDoc.id = "peekBox"  //GUY TODO: confusing?
-  var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"'] canvas");  
-
+  var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"']");  
+  var canvasOriginal = pageOriginal.find("canvas")
   
   // Render the PDF
   pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-      // Display page on the existing canvas with 100% scale.
+    // Display page on the existing canvas with 100% scale.
       var viewport = pdfPage.getViewport({ scale: 2.5 });   //GUY TODO: Understand what's the right scale
-      var canvas = $("#peekBox canvas")[0];
+      var canvas = canvasOriginal[0];
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       var ctx = canvas.getContext("2d");
@@ -234,17 +234,22 @@ function peekView(element, spot, pageIdx, pdfDocument) {
         viewport: viewport,
       });
       return renderTask.promise;
-    }).catch(function(reason) {
-    console.error("Error: " + reason);
-  });
-  var page = pageOriginal.clone();
-  page[0].getContext('2d').drawImage(pageOriginal[0],0,0);
-  page[0].style.position = "absolute"; // GUY TODO: I'm going to HTMHell
-  page.appendTo(iframeDoc);
-  page.scroll(spot);
-  makeDraggable(page[0]);
-  peekBoxContainer.classList.remove("hidden");
-  makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
+    })
+    .then(()=>{
+      var newPage = pageOriginal.clone();
+      var newCanvas = newPage.find("canvas");
+      newCanvas[0].getContext('2d').drawImage(canvasOriginal[0], 0, 0);
+      newPage[0].style.position = "absolute"; // GUY TODO: I'm going to HTMHell
+      newPage.appendTo(iframeDoc);
+      newPage.scroll(spot);
+      makeDraggable(newPage[0]);
+      peekBoxContainer.classList.remove("hidden");
+      makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
+    })
+  // .catch(function(reason) {
+  //   console.error("Error: " + reason);
+  // });
+
 
 }
 

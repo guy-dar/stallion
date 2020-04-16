@@ -460,91 +460,73 @@ class PDFFindController {
 
   _preprocessSuperMatch(){
     var query = this._query;
-    // Regular expressions
-    let re_simple =  /^(back)|(toolbar)|(outline)$/
-    let re_refer = /^hi$/ //^\[([0-9a-zA-Z\-' ]+)\]$/;
-    let re_page = /^hi$/ //^page (?<query>\d+)$/;
-    let re_zoom =  /^hi$/ //^zoom (?<dir>(out)|(in))(?<query>( \d|\b))$/
-    let re_fpeek = /^hi$/ //^fpeek (?<query>.*)$/
-    let re_fgoto = /^hi$/ //^fgoto (?<query>.*)$/
-    let re_set_shortcut = /^hi$/ //^(shortcut|name|dub) (?<query>.+)$/;
-    let re_jump_shortcut = /^hi$/ //^jump (?<query>.+)$/;
+    var queryArgs = query.split(" ");
+    var cmd = queryArgs[0];
+    var queryRest = queryArgs.slice(1).join(" ");
+    switch(cmd){
+      case "back":
+        window.history.go(-1);
+        return ["",""]
+      break;
+      case "toolbar":
+        document.getElementById("toolbarContainer").classList.toggle("hidden");
+        return ["",""]
+      break;
+      case "outline":
+        document.getElementById("sidebarToggle").click();
+        document.getElementById("viewOutline").click();
+        return ["",""]
+      break;
+      case "refer":
+        this._peekMatches = true;
+        var q = queryArgs[1];
+        return  [q, "refer"];
+      break;
+      case "fpeek":
+        this._peekMatches = true;
+        return  [queryRest, "find"];
+      break;
+      case "fgoto":
+        this._peekMatches = false;
+        return  [queryRest, "find"];
+      break;
+      case "page":
+        document.getElementById("pageNumber").value = queryArgs[1];
+        document.getElementById("pageNumber").dispatchEvent(new Event("change"));
+        return ["", ""];
+      break; 
+      case "zoom":
+        var zoomBtn = (queryArgs[1] == 'in') ? document.getElementById("zoomIn") : document.getElementById("zoomOut");
+        var q = (queryArgs.length == 3) ? queryArgs[2] : 1;
+  
+        for(var i = 0; i < q; i++)
+          zoomBtn.click();
+        return ["",""];
+      break;
+      case "shortcut":
+      case "name":
+      case "dub":
+        if(this.shortcutsDict == undefined)
+            this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
 
-    // Try match
-    var re;
-    if((re = re_simple.exec(query)) != null){
-
-      switch(query){
-        case "back":
-          window.history.go(-1);
-        break;
-        case "toolbar":
-          document.getElementById("toolbarContainer").classList.toggle("hidden");
-        break;
-        case "outline":
-          document.getElementById("sidebarToggle").click();
-          document.getElementById("viewOutline").click();
-        break;
-      }
-      return ["",""];
-    }
-    if((re = re_refer.exec(query)) != null){
-      this._peekMatches = true;
-      query = re.groups.query;
-      return  [query, "refer"];
-    }
-    if((re = re_fpeek.exec(query)) != null){
-      this._peekMatches = true;
-      query = re.groups.query;
-      return  [query, "find"];
-    }
+        if(this.shortcutsDict[queryRest] == undefined)
+          this.shortcutsDict[queryRest] = [$("#viewerContainer").scrollTop()];
+        else
+          console.log("Cannot set shortcut. already exists.")
+        return ["",""];
+      break;
+      case "jump":
+        $("#viewerContainer").scrollTop(this.shortcutsDict[queryRest]);
+        return ["",""];
+      break;
+      default:
+        alert("Cannot understand command. Are you stupid?");
+        return ["",""];
+    }  
     
-    if((re = re_fgoto.exec(query)) != null){
-      this._peekMatches = false;
-      query = re.groups.query;
-      return [query, "find"];
-    }
-
-    if((re = re_zoom.exec(query)) != null){
-      var zoomBtn = (re.groups.dir=='in')? document.getElementById("zoomIn") : document.getElementById("zoomOut");
-      query = re.groups.query;
-      query = (query == '') ? 1 : parseInt(query);
-
-      for(var i=0;i<query;i++)
-        zoomBtn.click();
-      return ["",""];
-    }
-
-    
-
-    if((re = re_page.exec(query)) != null){
-      document.getElementById("pageNumber").value = re.groups.query;
-      document.getElementById("pageNumber").dispatchEvent(new Event("change"));
-      return ["", ""];
-    }
-
-    if((re = re_set_shortcut.exec(query)) != null){
-      if(this.shortcutsDict == undefined)
-          this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
-
-      if(this.shortcutsDict[re.groups.query] == undefined)
-        this.shortcutsDict[re.groups.query] = [$("#viewerContainer").scrollTop()];
-      else
-        console.log("Cannot set shortcut. already exists.")
-      return ["",""];
-    }
-    
-    if((re = re_jump_shortcut.exec(query)) != null){
-      $("#viewerContainer").scrollTop(this.shortcutsDict[re.groups.query]);
-      return ["",""];
-    }
-
-
-    alert("Cannot understand command. Are you stupid?");
-    return ["",""];
-
-
   }
+
+  
   _calculateSuperMatch(pageIndex, query, queryType) {
 
     if(queryType == "find"){

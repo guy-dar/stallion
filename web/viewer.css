@@ -57,7 +57,7 @@ select {
 
 #peekBoxContainer{
   position: absolute;
-  bottom:10%;
+  top:30%;
   left:10%;
   width:500px;
   height:500px;
@@ -114,7 +114,9 @@ canvas, .page, .canvasWrapper, .textLayer{
   width: 100%;
 }
 
-
+#peekBox .page{
+  zoom:0.8;
+}
 
 
 .pdfViewer.enablePermissions .textLayer > span {
