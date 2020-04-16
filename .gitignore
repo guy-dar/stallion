@@ -7,5 +7,5 @@ Makefile
 node_modules/
 examples/node/svgdump/
 examples/node/pdf2png/*.png
-web/1412.6980.pdf
-web/PDF32000_2008.pdf
+web/*.pdf
+.vscode/
