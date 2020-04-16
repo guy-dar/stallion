@@ -97,12 +97,12 @@ There's plenty to be improved:
 
 As for now, we keep the same contribution guidelines as PDF.js:
 
-+ [Issue Reporting Guide](https://github.com/mozilla/pdf.js/blob/master/.github/CONTRIBUTING.md)
-+ [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
-+ [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
-+ [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
-+ [Projects](https://github.com/mozilla/pdf.js/projects)
+* [Issue Reporting Guide](https://github.com/mozilla/pdf.js/blob/master/.github/CONTRIBUTING.md)
+* [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
+* [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
+* [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
+* [Projects](https://github.com/mozilla/pdf.js/projects)
 
-+ [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org).
+* [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org).
 
 
