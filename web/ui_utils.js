@@ -161,6 +161,53 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
+function makeDraggable(elmnt){
+    /////  From W3Schools /////
+    elmnt.onmousedown = dragMouseDown;
+    var pos1 = 0, pos2= 0, pos3 = 0, pos4 = 0;
+    
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.onmouseup = closeDragElement;
+      elmnt.onmouseout = closeDragElement;
+      // call a function whenever the cursor moves:
+      elmnt.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      // set the element's new position:
+      var top = (elmnt.offsetTop - pos2)
+      var left = (elmnt.offsetLeft - pos1)
+      
+      elmnt.style.top = top + "px";
+      elmnt.style.left = left + "px";  
+      // elmnt.focus();
+    }
+  
+    function closeDragElement() {
+      // stop moving when mouse button is released:
+      elmnt.onmouseup = null;
+      elmnt.onmousemove = null;
+      }
+  
+    //// From W3Schools   /////
+  
+
+
+}
+
+
 
 
 function peekView(element, spot, pageIdx, pdfDocument) {
@@ -168,84 +215,11 @@ function peekView(element, spot, pageIdx, pdfDocument) {
   
   var peekBoxContainer = document.getElementById("peekBoxContainer");
   
-  $("#peekBox")[0].contentWindow.document.innerHTML = ('<h1>Hi</h1>');
-  peekBoxContainer.classList.remove("hidden");
-  
-  return;
-  var width =  document.getElementById("peekBox").clientWidth;
-  var height =  document.getElementById("peekBox").clientHeight;
+  var iframeDoc = $("#peekBox")[0].contentDocument.documentElement.getElementsByTagName("body")[0];
+  iframeDoc.innerHTML = '<link rel="stylesheet" href="../../node_modules/pdfjs-dist/web/pdf_viewer.css"><link rel="stylesheet" type="text/css" href="viewer.css">';
+  iframeDoc.id = "peekBox"  //GUY TODO: confusing?
+  var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"'] canvas");  
 
-  $(".page[data-page-number='"+(pageIdx+1)+"']").clone().appendTo($("#peekBox")); 
-  
-  $("#peekBox .page")[0].onmousedown = dragMouseDown;
-  $("#peekBox").find(".page")
-  .css({'position':'absolute', 'clip': 'rect(0px '+ width +'px '+ height +'px 0px)'})
-  
-  $("#peekBox").find(".textLayer, .canvasWrapper")
-  .css({'position':'absolute', 'width': '','height': '',
-  'top': -element.offsetTop + 10, 'left':-element.offsetLeft + 10});
-
-  /////  From W3Schools /////
-  var elmnt = $("#peekBox .page")[0];
-  var pos1 = 0, pos2= 0, pos3 = 0 ,pos4 = 0;
-  function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    elmnt.onmouseup = closeDragElement;
-    elmnt.onmouseout = closeDragElement;
-    // call a function whenever the cursor moves:
-    elmnt.onmousemove = elementDrag;
-  }
-
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    var top = (elmnt.offsetTop - pos2)
-    var left = (elmnt.offsetLeft - pos1)
-    // assert not outside frame
-    var maxLeft = width - $("#peekBox").width()/2; //GUY TODO: Why /2. It is not even accuracte btw
-    var maxTop =  height;
-    var minTop = -$("#peekBox").height();
-    var minLeft = - $("#peekBox").width()/2;
-
-    if(left > maxLeft)
-      left = maxLeft;
-
-    if(top < minTop)
-      top = minTop;
-    
-     if(left < minLeft)
-      left = minLeft;
-
-
-    if(top > maxTop)
-      top = maxTop;
-
-    elmnt.style.top = top + "px";
-    elmnt.style.left = left + "px";
-    elmnt.style.clip ='rect('+ -top + 'px '+ (-left+width) +'px '+ (-top+height)
-                                   +'px '+-left+'px)';
-
-    elmnt.focus();
-  }
-
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    elmnt.onmouseup = null;
-    elmnt.onmousemove = null;
-    }
-
-  //// From W3Schools   /////
-  
   
   // Render the PDF
   pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
@@ -263,6 +237,15 @@ function peekView(element, spot, pageIdx, pdfDocument) {
     }).catch(function(reason) {
     console.error("Error: " + reason);
   });
+  var page = pageOriginal.clone();
+  page[0].getContext('2d').drawImage(pageOriginal[0],0,0);
+  page[0].style.position = "absolute"; // GUY TODO: I'm going to HTMHell
+  page.appendTo(iframeDoc);
+  page.scroll(spot);
+  makeDraggable(page[0]);
+  peekBoxContainer.classList.remove("hidden");
+  makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
+
 }
 
 
