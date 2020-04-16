@@ -1,15 +1,9 @@
-# PDF.js [![Build Status](https://travis-ci.org/mozilla/pdf.js.svg?branch=master)](https://travis-ci.org/mozilla/pdf.js)
+# Stallion - Extended PDF viewer based on PDF.JS [PDF.js](https://mozilla.github.io/pdf.js/) 
 
-[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
-
-PDF.js is community-driven and supported by Mozilla Labs. Our goal is to
-create a general-purpose, web standards-based platform for parsing and
-rendering PDFs.
 
 ## Contributing
 
-PDF.js is an open source project and always looking for more contributors. To
-get involved, visit:
+As for now, we keep the same contribution guidelines as PDF.js:
 
 + [Issue Reporting Guide](https://github.com/mozilla/pdf.js/blob/master/.github/CONTRIBUTING.md)
 + [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
@@ -19,37 +13,12 @@ get involved, visit:
 
 Feel free to stop by our [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org) for questions or guidance.
 
-## Getting Started
-
-### Online demo
-
-Please note that the "Modern browsers" version assumes native support for
-features such as e.g. `async`/`await`, `Promise`, and `ReadableStream`.
-
-+ Modern browsers: https://mozilla.github.io/pdf.js/web/viewer.html
-
-+ Older browsers: https://mozilla.github.io/pdf.js/es5/web/viewer.html
-
-### Browser Extensions
-
-#### Firefox
-
-PDF.js is built into version 19+ of Firefox.
-
-#### Chrome
-
-+ The official extension for Chrome can be installed from the [Chrome Web Store](https://chrome.google.com/webstore/detail/pdf-viewer/oemmndcbldboiebfnladdacbdfmadadm).
-*This extension is maintained by [@Rob--W](https://github.com/Rob--W).*
-+ Build Your Own - Get the code as explained below and issue `gulp chromium`. Then open
-Chrome, go to `Tools > Extension` and load the (unpackaged) extension from the
-directory `build/chromium`.
-
-## Getting the Code
+### Getting the Code
 
 To get a local copy of the current code, clone it using git:
 
-    $ git clone https://github.com/mozilla/pdf.js.git
-    $ cd pdf.js
+    $ git clone https://github.com/guyd1995/Stallion.git
+    $ cd Stallion
 
 Next, install Node.js via the [official package](https://nodejs.org) or via
 [nvm](https://github.com/creationix/nvm). You need to install the gulp package
@@ -76,7 +45,42 @@ It is also possible to view all test PDF files on the right side by opening:
 
 + http://localhost:8888/test/pdfs/?frame
 
-## Building PDF.js
+
+
+## PDF.js
+[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
+
+PDF.js is community-driven and supported by Mozilla Labs. Our goal is to
+create a general-purpose, web standards-based platform for parsing and
+rendering PDFs.
+
+### Getting Started
+
+#### Online demo
+
+Please note that the "Modern browsers" version assumes native support for
+features such as e.g. `async`/`await`, `Promise`, and `ReadableStream`.
+
++ Modern browsers: https://mozilla.github.io/pdf.js/web/viewer.html
+
++ Older browsers: https://mozilla.github.io/pdf.js/es5/web/viewer.html
+
+#### Browser Extensions
+
+##### Firefox
+
+PDF.js is built into version 19+ of Firefox.
+
+##### Chrome
+
++ The official extension for Chrome can be installed from the [Chrome Web Store](https://chrome.google.com/webstore/detail/pdf-viewer/oemmndcbldboiebfnladdacbdfmadadm).
+*This extension is maintained by [@Rob--W](https://github.com/Rob--W).*
++ Build Your Own - Get the code as explained below and issue `gulp chromium`. Then open
+Chrome, go to `Tools > Extension` and load the (unpackaged) extension from the
+directory `build/chromium`.
+
+
+### Building PDF.js
 
 In order to bundle all `src/` files into two production scripts and build the generic
 viewer, run:
@@ -87,21 +91,21 @@ This will generate `pdf.js` and `pdf.worker.js` in the `build/generic/build/` di
 Both scripts are needed but only `pdf.js` needs to be included since `pdf.worker.js` will
 be loaded by `pdf.js`. The PDF.js files are large and should be minified for production.
 
-## Using PDF.js in a web application
+### Using PDF.js in a web application
 
 To use PDF.js in a web application you can choose to use a pre-built version of the library
 or to build it from source. We supply pre-built versions for usage with NPM and Bower under
 the `pdfjs-dist` name. For more information and examples please refer to the
 [wiki page](https://github.com/mozilla/pdf.js/wiki/Setup-pdf.js-in-a-website) on this subject.
 
-## Including via a CDN
+### Including via a CDN
 
 PDF.js is hosted on several free CDNs:
  - https://www.jsdelivr.com/package/npm/pdfjs-dist
  - https://cdnjs.com/libraries/pdf.js
  - https://unpkg.com/pdfjs-dist/
 
-## Learning
+### Learning
 
 You can play with the PDF.js API directly from your browser using the live demos below:
 
@@ -122,7 +126,7 @@ The API documentation can be found at:
 
 + https://mozilla.github.io/pdf.js/api/
 
-## Questions
+### Questions
 
 Check out our FAQs and get answers to common questions:
 

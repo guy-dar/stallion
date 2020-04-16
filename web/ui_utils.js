@@ -168,9 +168,10 @@ function peekView(element, spot, pageIdx, pdfDocument) {
   
   var peekBoxContainer = document.getElementById("peekBoxContainer");
   
-  $("#peekBox").html('');
+  $("#peekBox")[0].contentWindow.document.innerHTML = ('<h1>Hi</h1>');
   peekBoxContainer.classList.remove("hidden");
   
+  return;
   var width =  document.getElementById("peekBox").clientWidth;
   var height =  document.getElementById("peekBox").clientHeight;
 
