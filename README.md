@@ -17,7 +17,7 @@ The slash bar allows you to type commands instead of using on-screen buttons.
 * `zoom in/out [`*`digit`*`]` - Zoom. *digit* is optional. If specified, determines iterates the operation *digit* times.
 
 #### Navigation
-* `shortcut`/`name`/`dub` *`name`* - Set shortcut to specific location in document.
+* `shortcut/name/dub` *`name`* - Set shortcut to current location in document.
 * `jump`*`name`* - Go to shortcut.  
 * `fgoto`*`SearchPhrase`* - Find next occurence of the search phrase. You are advised to use the find bar instead (`Ctrl+F`).
 *  `fpeek`*`SearchPhrase`* - Opens a Peek Box for the search phrase.
@@ -80,7 +80,7 @@ Please, visit their [repository](https://mozilla.github.io/pdf.js/) for addition
 There's plenty to be improved:
 * More features! Please! *Send us feature requests*.
 * Better heuristics!
-* Debugging (code was written in an ad-hoc manner, which potentially result in bugs)
+* Debugging (code was written in an ad-hoc manner, which might potentially result in bugs)
 * Checking browser compatibility
 * Design choices (Peek Box design most notably)
 * Speed
