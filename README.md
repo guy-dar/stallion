@@ -14,7 +14,7 @@ In addition to all the amazing features in PDF.js, here are some more.
 ### The Slash Bar
 With simplicity as a core principle in Stallion, we introduce the (*soon to be famous*) **Slash Bar** (triggered by pressing `/` anywhere in the document). 
 The slash bar allows you to type commands instead of using on-screen buttons. 
-
+![Slash Bar](docs/contents/images/zoom_slash_bar.gif)
 #### Basic
 
 * `outline` - Toggle document's outline (if exists).
@@ -37,6 +37,8 @@ Note: Typing wrong commands can get offensive.
 The Peek Box is used as a substitute for the standard find operation. 
 It allows you to peek at different locations without leaving the current.
 Ideally, it should allow you to review definitions, references, theorems, and other parts of the document without the burden of context switching.
+![Peek Box](docs/contents/images/peek_box.gif)
+
 
 ### Double Slash
 Select text and double-click `/`. This will invoke a double slash operation. Naively it will just `fpeek` the selected text. With specific keywords, it is supposed to present some more advanced behavior (*intelligent peeking*) yet to be developed.
