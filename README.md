@@ -13,6 +13,10 @@ If you are experiencing trouble, please let us know.
 
 Help us! [Contribute](#contributing)
 
+**Note**: We are not affiliated with Mozilla. We share nothing apart from keen appreciation for the open source community.
+
+None of our actions reflects on them.
+
 ## Features
 In addition to all the amazing features in PDF.js, here are some more.
 
