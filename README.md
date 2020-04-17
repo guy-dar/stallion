@@ -55,10 +55,18 @@ Ideally, it should allow you to review definitions, references, theorems, and ot
 ![Peek Box](docs/contents/images/peek_box.gif)
 
 
-### Double Slash
-Select text and double-click `/`. This will invoke a double slash operation. Naively it will just `fpeek` the selected text. With specific keywords, it is supposed to present some more advanced behavior (*intelligent peeking*) yet to be developed.
+### Double Slash: experimental
+Select text and double-click `/`. This will invoke a double slash operation. It serves several purposes
 
+#### 1. Peek at selection
+In its most naive use, it will just `fpeek` the selected text. 
+If the selection follows certain patterns, it is supposed to present some more advanced behavior (*intelligent peeking*) which is still under active development.
 
+#### 2. Reference Resolution
+If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters).
+
+#### 3. Quick fpeek 
+If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.
 
 ## Getting the Code
 
