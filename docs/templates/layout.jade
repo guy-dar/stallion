@@ -29,13 +29,12 @@ html(lang='en')
                       a(href=makeRelative(page.url, '/')) Home
                   li(class=(page.url === '/getting_started/' ? 'active' : ''))
                       a(href=makeRelative(page.url, '/getting_started/')) Getting Started
-                  li(class=(page.url === '/examples/' ? 'active' : ''))
-                      a(href=makeRelative(page.url, '/examples/')) Examples
-                  li
-                      a(href='https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions') FAQ
-                  li(class=(page.url === '/api/' ? 'active' : ''))
-                      a(href=makeRelative(page.url, '/api/')) API
-
+                  li(class=(page.url === '/users/' ? 'active' : ''))
+                      a(href=makeRelative(page.url, '/users/')) For Users
+                  li(class=(page.url === '/developers/' ? 'active' : ''))
+                      a(href=makeRelative(page.url, '/developers/')) For Developers
+                      li
+                          a(href='https://github.com/guyd1995/Stallion/wiki/Frequently-Asked-Questions') FAQ
     .container
       .starter-template
         section.content!= typogr(page.html).typogrify()

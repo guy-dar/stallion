@@ -1,7 +1,7 @@
 {
   "locals": {
     "url": "http://localhost:8080",
-    "name": "PDF.js Documentation",
+    "name": "Stallion Documentation",
     "description": ""
   },
   "require": {
