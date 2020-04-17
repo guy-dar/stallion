@@ -5,6 +5,7 @@ It provides researchers with tools that make paper reading simpler. Some feature
 
 <br/>
 <br/>
+<br/>
 
 You can play around with our [Demo](https://guyd1995.github.io/Stallion/web/viewer.html)!
 
