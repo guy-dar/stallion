@@ -117,10 +117,10 @@ We base our contribution guidelines on those of PDF.js. Also, we utilize their c
 * [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
 * [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
 
-PDF.js
-	* [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
-	* [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
-	* [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
+* PDF.js
+	+ [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
+	+ [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
+	+ [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
 
 
 
