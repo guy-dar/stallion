@@ -1,6 +1,6 @@
 # Stallion [![Build Status](https://travis-ci.com/guyd1995/Stallion.svg?branch=master)](https://travis-ci.org/guyd1995/Stallion) 
-<img align="right" src="docs/contents/images/logo2.png">
-Stallion is an extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/). 
+<img align="right" src="docs/contents/images/logo2.png"/>
+Stallion is an extended PDF viewer based on <a href="https://mozilla.github.io/pdf.js/">PDF.js</a>. 
 It provides researchers with tools that make paper reading simpler. Some features include intuitive peeking routines for definition review, better handling of references and adding shorcuts to arbitrary locations in the document. 
 
 <br/>
@@ -108,31 +108,18 @@ create a general-purpose, web standards-based platform for parsing and
 rendering PDFs.
 
 Please, visit their [repository](https://github.com/mozilla/pdf.js) for additional information.
-
-## Future Goals
-There's plenty to be improved:
-* More features! Please! *Send us feature requests*.
-* Better heuristics!
-* Debugging (code was written in an ad-hoc manner, which might potentially result in bugs)
-* Checking browser compatibility
-* Design choices (Peek Box design most notably)
-* Speed
-* Moving to asynchronous routines
-* Design for Mobile browsers
-* Refactoring code. 
-	* Separating from PDF.js for cleaner merges.
-	* More documentation
-	* Better practice code
-* Vebosity in non-"happy flow" scenarios.
  
 
 ## Contributing
 
-As for now, we keep the same contribution guidelines as PDF.js:
+We base our contribution guidelines on those of PDF.js. Also, we utilize their code base. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide(see below).
 
-* [Issue Reporting Guide](https://github.com/mozilla/pdf.js/blob/master/.github/CONTRIBUTING.md)
-* [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
-* [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
-* [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
-* [Projects](https://github.com/mozilla/pdf.js/projects)
+* [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
+* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
+PDF.js
+	* [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
+	* [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
+	* [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
+
+
 
