@@ -62,8 +62,8 @@ Select text and double-click `/`. This will invoke a double slash operation. It 
 In its most naive use, it will just `fpeek` the selected text. 
 If the selection follows certain patterns, it is supposed to present some more advanced behavior (*intelligent peeking*) which is still under active development.
 
-#### 2. Reference Resolution
-If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters).
+#### 2. Reference Resolution (preliminary)
+If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters), a reference summary box will appear. This summary includes: Title, URL, reference count and citation count. As of now, the resolution is still handled poorly. Plus, even if the right article is found,  data isn't always correct.
 
 
 #### 3. Quick fpeek 
