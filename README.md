@@ -6,6 +6,7 @@ It provides researchers with tools that make paper reading simpler. Some feature
 <br/>
 <br/>
 <br/>
+<br/>
 
 You can play around with our [Demo](https://guyd1995.github.io/Stallion/web/viewer.html)!
 
@@ -17,7 +18,6 @@ If you are experiencing trouble, please let us know.
 Help us! [Contribute](#contributing)
 
 **Note**: We are not affiliated with Mozilla. We share nothing apart from keen appreciation for the open source community.
-
 None of our actions reflects on them.
 
 ## Features
