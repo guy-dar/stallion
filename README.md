@@ -85,7 +85,7 @@ PDF.js is community-driven and supported by Mozilla Labs. Their goal is to
 create a general-purpose, web standards-based platform for parsing and
 rendering PDFs.
 
-Please, visit their [repository](https://mozilla.github.io/pdf.js/) for additional information.
+Please, visit their [repository](https://github.com/mozilla/pdf.js) for additional information.
 
 ## Future Goals
 There's plenty to be improved:
