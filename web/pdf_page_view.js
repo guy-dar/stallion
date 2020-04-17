@@ -514,8 +514,8 @@ class PDFPageView {
     this.paintTask = paintTask;
 
     const resultPromise = paintTask.promise.then(
-      function() {
-        return finishPaintTask(null).then(function() {
+      function () {
+        return finishPaintTask(null).then(function () {
           if (textLayer) {
             const readableStream = pdfPage.streamTextContent({
               normalizeWhitespace: true,
@@ -525,7 +525,7 @@ class PDFPageView {
           }
         });
       },
-      function(reason) {
+      function (reason) {
         return finishPaintTask(reason);
       }
     );
@@ -575,7 +575,7 @@ class PDFPageView {
     // is complete when `!this.renderingQueue`, to prevent black flickering.
     canvas.setAttribute("hidden", "hidden");
     let isCanvasHidden = true;
-    const showCanvas = function() {
+    const showCanvas = function () {
       if (isCanvasHidden) {
         canvas.removeAttribute("hidden");
         isCanvasHidden = false;
@@ -639,7 +639,7 @@ class PDFPageView {
       renderInteractiveForms: this.renderInteractiveForms,
     };
     const renderTask = this.pdfPage.render(renderContext);
-    renderTask.onContinue = function(cont) {
+    renderTask.onContinue = function (cont) {
       showCanvas();
       if (result.onRenderContinue) {
         result.onRenderContinue(cont);
@@ -649,11 +649,11 @@ class PDFPageView {
     };
 
     renderTask.promise.then(
-      function() {
+      function () {
         showCanvas();
         renderCapability.resolve(undefined);
       },
-      function(error) {
+      function (error) {
         showCanvas();
         renderCapability.reject(error);
       }

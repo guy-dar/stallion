@@ -270,7 +270,7 @@ function peekView(element, spot, pageIdx, pdfDocument) {
  * PDF.js friendly one: with scroll debounce and scroll direction.
  */
 function watchScroll(viewAreaElement, callback) {
-  const debounceScroll = function(evt) {
+  const debounceScroll = function (evt) {
     if (rAF) {
       return;
     }
@@ -670,7 +670,7 @@ function getVisibleElements(
     last = visible[visible.length - 1];
 
   if (sortByVisibility) {
-    visible.sort(function(a, b) {
+    visible.sort(function (a, b) {
       const pc = a.percent - b.percent;
       if (Math.abs(pc) > 0.001) {
         return -pc;
@@ -811,7 +811,7 @@ const WaitOnType = {
  * @returns {Promise} A promise that is resolved with a {WaitOnType} value.
  */
 function waitOnEventOrTimeout({ target, name, delay = 0 }) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (
       typeof target !== "object" ||
       !(name && typeof name === "string") ||
@@ -848,7 +848,7 @@ function waitOnEventOrTimeout({ target, name, delay = 0 }) {
 /**
  * Promise that is resolved when DOM window becomes visible.
  */
-const animationStarted = new Promise(function(resolve) {
+const animationStarted = new Promise(function (resolve) {
   if (
     typeof PDFJSDev !== "undefined" &&
     PDFJSDev.test("LIB && TESTING") &&
@@ -934,7 +934,7 @@ class EventBus {
     let externalListeners;
     // Making copy of the listeners array in case if it will be modified
     // during dispatch.
-    eventListeners.slice(0).forEach(function({ listener, external }) {
+    eventListeners.slice(0).forEach(function ({ listener, external }) {
       if (external) {
         if (!externalListeners) {
           externalListeners = [];
@@ -947,7 +947,7 @@ class EventBus {
     // Dispatch any "external" listeners *after* the internal ones, to give the
     // viewer components time to handle events and update their state first.
     if (externalListeners) {
-      externalListeners.forEach(function(listener) {
+      externalListeners.forEach(function (listener) {
         listener.apply(null, args);
       });
       externalListeners = null;

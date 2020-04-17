@@ -2468,6 +2468,14 @@
       "link": true,
       "type": "eq"
     },
+    {  "id": "issue11794",
+       "file": "pdfs/issue11794.pdf",
+       "md5": "00d17b10a5fd7c06cddd7a0d2066ecdd",
+       "rounds": 1,
+       "link": true,
+       "lastPage": 1,
+       "type": "eq"
+    },
     {
       "id": "bug852992",
       "file": "pdfs/bug852992_reduced.pdf",
@@ -3108,6 +3116,12 @@
        "rounds": 1,
        "type": "text",
        "about": "Invisible (and broken) TrueType font used for text-selection."
+    },
+    {  "id": "issue11768",
+       "file": "pdfs/issue11768_reduced.pdf",
+       "md5": "0cafde97d78bb6883531a325a996a5ef",
+       "rounds": 1,
+       "type": "eq"
     },
     {  "id": "issue1912",
       "file": "pdfs/issue1912.pdf",

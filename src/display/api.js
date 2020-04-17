@@ -310,12 +310,12 @@ function getDocument(src) {
   }
   const docId = task.docId;
   worker.promise
-    .then(function() {
+    .then(function () {
       if (task.destroyed) {
         throw new Error("Loading aborted");
       }
       return _fetchDocument(worker, params, rangeTransport, docId).then(
-        function(workerId) {
+        function (workerId) {
           if (task.destroyed) {
             throw new Error("Loading aborted");
           }
@@ -412,7 +412,7 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
       isEvalSupported: source.isEvalSupported,
       fontExtraProperties: source.fontExtraProperties,
     })
-    .then(function(workerId) {
+    .then(function (workerId) {
       if (worker.destroyed) {
         throw new Error("Worker was destroyed");
       }
@@ -664,7 +664,8 @@ class PDFDocumentProxy {
 
   /**
    * @returns {Promise} A promise that is resolved with an {Object} containing
-   *   the viewer preferences.
+   *   the viewer preferences, or `null` when no viewer preferences are present
+   *   in the PDF file.
    */
   getViewerPreferences() {
     return this._transport.getViewerPreferences();
@@ -680,7 +681,7 @@ class PDFDocumentProxy {
 
   getOpenActionDestination() {
     deprecated("getOpenActionDestination, use getOpenAction instead.");
-    return this.getOpenAction().then(function(openAction) {
+    return this.getOpenAction().then(function (openAction) {
       return openAction && openAction.dest ? openAction.dest : null;
     });
   }
@@ -1226,7 +1227,7 @@ class PDFPageProxy {
 
     return new Promise(function(resolve, reject) {
       function pump() {
-        reader.read().then(function({ value, done }) {
+        reader.read().then(function ({ value, done }) {
           if (done) {
             resolve(textContent);
             return;
@@ -1269,9 +1270,9 @@ class PDFPageProxy {
         // Avoid errors below, since the renderTasks are just stubs.
         return;
       }
-      intentState.renderTasks.forEach(function(renderTask) {
+      intentState.renderTasks.forEach(function (renderTask) {
         const renderCompleted = renderTask.capability.promise.catch(
-          function() {}
+          function () {}
         ); // ignoring failures
         waitOn.push(renderCompleted);
         renderTask.cancel();
@@ -1641,7 +1642,7 @@ const PDFWorker = (function PDFWorkerClosure() {
     }
     fakeWorkerCapability = createPromiseCapability();
 
-    const loader = async function() {
+    const loader = async function () {
       const mainWorkerMessageHandler = getMainThreadWorkerMessageHandler();
 
       if (mainWorkerMessageHandler) {
@@ -1746,7 +1747,7 @@ const PDFWorker = (function PDFWorkerClosure() {
     _initializeFromPort(port) {
       this._port = port;
       this._messageHandler = new MessageHandler("main", "worker", port);
-      this._messageHandler.on("ready", function() {
+      this._messageHandler.on("ready", function () {
         // Ignoring 'ready' event -- MessageHandler shall be already initialized
         // and ready to accept the messages.
       });
@@ -2003,7 +2004,7 @@ class WorkerTransport {
     const waitOn = [];
     // We need to wait for all renderings to be completed, e.g.
     // timeout/rAF can take a long time.
-    this.pageCache.forEach(function(page) {
+    this.pageCache.forEach(function (page) {
       if (page) {
         waitOn.push(page._destroy());
       }
@@ -2045,7 +2046,7 @@ class WorkerTransport {
       sink.onPull = () => {
         this._fullReader
           .read()
-          .then(function({ value, done }) {
+          .then(function ({ value, done }) {
             if (done) {
               sink.close();
               return;
@@ -2120,7 +2121,7 @@ class WorkerTransport {
       sink.onPull = () => {
         rangeReader
           .read()
-          .then(function({ value, done }) {
+          .then(function ({ value, done }) {
             if (done) {
               sink.close();
               return;
@@ -2143,7 +2144,7 @@ class WorkerTransport {
       loadingTask._capability.resolve(new PDFDocumentProxy(pdfInfo, this));
     });
 
-    messageHandler.on("DocException", function(ex) {
+    messageHandler.on("DocException", function (ex) {
       let reason;
       switch (ex.name) {
         case "PasswordException":
@@ -2295,10 +2296,10 @@ class WorkerTransport {
         case "JpegStream":
           return new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = function() {
+            img.onload = function () {
               resolve(img);
             };
-            img.onerror = function() {
+            img.onerror = function () {
               // Note that when the browser image loading/decoding fails,
               // we'll fallback to the built-in PDF.js JPEG decoder; see
               // `PartialEvaluator.buildPaintImageXObject` in the
@@ -2366,9 +2367,9 @@ class WorkerTransport {
         );
       }
 
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         const img = new Image();
-        img.onload = function() {
+        img.onload = function () {
           const { width, height } = img;
           const size = width * height;
           const rgbaLength = size * 4;
@@ -2402,7 +2403,7 @@ class WorkerTransport {
           tmpCanvas = null;
           tmpCtx = null;
         };
-        img.onerror = function() {
+        img.onerror = function () {
           reject(new Error("JpegDecode failed to load image"));
 
           // Always remember to release the image data if errors occurred.
@@ -2427,10 +2428,10 @@ class WorkerTransport {
         fetched = true;
 
         this.CMapReaderFactory.fetch(data)
-          .then(function(builtInCMap) {
+          .then(function (builtInCMap) {
             sink.enqueue(builtInCMap, 1, [builtInCMap.cMapData.buffer]);
           })
-          .catch(function(reason) {
+          .catch(function (reason) {
             sink.error(reason);
           });
       };
@@ -2489,7 +2490,7 @@ class WorkerTransport {
       .sendWithPromise("GetPageIndex", {
         ref,
       })
-      .catch(function(reason) {
+      .catch(function (reason) {
         return Promise.reject(new Error(reason));
       });
   }
@@ -2794,7 +2795,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
         imageLayer,
         background,
       } = this.params;
-      
+
 
       this.gfx = new CanvasGraphics(
         canvasContext,
@@ -2802,7 +2803,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
         this.objs,
         this.canvasFactory,
         this.webGLContext,
-        imageLayer, 
+        imageLayer,
         this.heuristics
         );
         this.gfx.beginDrawing({
@@ -2877,9 +2878,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
           this._nextBound().catch(this.cancel.bind(this));
         });
       } else {
-        Promise.resolve()
-          .then(this._nextBound)
-          .catch(this.cancel.bind(this));
+        Promise.resolve().then(this._nextBound).catch(this.cancel.bind(this));
       }
     }
 
