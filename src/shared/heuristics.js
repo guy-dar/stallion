@@ -97,7 +97,8 @@ class PageHeuristics{
                 var jump = (Math.abs(curFeatures.top - lastFeatures.bottom));
                 if(jump >= dominantFeatures.height * this._blockJumpPctTol){
                     blockBreaks.push(n);
-                    console.log(textDivs[n]);
+                    if(this.debugMode)
+                        console.log(textDivs[n]);
                 }
             }
 
@@ -146,5 +147,18 @@ class PageHeuristics{
 
 }
 
+class SelectionHeuristics{
+    constructor(){
+        this._maxRegularTextLen = 20;
+    }
+    selectionType(selection){
+        if(selection.length > this._maxRegularTextLen){
+            return "reference";
+        }
+        return "text";
+    }
 
-export {PageHeuristics, HeuristicsHelper}
+}
+
+
+export {PageHeuristics, SelectionHeuristics, HeuristicsHelper}

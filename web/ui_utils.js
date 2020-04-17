@@ -218,12 +218,11 @@ function makeDraggable(elmnt, dragElements = null){
 
 
 function peekView(element, spot, pageIdx, pdfDocument) {
-
   
   var peekBoxContainer = document.getElementById("peekBoxContainer");
   
   var iframeDoc = $("#peekBox")[0].contentDocument.documentElement.getElementsByTagName("body")[0];
-  iframeDoc.innerHTML = '<link rel="stylesheet" href="../../node_modules/pdfjs-dist/web/pdf_viewer.css"><link rel="stylesheet" type="text/css" href="viewer.css">';
+  iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
   iframeDoc.id = "peekBox"  //GUY TODO: confusing?
   var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"']");  
   var canvasOriginal = pageOriginal.find("canvas")
