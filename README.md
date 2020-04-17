@@ -5,7 +5,6 @@ If you are experiencing trouble, please let us know.
 
 
 You can play around with our [Demo](https://guyd1995.github.io/Stallion/web/viewer.html)!
- 
 You can also visit us on our website: [Homepage](https://guyd1995.github.io/Stallion)
 
 Help us! [Contribute](#contributing)
