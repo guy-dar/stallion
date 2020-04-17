@@ -64,7 +64,7 @@ If the selection follows certain patterns, it is supposed to present some more a
 
 #### 2. Reference Resolution (preliminary)
 If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters), a reference summary box will appear. This summary includes: Title, URL, reference count and citation count. As of now, the resolution is still handled poorly. Plus, even if the right article is found,  data isn't always correct.
-
+![Peek Box](docs/contents/images/reference_peek.gif)
 
 #### 3. Quick fpeek 
 If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.
