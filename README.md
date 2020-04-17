@@ -65,6 +65,8 @@ If the selection follows certain patterns, it is supposed to present some more a
 #### 2. Reference Resolution
 If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters).
 
+![](docs/contents/images/reference_peek.gif)
+
 #### 3. Quick fpeek 
 If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.
 
