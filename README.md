@@ -1,7 +1,5 @@
 # Stallion [![Build Status](https://travis-ci.com/guyd1995/Stallion.svg?branch=master)](https://travis-ci.org/guyd1995/Stallion) 
-Stallion is an extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/). 
-
-It provides researchers with tools that make paper reading simpler.
+Stallion is an extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/).  It provides researchers with tools that make paper reading simpler.
 
 If you are experiencing trouble, please let us know.
 
