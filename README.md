@@ -111,6 +111,3 @@ As for now, we keep the same contribution guidelines as PDF.js:
 * [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
 * [Projects](https://github.com/mozilla/pdf.js/projects)
 
-* [Matrix room](https://chat.mozilla.org/#/room/#pdfjs:mozilla.org).
-
-
