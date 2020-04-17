@@ -1,5 +1,5 @@
-# Stallion - Extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/) 
-[![Build Status](https://travis-ci.com/guyd1995/Stallion.svg?branch=master)](https://travis-ci.org/guyd1995/Stallion)
+# Stallion - Extended PDF viewer based on [PDF.js](https://mozilla.github.io/pdf.js/) [![Build Status](https://travis-ci.com/guyd1995/Stallion.svg?branch=master)](https://travis-ci.org/guyd1995/Stallion) 
+
 
 
 
