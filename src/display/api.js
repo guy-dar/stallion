@@ -2738,6 +2738,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       pdfBug = false,
       heuristics
     }) {
+      heuristics.startRendering();   // GUY TODO: Is it the right location ? 
       this.callback = callback;
       this.params = params;
       this.objs = objs;
@@ -2814,8 +2815,8 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       });
 
       this.capability.promise.then(() =>{
-              this.heuristics.finishedRenderingContext(this._canvas);
-              console.log("Rendered!")});
+              this.heuristics.finishedRenderingContext(this._canvas, viewport, transform);
+            });
 
       this.operatorListIdx = 0;
       this.graphicsReady = true;

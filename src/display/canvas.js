@@ -1592,6 +1592,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       }
 
       var ctx = this.ctx;
+
       var fontSizeScale = current.fontSizeScale;
       var charSpacing = current.charSpacing;
       var wordSpacing = current.wordSpacing;
@@ -1703,7 +1704,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
-        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
+        this.heuristics.reportTextAction(ctx, current, scaledX, scaledY);
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
             // common case
