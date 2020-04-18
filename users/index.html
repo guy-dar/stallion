@@ -1,55 +1,44 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A general-purpose, web standards-based platform for parsing and rendering PDFs."><meta name="author" content=""><link rel="shortcut icon" href="../images/favicon.ico"><title>Users</title><!-- Bootstrap core CSS--><link href="../css/bootstrap.min.css" rel="stylesheet"><!-- Custom styles for this template--><link href="../css/main.css" rel="stylesheet"></head><body><header class="navbar navbar-default navbar-static-top"><div class="container"><div class="navbar-header"><button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="#"><img src="../images/logo.png"></a></div><div class="collapse navbar-collapse"><ul class="nav navbar-nav"><li><a href="../">Home</a></li><li><a href="../getting_started/">Getting Started</a></li><li class="active"><a href="../users/">For Users</a></li><li><a href="../developers/">For Developers</a><li><a href="https://github.com/guyd1995/Stallion/wiki/Frequently-Asked-Questions">FAQ</a></li></li></ul></div></div></header><div class="container"><div class="starter-template"><section class="content"><h2 id="hello-world-walkthrough">Hello World Walkthrough</h2>
-<p><a href="https://github.com/mozilla/pdf.js/blob/master/examples/learning/helloworld.html">Full source</a></p>
-<p><span class="caps">PDF</span>.js heavily relies on the use of <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promises</a>. If promises are new to you, it’s recommended you become familiar with them before continuing<span class="widont">&nbsp;</span>on.</p>
-<p>This tutorial shows how <span class="caps">PDF</span>.js can be used as a library in a web browser.
-<a href="https://github.com/mozilla/pdf.js/tree/master/examples">examples/</a> provides more examples, including usage in Node.js (at <a href="https://github.com/mozilla/pdf.js/tree/master/examples/node">examples/node/</a>).</p>
-<h3 id="document">Document</h3>
-<p>The object structure of <span class="caps">PDF</span>.js loosely follows the structure of an actual <span class="caps">PDF</span>. At the top level there is a document object. From the document, more information and individual pages can be fetched. To get the<span class="widont">&nbsp;</span>document:</p>
-<pre><code class="language-js">pdfjsLib.getDocument(<span class="string">'helloworld.pdf'</span>)</code></pre>
-<p>Remember though that <span class="caps">PDF</span>.js uses promises, and the above will return a <code>PDFDocumentLoadingTask</code> instance that has a <code>promise</code> property which is resolved with the document<span class="widont">&nbsp;</span>object.</p>
-<pre><code class="language-js"><span class="keyword">var</span> loadingTask = pdfjsLib.getDocument(<span class="string">'helloworld.pdf'</span>);
-loadingTask.promise.then(<span class="function"><span class="keyword">function</span>(<span class="params">pdf</span>) </span>{
-  <span class="comment">// you can now use *pdf* here</span>
-});</code></pre>
-<h3 id="page">Page</h3>
-<p>Now that we have the document, we can get a page. Again, this uses<span class="widont">&nbsp;</span>promises.</p>
-<pre><code class="language-js">pdf.getPage(<span class="number">1</span>).then(<span class="function"><span class="keyword">function</span>(<span class="params">page</span>) </span>{
-  <span class="comment">// you can now use *page* here</span>
-});</code></pre>
-<h3 id="rendering-the-page">Rendering the Page</h3>
-<p>Each <span class="caps">PDF</span> page has its own viewport which defines the size in pixels(<span class="caps">72DPI</span>) and initial rotation. By default the viewport is scaled to the original size of the <span class="caps">PDF</span>, but this can be changed by modifying the viewport. When the viewport is created, an initial transformation matrix will also be created that takes into account the desired scale, rotation, and it transforms the coordinate system (the 0,0 point in <span class="caps">PDF</span> documents the bottom-left whereas canvas 0,0 is<span class="widont">&nbsp;</span>top-left).</p>
-<pre><code class="language-js"><span class="keyword">var</span> scale = <span class="number">1.5</span>;
-<span class="keyword">var</span> viewport = page.getViewport({ <span class="attr">scale</span>: scale, });
-
-<span class="keyword">var</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'the-canvas'</span>);
-<span class="keyword">var</span> context = canvas.getContext(<span class="string">'2d'</span>);
-canvas.height = viewport.height;
-canvas.width = viewport.width;
-
-<span class="keyword">var</span> renderContext = {
-  <span class="attr">canvasContext</span>: context,
-  <span class="attr">viewport</span>: viewport
-};
-page.render(renderContext);</code></pre>
-<p>Alternatively, if you want the canvas to render to a certain pixel size you could do the<span class="widont">&nbsp;</span>following:</p>
-<pre><code class="language-js"><span class="keyword">var</span> desiredWidth = <span class="number">100</span>;
-<span class="keyword">var</span> viewport = page.getViewport({ <span class="attr">scale</span>: <span class="number">1</span>, });
-<span class="keyword">var</span> scale = desiredWidth / viewport.width;
-<span class="keyword">var</span> scaledViewport = page.getViewport({ <span class="attr">scale</span>: scale, });</code></pre>
-<h2 id="interactive-examples">Interactive examples</h2>
-<h3 id="hello-world-with-document-load-error-handling">Hello World with document load error<span class="widont">&nbsp;</span>handling</h3>
-<p>The example demonstrates how promises can be used to handle errors during loading.
-It also demonstrates how to wait until page loaded and<span class="widont">&nbsp;</span>rendered.</p>
-<script async src="//jsfiddle.net/pdfjs/9engc9mw/embed/js,html,css,result/"></script>
-
-<h3 id="hello-world-using-base64-encoded-pdf">Hello World using base64 encoded<span class="widont">&nbsp;</span><span class="caps">PDF</span></h3>
-<p>The <span class="caps">PDF</span>.js can accept any decoded base64 data as an<span class="widont">&nbsp;</span>array.</p>
-<script async src="//jsfiddle.net/pdfjs/cq0asLqz/embed/js,html,css,result/"></script>
-
-<h3 id="previous-next-example">Previous/Next example</h3>
-<p>The same canvas cannot be used to perform to draw two pages at the same time –
-the example demonstrates how to wait on previous operation to be<span class="widont">&nbsp;</span>complete.</p>
-<script async src="//jsfiddle.net/pdfjs/wagvs9Lf/embed/js,html,css,result/"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A general-purpose, web standards-based platform for parsing and rendering PDFs."><meta name="author" content=""><link rel="shortcut icon" href="../images/favicon.ico"><title>Users</title><!-- Bootstrap core CSS--><link href="../css/bootstrap.min.css" rel="stylesheet"><!-- Custom styles for this template--><link href="../css/main.css" rel="stylesheet"></head><body><header class="navbar navbar-default navbar-static-top"><div class="container"><div class="navbar-header"><button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="#"><img src="../images/logo.png"></a></div><div class="collapse navbar-collapse"><ul class="nav navbar-nav"><li><a href="../">Home</a></li><li><a href="../getting_started/">Getting Started</a></li><li class="active"><a href="../users/">For Users</a></li><li><a href="../developers/">For Developers</a><li><a href="https://github.com/guyd1995/Stallion/wiki/Frequently-Asked-Questions">FAQ</a></li></li></ul></div></div></header><div class="container"><div class="starter-template"><section class="content"><h2 id="features">Features</h2>
+<p>In addition to all the amazing features in <span class="caps">PDF</span>.js, here are some<span class="widont">&nbsp;</span>more.</p>
+<h3 id="the-slash-bar">The Slash Bar</h3>
+<p>With simplicity as a core principle in Stallion, we introduce the (<em>soon to be famous</em>) <strong>Slash Bar</strong> (triggered by pressing <code>/</code> anywhere in the document). 
+The slash bar allows you to type commands instead of using on-screen<span class="widont">&nbsp;</span>buttons. </p>
+<p><img src="/users/docs/contents/images/zoom_slash_bar.gif" alt="Slash Bar"></p>
+<h4 id="basic">Basic</h4>
+<ul>
+<li><p><code>outline</code> - Toggle document’s outline (if<span class="widont">&nbsp;</span>exists).</p>
+</li>
+<li><p><code>toolbar</code> - Toggle <span class="caps">PDF</span>.js-derived toolbar (hidden by<span class="widont">&nbsp;</span>default).</p>
+</li>
+<li><p><code>back</code> - Go<span class="widont">&nbsp;</span>back.</p>
+</li>
+<li><p><code>page</code><em><code>number</code></em> - Go to<span class="widont">&nbsp;</span>page.</p>
+</li>
+<li><p><code>zoom in/out [</code><em><code>digit</code></em><code>]</code> - Zoom. <em>digit</em> is optional. If specified, determines iterates the operation <em>digit</em><span class="widont">&nbsp;</span>times.</p>
+</li>
+</ul>
+<h4 id="navigation">Navigation</h4>
+<ul>
+<li><code>shortcut/name/dub</code><em><code>name</code></em> - Set shortcut to current location in<span class="widont">&nbsp;</span>document.</li>
+<li><code>jump</code><em><code>name</code></em> - Go to<span class="widont">&nbsp;</span>shortcut.  </li>
+<li><code>fgoto</code><em><code>SearchPhrase</code></em> - Find next occurence of the search phrase. You are advised to use the find bar instead (<code>Ctrl+F</code>).</li>
+<li><code>fpeek</code><em><code>SearchPhrase</code></em> - Opens a Peek Box for the search<span class="widont">&nbsp;</span>phrase.</li>
+</ul>
+<p>Note: Typing wrong commands can get<span class="widont">&nbsp;</span>offensive.</p>
+<h3 id="peek-box">Peek Box</h3>
+<p>The Peek Box is used as a substitute for the standard find operation. 
+It allows you to peek at different locations without leaving the current.
+Ideally, it should allow you to review definitions, references, theorems, and other parts of the document without the burden of context<span class="widont">&nbsp;</span>switching.</p>
+<p><img src="/users/docs/contents/images/peek_box.gif" alt="Peek Box"></p>
+<h3 id="double-slash-experimental">Double Slash: experimental</h3>
+<p>Select text and double-click <code>/</code>. This will invoke a double slash operation. It serves several<span class="widont">&nbsp;</span>purposes</p>
+<h4 id="1-peek-at-selection">1. Peek at<span class="widont">&nbsp;</span>selection</h4>
+<p>In its most naive use, it will just <code>fpeek</code> the selected text. 
+If the selection follows certain patterns, it is supposed to present some more advanced behavior (<em>intelligent peeking</em>) which is still under active<span class="widont">&nbsp;</span>development.</p>
+<h4 id="2-reference-resolution-preliminary-">2. Reference Resolution<span class="widont">&nbsp;</span>(preliminary)</h4>
+<p>If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters), a reference summary box will appear. This summary includes: Title, <span class="caps">URL</span>, reference count and citation count. As of now, the resolution is still handled poorly. Plus, even if the right article is found,  data isn’t always<span class="widont">&nbsp;</span>correct.</p>
+<h4 id="3-quick-fpeek">3. Quick fpeek</h4>
+<p>If no text is selected, the slash bar is opened, waiting for a keyword for <code>fpeek</code>.</p>
 </section></div></div><div class="container"><footer><p>&copy;Mozilla and individual contributors</p><p>PDF.js is licensed under <a href="https://github.com/mozilla/pdf.js/blob/master/LICENSE">Apache</a>,
 documentation is licensed under <a href="https://creativecommons.org/licenses/by-sa/2.5/">CC BY-SA 2.5</a></p>
 </footer></div><!-- Bootstrap core JavaScript--><script src="../js/jquery-2.1.0.min.js"></script><script src="../js/bootstrap.min.js"></script></body></html>
