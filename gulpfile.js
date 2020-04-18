@@ -1120,7 +1120,7 @@ gulp.task(
       gulp.src("LICENSE").pipe(gulp.dest(CHROME_BUILD_DIR)),
       gulp
         .src("extensions/chromium/manifest.json")
-        .pipe(replace(/\bPDFJSSCRIPT_VERSION\b/g, version))
+        .pipe(replace(/\bSTALLIONSCRIPT_VERSION\b/g, version))
         .pipe(gulp.dest(CHROME_BUILD_DIR)),
       gulp
         .src(
