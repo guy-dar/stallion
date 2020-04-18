@@ -71,7 +71,7 @@ var DIST_REPO_URL = "https://github.com/guyd1995/Stallion-dist";
 
 var builder = require("./external/builder/builder.js");
 
-var CONFIG_FILE = "pdfjs.config";
+var CONFIG_FILE = "Stallion.config";
 var config = JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
 
 // Default Autoprefixer config used for generic, components, minified-pre
@@ -1058,8 +1058,8 @@ gulp.task(
       gulp.src("l10n/en-US/*.properties").pipe(gulp.dest(MOZCENTRAL_L10N_DIR)),
       gulp
         .src(FIREFOX_EXTENSION_DIR + "README.mozilla")
-        .pipe(replace(/\bPDFJSSCRIPT_VERSION\b/g, version))
-        .pipe(replace(/\bPDFJSSCRIPT_COMMIT\b/g, commit))
+        .pipe(replace(/\bSTALLIONSCRIPT_VERSION\b/g, version))
+        .pipe(replace(/\bSTALLIONSCRIPT_COMMIT\b/g, commit))
         .pipe(gulp.dest(MOZCENTRAL_EXTENSION_DIR)),
       gulp.src("LICENSE").pipe(gulp.dest(MOZCENTRAL_EXTENSION_DIR)),
       gulp
