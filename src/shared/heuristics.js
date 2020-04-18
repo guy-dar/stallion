@@ -1,3 +1,4 @@
+//var solver = require("./src/solver");
 
 class HeuristicsHelper{
     constructor(){

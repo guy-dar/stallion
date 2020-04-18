@@ -2,88 +2,50 @@
 title: Users
 template: layout.jade
 ---
+## Features
+In addition to all the amazing features in PDF.js, here are some more.
 
-## Hello World Walkthrough
+### The Slash Bar
+With simplicity as a core principle in Stallion, we introduce the (*soon to be famous*) **Slash Bar** (triggered by pressing `/` anywhere in the document). 
+The slash bar allows you to type commands instead of using on-screen buttons. 
 
-[Full source](https://github.com/mozilla/pdf.js/blob/master/examples/learning/helloworld.html)
+![Slash Bar](docs/contents/images/zoom_slash_bar.gif)
 
-PDF.js heavily relies on the use of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). If promises are new to you, it's recommended you become familiar with them before continuing on.
+#### Basic
 
-This tutorial shows how PDF.js can be used as a library in a web browser.
-[examples/](https://github.com/mozilla/pdf.js/tree/master/examples) provides more examples, including usage in Node.js (at [examples/node/](https://github.com/mozilla/pdf.js/tree/master/examples/node)).
+* `outline` - Toggle document's outline (if exists).
+* `toolbar` - Toggle PDF.js-derived toolbar (hidden by default).
 
-### Document
+* `back` - Go back.
+* `page`*`number`* - Go to page.
+* `zoom in/out [`*`digit`*`]` - Zoom. *digit* is optional. If specified, determines iterates the operation *digit* times.
 
-The object structure of PDF.js loosely follows the structure of an actual PDF. At the top level there is a document object. From the document, more information and individual pages can be fetched. To get the document:
+#### Navigation
+* `shortcut/name/dub`*`name`* - Set shortcut to current location in document.
+* `jump`*`name`* - Go to shortcut.  
+* `fgoto`*`SearchPhrase`* - Find next occurence of the search phrase. You are advised to use the find bar instead (`Ctrl+F`).
+*  `fpeek`*`SearchPhrase`* - Opens a Peek Box for the search phrase.
 
-```js
-pdfjsLib.getDocument('helloworld.pdf')
-```
 
-Remember though that PDF.js uses promises, and the above will return a `PDFDocumentLoadingTask` instance that has a `promise` property which is resolved with the document object.
+Note: Typing wrong commands can get offensive.
 
-```js
-var loadingTask = pdfjsLib.getDocument('helloworld.pdf');
-loadingTask.promise.then(function(pdf) {
-  // you can now use *pdf* here
-});
-```
+### Peek Box
+The Peek Box is used as a substitute for the standard find operation. 
+It allows you to peek at different locations without leaving the current.
+Ideally, it should allow you to review definitions, references, theorems, and other parts of the document without the burden of context switching.
 
-### Page
-Now that we have the document, we can get a page. Again, this uses promises.
+![Peek Box](docs/contents/images/peek_box.gif)
 
-```js
-pdf.getPage(1).then(function(page) {
-  // you can now use *page* here
-});
-```
 
-### Rendering the Page
-Each PDF page has its own viewport which defines the size in pixels(72DPI) and initial rotation. By default the viewport is scaled to the original size of the PDF, but this can be changed by modifying the viewport. When the viewport is created, an initial transformation matrix will also be created that takes into account the desired scale, rotation, and it transforms the coordinate system (the 0,0 point in PDF documents the bottom-left whereas canvas 0,0 is top-left).
+### Double Slash: experimental
+Select text and double-click `/`. This will invoke a double slash operation. It serves several purposes
 
-```js
-var scale = 1.5;
-var viewport = page.getViewport({ scale: scale, });
+#### 1. Peek at selection
+In its most naive use, it will just `fpeek` the selected text. 
+If the selection follows certain patterns, it is supposed to present some more advanced behavior (*intelligent peeking*) which is still under active development.
 
-var canvas = document.getElementById('the-canvas');
-var context = canvas.getContext('2d');
-canvas.height = viewport.height;
-canvas.width = viewport.width;
+#### 2. Reference Resolution (preliminary)
+If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters), a reference summary box will appear. This summary includes: Title, URL, reference count and citation count. As of now, the resolution is still handled poorly. Plus, even if the right article is found,  data isn't always correct.
 
-var renderContext = {
-  canvasContext: context,
-  viewport: viewport
-};
-page.render(renderContext);
-```
-
-Alternatively, if you want the canvas to render to a certain pixel size you could do the following:
-
-```js
-var desiredWidth = 100;
-var viewport = page.getViewport({ scale: 1, });
-var scale = desiredWidth / viewport.width;
-var scaledViewport = page.getViewport({ scale: scale, });
-```
-
-## Interactive examples
-
-### Hello World with document load error handling
-
-The example demonstrates how promises can be used to handle errors during loading.
-It also demonstrates how to wait until page loaded and rendered.
-
-<script async src="//jsfiddle.net/pdfjs/9engc9mw/embed/js,html,css,result/"></script>
-
-### Hello World using base64 encoded PDF
-
-The PDF.js can accept any decoded base64 data as an array.
-
-<script async src="//jsfiddle.net/pdfjs/cq0asLqz/embed/js,html,css,result/"></script>
-
-### Previous/Next example
-
-The same canvas cannot be used to perform to draw two pages at the same time --
-the example demonstrates how to wait on previous operation to be complete.
-
-<script async src="//jsfiddle.net/pdfjs/wagvs9Lf/embed/js,html,css,result/"></script>
+#### 3. Quick fpeek 
+If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.

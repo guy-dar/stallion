@@ -3,87 +3,111 @@ title: For Developers
 template: layout.jade
 ---
 
-## Hello World Walkthrough
+## Getting the Code
 
-[Full source](https://github.com/mozilla/pdf.js/blob/master/examples/learning/helloworld.html)
+To get a local copy of the current code, clone it using git:
 
-PDF.js heavily relies on the use of [Promises](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise). If promises are new to you, it's recommended you become familiar with them before continuing on.
+    $ git clone https://github.com/guyd1995/Stallion.git
+    $ cd Stallion
 
-This tutorial shows how PDF.js can be used as a library in a web browser.
-[examples/](https://github.com/mozilla/pdf.js/tree/master/examples) provides more examples, including usage in Node.js (at [examples/node/](https://github.com/mozilla/pdf.js/tree/master/examples/node)).
+Next, install Node.js via the [official package](https://nodejs.org) or via
+[nvm](https://github.com/creationix/nvm). You need to install the gulp package
+globally (see also [gulp's getting started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)):
 
-### Document
+    $ npm install -g gulp-cli
 
-The object structure of PDF.js loosely follows the structure of an actual PDF. At the top level there is a document object. From the document, more information and individual pages can be fetched. To get the document:
+If everything worked out, install all dependencies for PDF.js:
 
-```js
-pdfjsLib.getDocument('helloworld.pdf')
-```
+    $ npm install
 
-Remember though that PDF.js uses promises, and the above will return a `PDFDocumentLoadingTask` instance that has a `promise` property which is resolved with the document object.
+Finally, you need to start a local web server as some browsers do not allow opening
+PDF files using a `file://` URL. Run:
 
-```js
-var loadingTask = pdfjsLib.getDocument('helloworld.pdf');
-loadingTask.promise.then(function(pdf) {
-  // you can now use *pdf* here
-});
-```
+    $ gulp server
 
-### Page
-Now that we have the document, we can get a page. Again, this uses promises.
+and then you can open:
 
-```js
-pdf.getPage(1).then(function(page) {
-  // you can now use *page* here
-});
-```
++ http://localhost:8888/web/viewer.html
 
-### Rendering the Page
-Each PDF page has its own viewport which defines the size in pixels(72DPI) and initial rotation. By default the viewport is scaled to the original size of the PDF, but this can be changed by modifying the viewport. When the viewport is created, an initial transformation matrix will also be created that takes into account the desired scale, rotation, and it transforms the coordinate system (the 0,0 point in PDF documents the bottom-left whereas canvas 0,0 is top-left).
+Please keep in mind that this requires an ES6 compatible browser; refer to [Building PDF.js](https://github.com/mozilla/pdf.js/blob/master/README.md#building-pdfjs) for usage with older browsers.
 
-```js
-var scale = 1.5;
-var viewport = page.getViewport({ scale: scale, });
+It is also possible to view all test PDF files on the right side by opening:
 
-var canvas = document.getElementById('the-canvas');
-var context = canvas.getContext('2d');
-canvas.height = viewport.height;
-canvas.width = viewport.width;
++ http://localhost:8888/test/pdfs/?frame
 
-var renderContext = {
-  canvasContext: context,
-  viewport: viewport
-};
-page.render(renderContext);
-```
+## PDF.js
+[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
 
-Alternatively, if you want the canvas to render to a certain pixel size you could do the following:
+PDF.js is community-driven and supported by Mozilla Labs. Their goal is to
+create a general-purpose, web standards-based platform for parsing and
+rendering PDFs.
 
-```js
-var desiredWidth = 100;
-var viewport = page.getViewport({ scale: 1, });
-var scale = desiredWidth / viewport.width;
-var scaledViewport = page.getViewport({ scale: scale, });
-```
+Please, visit their [repository](https://github.com/mozilla/pdf.js) for additional information.
+ 
 
-## Interactive examples
+## Contributing
 
-### Hello World with document load error handling
+We base our contribution guidelines on those of PDF.js. Also, we utilize their code base. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide(see below).
 
-The example demonstrates how promises can be used to handle errors during loading.
-It also demonstrates how to wait until page loaded and rendered.
+* [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
+* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
 
-<script async src="//jsfiddle.net/pdfjs/9engc9mw/embed/js,html,css,result/"></script>
+* PDF.js
+	+ [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
+	+ [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
+	+ [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
 
-### Hello World using base64 encoded PDF
+## Getting the Code
 
-The PDF.js can accept any decoded base64 data as an array.
+To get a local copy of the current code, clone it using git:
 
-<script async src="//jsfiddle.net/pdfjs/cq0asLqz/embed/js,html,css,result/"></script>
+    $ git clone https://github.com/guyd1995/Stallion.git
+    $ cd Stallion
 
-### Previous/Next example
+Next, install Node.js via the [official package](https://nodejs.org) or via
+[nvm](https://github.com/creationix/nvm). You need to install the gulp package
+globally (see also [gulp's getting started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)):
 
-The same canvas cannot be used to perform to draw two pages at the same time --
-the example demonstrates how to wait on previous operation to be complete.
+    $ npm install -g gulp-cli
 
-<script async src="//jsfiddle.net/pdfjs/wagvs9Lf/embed/js,html,css,result/"></script>
+If everything worked out, install all dependencies for PDF.js:
+
+    $ npm install
+
+Finally, you need to start a local web server as some browsers do not allow opening
+PDF files using a `file://` URL. Run:
+
+    $ gulp server
+
+and then you can open:
+
++ http://localhost:8888/web/viewer.html
+
+Please keep in mind that this requires an ES6 compatible browser; refer to [Building PDF.js](https://github.com/mozilla/pdf.js/blob/master/README.md#building-pdfjs) for usage with older browsers.
+
+It is also possible to view all test PDF files on the right side by opening:
+
++ http://localhost:8888/test/pdfs/?frame
+
+## PDF.js
+[PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
+
+PDF.js is community-driven and supported by Mozilla Labs. Their goal is to
+create a general-purpose, web standards-based platform for parsing and
+rendering PDFs.
+
+Please, visit their [repository](https://github.com/mozilla/pdf.js) for additional information.
+ 
+
+## Contributing
+
+We base our contribution guidelines on those of PDF.js. Also, we utilize their code base. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide(see below).
+
+* [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
+* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
+
+* PDF.js
+	+ [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
+	+ [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
+	+ [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
+
