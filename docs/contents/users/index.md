@@ -40,7 +40,7 @@ Ideally, it should allow you to review definitions, references, theorems, and ot
 ### Double Slash: experimental
 Select text and double-click `/`. This will invoke a double slash operation. It serves several purposes
 
-#### 1. Peek at selection
+#### 1. Peek at Selection
 In its most naive use, it will just `fpeek` the selected text. 
 If the selection follows certain patterns, it is supposed to present some more advanced behavior (*intelligent peeking*) which is still under active development.
 
@@ -49,3 +49,23 @@ If the reference trigger is fired (As of now, this happens if the selection has 
 
 #### 3. Quick fpeek 
 If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.
+
+## Install
+### Option 1: Install Chrome Extension from Web Store (Easy)
+Coming soon.. (app needs to be deployed and it costs 5 bucks)
+
+### Option 2: Install Chrome Extension Like a Pro 
+Download and unzip from here 
+
+  <a type="button" class="btn btn-lg btn-default" href="https://github.com/guyd1995/Stallion/releases/latest">Chrome Extension</a>
+
+
+Add to Chrome:
+ - Go to Chrome `Settings` > `Extensions`
+ - Switch `Developer Mode` on.
+ - Click `Load Unpacked` and choose the unzipped folder. 
+ - Click 'Open Folder' and then 'OK'.
+ 
+
+
+
