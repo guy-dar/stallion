@@ -123,7 +123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-var pdfjsVersion = '2.5.0';
+var pdfjsVersion = '0.2.0';
 var pdfjsBuild = '';
 
 var pdfjsSharedUtil = __w_pdfjs_require__(1);
@@ -1249,7 +1249,7 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
 
   return worker.messageHandler.sendWithPromise("GetDocRequest", {
     docId,
-    apiVersion: '2.5.0',
+    apiVersion: '0.2.0',
     source: {
       data: source.data,
       url: source.url,
@@ -3069,6 +3069,7 @@ const InternalRenderTask = function InternalRenderTaskClosure() {
       pdfBug = false,
       heuristics
     }) {
+      heuristics.startRendering();
       this.callback = callback;
       this.params = params;
       this.objs = objs;
@@ -3127,8 +3128,7 @@ const InternalRenderTask = function InternalRenderTaskClosure() {
         background
       });
       this.capability.promise.then(() => {
-        this.heuristics.finishedRenderingContext(this._canvas);
-        console.log("Rendered!");
+        this.heuristics.finishedRenderingContext(this._canvas, viewport, transform);
       });
       this.operatorListIdx = 0;
       this.graphicsReady = true;
@@ -3224,7 +3224,7 @@ const InternalRenderTask = function InternalRenderTaskClosure() {
   return InternalRenderTask;
 }();
 
-const version = '2.5.0';
+const version = '0.2.0';
 exports.version = version;
 const build = '';
 exports.build = build;
@@ -3242,7 +3242,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.HeuristicsHelper = exports.SelectionHeuristics = exports.PageHeuristics = void 0;
 
 class HeuristicsHelper {
-  constructor() {}
+  fontNormalizer(fontData) {
+    return {
+      'name': fontData.font.name,
+      'fontSize': fontData.fontSize
+    };
+  }
 
   select(elArr) {
     elArr.addClass('highlight');
@@ -3280,6 +3285,52 @@ class HeuristicsHelper {
     dict[val]++;
   }
 
+  _generateFontContext(x, y, w, h, font) {
+    return {
+      x,
+      y,
+      w,
+      h,
+      right: x + w,
+      bottom: y + h,
+      font
+    };
+  }
+
+  _isColumnJump(newFontCtx, oldFontCtx) {
+    return newFontCtx.y + newFontCtx.h < oldFontCtx.y;
+  }
+
+  isLineBreak(newFontCtx, oldFontCtx) {
+    if (oldFontCtx == null) return true;
+
+    if (newFontCtx.y > oldFontCtx.h + oldFontCtx.y) {
+      return true;
+    }
+
+    if (this._isColumnJump(newFontCtx, oldFontCtx)) return true;
+    return false;
+  }
+
+  addRect(ctx_, rgb, x, y, w, h, transform = null) {
+    var ctx = ctx_;
+    ctx.save();
+
+    if (transform) {
+      ctx.resetTransform();
+      ctx.transform(transform);
+    } else {
+      ctx.resetTransform();
+      ctx.translate(0, 0);
+    }
+
+    var fillStyle = ctx.fillStyle;
+    ctx.fillStyle = rgb;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = fillStyle;
+    ctx.restore();
+  }
+
   htmlFeatures(elem) {
     var w = elem.offsetWidth,
         h = elem.offsetHeight,
@@ -3299,55 +3350,103 @@ class HeuristicsHelper {
 
 exports.HeuristicsHelper = HeuristicsHelper;
 
+function isDictInArray(dict, arr) {
+  for (let i = 0; i < arr.length; i++) {
+    const element = arr[i];
+
+    if (JSON.stringify(element) == JSON.stringify(dict)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function _last(arr) {
+  return arr.slice(-1)[0];
+}
+
 class PageHeuristics {
   constructor() {
+    this.startRendering();
+  }
+
+  startRendering() {
     this.debugMode = false;
     this.helper = new HeuristicsHelper();
-    this._fonts = {};
+    this._prevLineFonts = null;
+    this._curLineFonts = [];
+    this._textBlocks = [];
+    this._lineBeginning = [];
+    this._curFontCtx = null;
     this._images = [];
     this.idx = 0;
     this._maxImgDim = 1000;
     this._blockJumpPctTol = 1.4;
   }
 
-  setMainCtx(mainCtx) {
-    this.mainCtx = mainCtx;
-  }
+  isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
+    if (!curTextBlock) return false;
 
-  analyzeTextLayer(textLayer) {
-    var textDivs = textLayer.textDivs;
-    var blockBreaks = [];
-    var lastFeatures = null;
-
-    for (let n = 0; n < textDivs.length; n++) {
-      const curFeatures = this.helper.htmlFeatures(textDivs[n]);
-
-      if (lastFeatures) {
-        var dominantFeatures = curFeatures.height >= lastFeatures.height ? curFeatures : lastFeatures;
-        var jump = Math.abs(curFeatures.top - lastFeatures.bottom);
-
-        if (jump >= dominantFeatures.height * this._blockJumpPctTol) {
-          blockBreaks.push(n);
-          if (this.debugMode) console.log(textDivs[n]);
-        }
-      }
-
-      lastFeatures = curFeatures;
+    if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
+      return false;
     }
+
+    if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
+      return false;
+    }
+
+    return isDictInArray(newFontCtx.font, curTextBlock.fonts);
   }
 
-  reportTextAction(ctx, font, x, y) {
-    var fillStyle = ctx.fillStyle;
-    this.helper.incrementDict(this._fonts, font.name);
+  reportTextAction(ctx, fontData, scaledX, scaledY) {
+    var font = this.helper.fontNormalizer(fontData);
+    var {
+      e: x,
+      f: y,
+      a: scale
+    } = ctx.getTransform();
+    var h = font.fontSize * scale;
+    var w = h;
+    y -= h;
+    x += scaledX * scale;
+    y += scaledY * scale;
+
+    var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+
+    var curTextBlock = _last(this._textBlocks);
+
+    if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
+      if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
+        this._textBlocks.push({
+          left: x,
+          top: y,
+          right: x + w,
+          bottom: y + h,
+          fonts: []
+        });
+
+        curTextBlock = _last(this._textBlocks);
+      }
+    }
+
+    if (!isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
+    var {
+      left,
+      top,
+      bottom,
+      right
+    } = newFontCtx;
+    curTextBlock.right = Math.max(right, curTextBlock.right);
+    curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
 
     if (font.name.indexOf('+CM') != -1) {
       if (this.debugMode) {
-        ctx.fillStyle = 'rgba(0,0,225,0.2)';
-        ctx.fillRect(x, y, 10, -10);
-        ctx.fillStyle = fillStyle;
+        this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
       }
     }
 
+    this._curFontCtx = newFontCtx;
     this.idx++;
   }
 
@@ -3365,19 +3464,28 @@ class PageHeuristics {
     });
   }
 
-  finishedRenderingContext(curCtx) {
+  finishedRenderingContext(curCtx, viewport, transform) {
     if (!this.debugMode) return;
     var ctx = curCtx.getContext('2d');
 
+    this._textBlocks.forEach(block => {
+      var {
+        left,
+        top,
+        right,
+        bottom
+      } = block;
+      this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
+    });
+
     this._images.forEach(img => {
       var rect = img['rect'];
-      var fillStyle = ctx.fillStyle;
-      ctx.fillStyle = "rgba(225, 0, 0, 0.2)";
-      ctx.fillRect(rect[0], rect[1], rect[2], rect[3]);
+      this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
       console.log(rect);
-      ctx.fillStyle = fillStyle;
     });
   }
+
+  analyzeTextLayer(textLayer) {}
 
 }
 
@@ -4339,7 +4447,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.isNodeJS = void 0;
-const isNodeJS = typeof process === "object" && process + "" === "[object process]" && !process.versions["nw"] && !process.versions["electron"];
+const isNodeJS = typeof process === "object" && process + "" === "[object process]" && !process.versions.nw && !process.versions.electron;
 exports.isNodeJS = isNodeJS;
 
 /***/ }),
@@ -5795,7 +5903,7 @@ var CanvasGraphics = function CanvasGraphicsClosure() {
           }
         }
 
-        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
+        this.heuristics.reportTextAction(ctx, current, scaledX, scaledY);
 
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
@@ -11204,6 +11312,7 @@ exports.SVGGraphics = SVGGraphics;
       current.x = current.lineX = 0;
       current.y = current.lineY = 0;
       current.xcoords = [];
+      current.ycoords = [];
       current.tspan = this.svgFactory.createElement("svg:tspan");
       current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
       current.tspan.setAttributeNS(null, "font-size", `${pf(current.fontSize)}px`);
@@ -11223,6 +11332,7 @@ exports.SVGGraphics = SVGGraphics;
       current.txtElement = this.svgFactory.createElement("svg:text");
       current.txtgrp = this.svgFactory.createElement("svg:g");
       current.xcoords = [];
+      current.ycoords = [];
     }
 
     moveText(x, y) {
@@ -11230,6 +11340,7 @@ exports.SVGGraphics = SVGGraphics;
       current.x = current.lineX += x;
       current.y = current.lineY += y;
       current.xcoords = [];
+      current.ycoords = [];
       current.tspan = this.svgFactory.createElement("svg:tspan");
       current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
       current.tspan.setAttributeNS(null, "font-size", `${pf(current.fontSize)}px`);
@@ -11245,11 +11356,14 @@ exports.SVGGraphics = SVGGraphics;
         return;
       }
 
+      const fontSizeScale = current.fontSizeScale;
       const charSpacing = current.charSpacing;
       const wordSpacing = current.wordSpacing;
       const fontDirection = current.fontDirection;
       const textHScale = current.textHScale * fontDirection;
       const vertical = font.vertical;
+      const spacingDir = vertical ? 1 : -1;
+      const defaultVMetrics = font.defaultVMetrics;
       const widthAdvanceScale = fontSize * current.fontMatrix[0];
       let x = 0;
 
@@ -11258,33 +11372,64 @@ exports.SVGGraphics = SVGGraphics;
           x += fontDirection * wordSpacing;
           continue;
         } else if ((0, _util.isNum)(glyph)) {
-          x += -glyph * fontSize * 0.001;
+          x += spacingDir * glyph * fontSize / 1000;
           continue;
         }
 
-        const width = glyph.width;
-        const character = glyph.fontChar;
         const spacing = (glyph.isSpace ? wordSpacing : 0) + charSpacing;
-        const charWidth = width * widthAdvanceScale + spacing * fontDirection;
+        const character = glyph.fontChar;
+        let scaledX, scaledY;
+        let width = glyph.width;
 
-        if (!glyph.isInFont && !font.missingFile) {
-          x += charWidth;
-          continue;
+        if (vertical) {
+          let vx;
+          const vmetric = glyph.vmetric || defaultVMetrics;
+          vx = glyph.vmetric ? vmetric[1] : width * 0.5;
+          vx = -vx * widthAdvanceScale;
+          const vy = vmetric[2] * widthAdvanceScale;
+          width = vmetric ? -vmetric[0] : width;
+          scaledX = vx / fontSizeScale;
+          scaledY = (x + vy) / fontSizeScale;
+        } else {
+          scaledX = x / fontSizeScale;
+          scaledY = 0;
         }
 
-        current.xcoords.push(current.x + x);
-        current.tspan.textContent += character;
+        if (glyph.isInFont || font.missingFile) {
+          current.xcoords.push(current.x + scaledX);
+
+          if (vertical) {
+            current.ycoords.push(-current.y + scaledY);
+          }
+
+          current.tspan.textContent += character;
+        } else {}
+
+        let charWidth;
+
+        if (vertical) {
+          charWidth = width * widthAdvanceScale - spacing * fontDirection;
+        } else {
+          charWidth = width * widthAdvanceScale + spacing * fontDirection;
+        }
+
         x += charWidth;
       }
 
+      current.tspan.setAttributeNS(null, "x", current.xcoords.map(pf).join(" "));
+
       if (vertical) {
-        current.y -= x * textHScale;
+        current.tspan.setAttributeNS(null, "y", current.ycoords.map(pf).join(" "));
+      } else {
+        current.tspan.setAttributeNS(null, "y", pf(-current.y));
+      }
+
+      if (vertical) {
+        current.y -= x;
       } else {
         current.x += x * textHScale;
       }
 
-      current.tspan.setAttributeNS(null, "x", current.xcoords.map(pf).join(" "));
-      current.tspan.setAttributeNS(null, "y", pf(-current.y));
       current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
       current.tspan.setAttributeNS(null, "font-size", `${pf(current.fontSize)}px`);
 
@@ -11385,6 +11530,7 @@ exports.SVGGraphics = SVGGraphics;
       current.tspan = this.svgFactory.createElement("svg:tspan");
       current.tspan.setAttributeNS(null, "y", pf(-current.y));
       current.xcoords = [];
+      current.ycoords = [];
     }
 
     endText() {
@@ -11431,6 +11577,7 @@ exports.SVGGraphics = SVGGraphics;
       this.current.fillColor = _util.Util.makeCssRgb(r, g, b);
       this.current.tspan = this.svgFactory.createElement("svg:tspan");
       this.current.xcoords = [];
+      this.current.ycoords = [];
     }
 
     setStrokeColorN(args) {
@@ -12403,7 +12550,7 @@ class PDFNodeStreamRangeReader extends BaseRangeReader {
       this._httpHeaders[property] = value;
     }
 
-    this._httpHeaders["Range"] = `bytes=${start}-${end - 1}`;
+    this._httpHeaders.Range = `bytes=${start}-${end - 1}`;
 
     const handleResponse = response => {
       if (response.statusCode === 404) {

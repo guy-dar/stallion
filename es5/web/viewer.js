@@ -601,36 +601,36 @@ var PDFViewerApplication = {
             case 5:
               hashParams = (0, _ui_utils.parseQueryString)(hash), waitOn = [];
 
-              if ("disableworker" in hashParams && hashParams["disableworker"] === "true") {
+              if ("disableworker" in hashParams && hashParams.disableworker === "true") {
                 waitOn.push(loadFakeWorker());
               }
 
               if ("disablerange" in hashParams) {
-                _app_options.AppOptions.set("disableRange", hashParams["disablerange"] === "true");
+                _app_options.AppOptions.set("disableRange", hashParams.disablerange === "true");
               }
 
               if ("disablestream" in hashParams) {
-                _app_options.AppOptions.set("disableStream", hashParams["disablestream"] === "true");
+                _app_options.AppOptions.set("disableStream", hashParams.disablestream === "true");
               }
 
               if ("disableautofetch" in hashParams) {
-                _app_options.AppOptions.set("disableAutoFetch", hashParams["disableautofetch"] === "true");
+                _app_options.AppOptions.set("disableAutoFetch", hashParams.disableautofetch === "true");
               }
 
               if ("disablefontface" in hashParams) {
-                _app_options.AppOptions.set("disableFontFace", hashParams["disablefontface"] === "true");
+                _app_options.AppOptions.set("disableFontFace", hashParams.disablefontface === "true");
               }
 
               if ("disablehistory" in hashParams) {
-                _app_options.AppOptions.set("disableHistory", hashParams["disablehistory"] === "true");
+                _app_options.AppOptions.set("disableHistory", hashParams.disablehistory === "true");
               }
 
               if ("webgl" in hashParams) {
-                _app_options.AppOptions.set("enableWebGL", hashParams["webgl"] === "true");
+                _app_options.AppOptions.set("enableWebGL", hashParams.webgl === "true");
               }
 
               if ("verbosity" in hashParams) {
-                _app_options.AppOptions.set("verbosity", hashParams["verbosity"] | 0);
+                _app_options.AppOptions.set("verbosity", hashParams.verbosity | 0);
               }
 
               if (!("textlayer" in hashParams)) {
@@ -638,7 +638,7 @@ var PDFViewerApplication = {
                 break;
               }
 
-              _context3.t0 = hashParams["textlayer"];
+              _context3.t0 = hashParams.textlayer;
               _context3.next = _context3.t0 === "off" ? 18 : _context3.t0 === "visible" ? 20 : _context3.t0 === "shadow" ? 20 : _context3.t0 === "hover" ? 20 : 23;
               break;
 
@@ -649,7 +649,7 @@ var PDFViewerApplication = {
 
             case 20:
               viewer = _this3.appConfig.viewerContainer;
-              viewer.classList.add("textLayer-" + hashParams["textlayer"]);
+              viewer.classList.add("textLayer-" + hashParams.textlayer);
               return _context3.abrupt("break", 23);
 
             case 23:
@@ -658,12 +658,12 @@ var PDFViewerApplication = {
 
                 _app_options.AppOptions.set("fontExtraProperties", true);
 
-                enabled = hashParams["pdfbug"].split(",");
+                enabled = hashParams.pdfbug.split(",");
                 waitOn.push(loadAndEnablePDFBug(enabled));
               }
 
               if ("locale" in hashParams) {
-                _app_options.AppOptions.set("locale", hashParams["locale"]);
+                _app_options.AppOptions.set("locale", hashParams.locale);
               }
 
               return _context3.abrupt("return", Promise.all(waitOn)["catch"](function (reason) {
@@ -1265,7 +1265,7 @@ var PDFViewerApplication = {
 
     if (percent > this.loadingBar.percent || isNaN(percent)) {
       this.loadingBar.percent = percent;
-      var disableAutoFetch = this.pdfDocument ? this.pdfDocument.loadingParams["disableAutoFetch"] : _app_options.AppOptions.get("disableAutoFetch");
+      var disableAutoFetch = this.pdfDocument ? this.pdfDocument.loadingParams.disableAutoFetch : _app_options.AppOptions.get("disableAutoFetch");
 
       if (disableAutoFetch && percent) {
         if (this.disableAutoFetchLoadingBarTimeout) {
@@ -1610,7 +1610,7 @@ var PDFViewerApplication = {
               _this12.metadata = metadata;
               _this12.contentDispositionFilename = contentDispositionFilename;
               console.log("PDF ".concat(pdfDocument.fingerprint, " [").concat(info.PDFFormatVersion, " ") + "".concat((info.Producer || "-").trim(), " / ").concat((info.Creator || "-").trim(), "] ") + "(PDF.js: ".concat(_pdfjsLib.version || "-") + "".concat(_this12.pdfViewer.enableWebGL ? " [WebGL]" : "", ")"));
-              infoTitle = info && info["Title"];
+              infoTitle = info && info.Title;
 
               if (infoTitle) {
                 pdfTitle = infoTitle;
@@ -6595,7 +6595,7 @@ var PDFDocumentProperties = /*#__PURE__*/function () {
         var currentPageNumber = _this2._currentPageNumber;
         var pagesRotation = _this2._pagesRotation;
 
-        if (_this2.fieldData && currentPageNumber === _this2.fieldData["_currentPageNumber"] && pagesRotation === _this2.fieldData["_pagesRotation"]) {
+        if (_this2.fieldData && currentPageNumber === _this2.fieldData._currentPageNumber && pagesRotation === _this2.fieldData._pagesRotation) {
           _this2._updateUI();
 
           return;
@@ -6646,12 +6646,12 @@ var PDFDocumentProperties = /*#__PURE__*/function () {
           _this2.maybeFileSize = length;
           return _this2._parseFileSize(length);
         }).then(function (fileSize) {
-          if (fileSize === _this2.fieldData["fileSize"]) {
+          if (fileSize === _this2.fieldData.fileSize) {
             return;
           }
 
           var data = Object.assign(Object.create(null), _this2.fieldData);
-          data["fileSize"] = fileSize;
+          data.fileSize = fileSize;
           freezeFieldData(data);
 
           _this2._updateUI();
@@ -8499,6 +8499,14 @@ var HeuristicsHelper = /*#__PURE__*/function () {
   }
 
   _createClass(HeuristicsHelper, [{
+    key: "fontNormalizer",
+    value: function fontNormalizer(fontData) {
+      return {
+        'name': fontData.font.name,
+        'fontSize': fontData.fontSize
+      };
+    }
+  }, {
     key: "select",
     value: function select(elArr) {
       elArr.addClass('highlight');
@@ -8540,6 +8548,57 @@ var HeuristicsHelper = /*#__PURE__*/function () {
       dict[val]++;
     }
   }, {
+    key: "_generateFontContext",
+    value: function _generateFontContext(x, y, w, h, font) {
+      return {
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        right: x + w,
+        bottom: y + h,
+        font: font
+      };
+    }
+  }, {
+    key: "_isColumnJump",
+    value: function _isColumnJump(newFontCtx, oldFontCtx) {
+      return newFontCtx.y + newFontCtx.h < oldFontCtx.y;
+    }
+  }, {
+    key: "isLineBreak",
+    value: function isLineBreak(newFontCtx, oldFontCtx) {
+      if (oldFontCtx == null) return true;
+
+      if (newFontCtx.y > oldFontCtx.h + oldFontCtx.y) {
+        return true;
+      }
+
+      if (this._isColumnJump(newFontCtx, oldFontCtx)) return true;
+      return false;
+    }
+  }, {
+    key: "addRect",
+    value: function addRect(ctx_, rgb, x, y, w, h) {
+      var transform = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : null;
+      var ctx = ctx_;
+      ctx.save();
+
+      if (transform) {
+        ctx.resetTransform();
+        ctx.transform(transform);
+      } else {
+        ctx.resetTransform();
+        ctx.translate(0, 0);
+      }
+
+      var fillStyle = ctx.fillStyle;
+      ctx.fillStyle = rgb;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = fillStyle;
+      ctx.restore();
+    }
+  }, {
     key: "htmlFeatures",
     value: function htmlFeatures(elem) {
       var w = elem.offsetWidth,
@@ -8562,61 +8621,108 @@ var HeuristicsHelper = /*#__PURE__*/function () {
 
 exports.HeuristicsHelper = HeuristicsHelper;
 
+function isDictInArray(dict, arr) {
+  for (var i = 0; i < arr.length; i++) {
+    var element = arr[i];
+
+    if (JSON.stringify(element) == JSON.stringify(dict)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function _last(arr) {
+  return arr.slice(-1)[0];
+}
+
 var PageHeuristics = /*#__PURE__*/function () {
   function PageHeuristics() {
     _classCallCheck(this, PageHeuristics);
 
-    this.debugMode = false;
-    this.helper = new HeuristicsHelper();
-    this._fonts = {};
-    this._images = [];
-    this.idx = 0;
-    this._maxImgDim = 1000;
-    this._blockJumpPctTol = 1.4;
+    this.startRendering();
   }
 
   _createClass(PageHeuristics, [{
-    key: "setMainCtx",
-    value: function setMainCtx(mainCtx) {
-      this.mainCtx = mainCtx;
+    key: "startRendering",
+    value: function startRendering() {
+      this.debugMode = false;
+      this.helper = new HeuristicsHelper();
+      this._prevLineFonts = null;
+      this._curLineFonts = [];
+      this._textBlocks = [];
+      this._lineBeginning = [];
+      this._curFontCtx = null;
+      this._images = [];
+      this.idx = 0;
+      this._maxImgDim = 1000;
+      this._blockJumpPctTol = 1.4;
     }
   }, {
-    key: "analyzeTextLayer",
-    value: function analyzeTextLayer(textLayer) {
-      var textDivs = textLayer.textDivs;
-      var blockBreaks = [];
-      var lastFeatures = null;
+    key: "isTextBlockShared",
+    value: function isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
+      if (!curTextBlock) return false;
 
-      for (var n = 0; n < textDivs.length; n++) {
-        var curFeatures = this.helper.htmlFeatures(textDivs[n]);
-
-        if (lastFeatures) {
-          var dominantFeatures = curFeatures.height >= lastFeatures.height ? curFeatures : lastFeatures;
-          var jump = Math.abs(curFeatures.top - lastFeatures.bottom);
-
-          if (jump >= dominantFeatures.height * this._blockJumpPctTol) {
-            blockBreaks.push(n);
-            if (this.debugMode) console.log(textDivs[n]);
-          }
-        }
-
-        lastFeatures = curFeatures;
+      if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
+        return false;
       }
+
+      if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
+        return false;
+      }
+
+      return isDictInArray(newFontCtx.font, curTextBlock.fonts);
     }
   }, {
     key: "reportTextAction",
-    value: function reportTextAction(ctx, font, x, y) {
-      var fillStyle = ctx.fillStyle;
-      this.helper.incrementDict(this._fonts, font.name);
+    value: function reportTextAction(ctx, fontData, scaledX, scaledY) {
+      var font = this.helper.fontNormalizer(fontData);
 
-      if (font.name.indexOf('+CM') != -1) {
-        if (this.debugMode) {
-          ctx.fillStyle = 'rgba(0,0,225,0.2)';
-          ctx.fillRect(x, y, 10, -10);
-          ctx.fillStyle = fillStyle;
+      var _ctx$getTransform = ctx.getTransform(),
+          x = _ctx$getTransform.e,
+          y = _ctx$getTransform.f,
+          scale = _ctx$getTransform.a;
+
+      var h = font.fontSize * scale;
+      var w = h;
+      y -= h;
+      x += scaledX * scale;
+      y += scaledY * scale;
+
+      var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+
+      var curTextBlock = _last(this._textBlocks);
+
+      if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
+        if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
+          this._textBlocks.push({
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h,
+            fonts: []
+          });
+
+          curTextBlock = _last(this._textBlocks);
         }
       }
 
+      if (!isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
+      var left = newFontCtx.left,
+          top = newFontCtx.top,
+          bottom = newFontCtx.bottom,
+          right = newFontCtx.right;
+      curTextBlock.right = Math.max(right, curTextBlock.right);
+      curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
+
+      if (font.name.indexOf('+CM') != -1) {
+        if (this.debugMode) {
+          this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
+        }
+      }
+
+      this._curFontCtx = newFontCtx;
       this.idx++;
     }
   }, {
@@ -8636,19 +8742,32 @@ var PageHeuristics = /*#__PURE__*/function () {
     }
   }, {
     key: "finishedRenderingContext",
-    value: function finishedRenderingContext(curCtx) {
+    value: function finishedRenderingContext(curCtx, viewport, transform) {
+      var _this = this;
+
       if (!this.debugMode) return;
       var ctx = curCtx.getContext('2d');
 
+      this._textBlocks.forEach(function (block) {
+        var left = block.left,
+            top = block.top,
+            right = block.right,
+            bottom = block.bottom;
+
+        _this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
+      });
+
       this._images.forEach(function (img) {
         var rect = img['rect'];
-        var fillStyle = ctx.fillStyle;
-        ctx.fillStyle = "rgba(225, 0, 0, 0.2)";
-        ctx.fillRect(rect[0], rect[1], rect[2], rect[3]);
+
+        _this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
+
         console.log(rect);
-        ctx.fillStyle = fillStyle;
       });
     }
+  }, {
+    key: "analyzeTextLayer",
+    value: function analyzeTextLayer(textLayer) {}
   }]);
 
   return PageHeuristics;
@@ -9504,8 +9623,8 @@ var PDFLinkService = /*#__PURE__*/function () {
         if ("search" in params) {
           this.eventBus.dispatch("findfromurlhash", {
             source: this,
-            query: params["search"].replace(/"/g, ""),
-            phraseSearch: params["phrase"] === "true"
+            query: params.search.replace(/"/g, ""),
+            phraseSearch: params.phrase === "true"
           });
         }
 
@@ -11847,7 +11966,7 @@ var BaseViewer = /*#__PURE__*/function () {
             _this2.findController.setDocument(pdfDocument);
           }
 
-          if (pdfDocument.loadingParams["disableAutoFetch"] || pagesCount > 7500) {
+          if (pdfDocument.loadingParams.disableAutoFetch || pagesCount > 7500) {
             _this2._pagesCapability.resolve();
 
             return;
@@ -16801,7 +16920,7 @@ function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
   this.pagesOverview = pagesOverview;
   this.printContainer = printContainer;
   this.l10n = l10n || _ui_utils.NullL10n;
-  this.disableCreateObjectURL = pdfDocument.loadingParams["disableCreateObjectURL"];
+  this.disableCreateObjectURL = pdfDocument.loadingParams.disableCreateObjectURL;
   this.currentPage = -1;
   this.scratchCanvas = document.createElement("canvas");
 }

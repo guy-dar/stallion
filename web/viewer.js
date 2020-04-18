@@ -485,40 +485,40 @@ const PDFViewerApplication = {
     const hashParams = (0, _ui_utils.parseQueryString)(hash),
           waitOn = [];
 
-    if ("disableworker" in hashParams && hashParams["disableworker"] === "true") {
+    if ("disableworker" in hashParams && hashParams.disableworker === "true") {
       waitOn.push(loadFakeWorker());
     }
 
     if ("disablerange" in hashParams) {
-      _app_options.AppOptions.set("disableRange", hashParams["disablerange"] === "true");
+      _app_options.AppOptions.set("disableRange", hashParams.disablerange === "true");
     }
 
     if ("disablestream" in hashParams) {
-      _app_options.AppOptions.set("disableStream", hashParams["disablestream"] === "true");
+      _app_options.AppOptions.set("disableStream", hashParams.disablestream === "true");
     }
 
     if ("disableautofetch" in hashParams) {
-      _app_options.AppOptions.set("disableAutoFetch", hashParams["disableautofetch"] === "true");
+      _app_options.AppOptions.set("disableAutoFetch", hashParams.disableautofetch === "true");
     }
 
     if ("disablefontface" in hashParams) {
-      _app_options.AppOptions.set("disableFontFace", hashParams["disablefontface"] === "true");
+      _app_options.AppOptions.set("disableFontFace", hashParams.disablefontface === "true");
     }
 
     if ("disablehistory" in hashParams) {
-      _app_options.AppOptions.set("disableHistory", hashParams["disablehistory"] === "true");
+      _app_options.AppOptions.set("disableHistory", hashParams.disablehistory === "true");
     }
 
     if ("webgl" in hashParams) {
-      _app_options.AppOptions.set("enableWebGL", hashParams["webgl"] === "true");
+      _app_options.AppOptions.set("enableWebGL", hashParams.webgl === "true");
     }
 
     if ("verbosity" in hashParams) {
-      _app_options.AppOptions.set("verbosity", hashParams["verbosity"] | 0);
+      _app_options.AppOptions.set("verbosity", hashParams.verbosity | 0);
     }
 
     if ("textlayer" in hashParams) {
-      switch (hashParams["textlayer"]) {
+      switch (hashParams.textlayer) {
         case "off":
           _app_options.AppOptions.set("textLayerMode", _ui_utils.TextLayerMode.DISABLE);
 
@@ -528,7 +528,7 @@ const PDFViewerApplication = {
         case "shadow":
         case "hover":
           const viewer = this.appConfig.viewerContainer;
-          viewer.classList.add("textLayer-" + hashParams["textlayer"]);
+          viewer.classList.add("textLayer-" + hashParams.textlayer);
           break;
       }
     }
@@ -538,12 +538,12 @@ const PDFViewerApplication = {
 
       _app_options.AppOptions.set("fontExtraProperties", true);
 
-      const enabled = hashParams["pdfbug"].split(",");
+      const enabled = hashParams.pdfbug.split(",");
       waitOn.push(loadAndEnablePDFBug(enabled));
     }
 
     if ("locale" in hashParams) {
-      _app_options.AppOptions.set("locale", hashParams["locale"]);
+      _app_options.AppOptions.set("locale", hashParams.locale);
     }
 
     return Promise.all(waitOn).catch(reason => {
@@ -1054,7 +1054,7 @@ const PDFViewerApplication = {
 
     if (percent > this.loadingBar.percent || isNaN(percent)) {
       this.loadingBar.percent = percent;
-      const disableAutoFetch = this.pdfDocument ? this.pdfDocument.loadingParams["disableAutoFetch"] : _app_options.AppOptions.get("disableAutoFetch");
+      const disableAutoFetch = this.pdfDocument ? this.pdfDocument.loadingParams.disableAutoFetch : _app_options.AppOptions.get("disableAutoFetch");
 
       if (disableAutoFetch && percent) {
         if (this.disableAutoFetchLoadingBarTimeout) {
@@ -1280,7 +1280,7 @@ const PDFViewerApplication = {
     this.contentDispositionFilename = contentDispositionFilename;
     console.log(`PDF ${pdfDocument.fingerprint} [${info.PDFFormatVersion} ` + `${(info.Producer || "-").trim()} / ${(info.Creator || "-").trim()}] ` + `(PDF.js: ${_pdfjsLib.version || "-"}` + `${this.pdfViewer.enableWebGL ? " [WebGL]" : ""})`);
     let pdfTitle;
-    const infoTitle = info && info["Title"];
+    const infoTitle = info && info.Title;
 
     if (infoTitle) {
       pdfTitle = infoTitle;
@@ -5115,7 +5115,7 @@ class PDFDocumentProperties {
       const currentPageNumber = this._currentPageNumber;
       const pagesRotation = this._pagesRotation;
 
-      if (this.fieldData && currentPageNumber === this.fieldData["_currentPageNumber"] && pagesRotation === this.fieldData["_pagesRotation"]) {
+      if (this.fieldData && currentPageNumber === this.fieldData._currentPageNumber && pagesRotation === this.fieldData._pagesRotation) {
         this._updateUI();
 
         return;
@@ -5158,12 +5158,12 @@ class PDFDocumentProperties {
         this.maybeFileSize = length;
         return this._parseFileSize(length);
       }).then(fileSize => {
-        if (fileSize === this.fieldData["fileSize"]) {
+        if (fileSize === this.fieldData.fileSize) {
           return;
         }
 
         const data = Object.assign(Object.create(null), this.fieldData);
-        data["fileSize"] = fileSize;
+        data.fileSize = fileSize;
         freezeFieldData(data);
 
         this._updateUI();
@@ -6751,7 +6751,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.HeuristicsHelper = exports.SelectionHeuristics = exports.PageHeuristics = void 0;
 
 class HeuristicsHelper {
-  constructor() {}
+  fontNormalizer(fontData) {
+    return {
+      'name': fontData.font.name,
+      'fontSize': fontData.fontSize
+    };
+  }
 
   select(elArr) {
     elArr.addClass('highlight');
@@ -6789,6 +6794,52 @@ class HeuristicsHelper {
     dict[val]++;
   }
 
+  _generateFontContext(x, y, w, h, font) {
+    return {
+      x,
+      y,
+      w,
+      h,
+      right: x + w,
+      bottom: y + h,
+      font
+    };
+  }
+
+  _isColumnJump(newFontCtx, oldFontCtx) {
+    return newFontCtx.y + newFontCtx.h < oldFontCtx.y;
+  }
+
+  isLineBreak(newFontCtx, oldFontCtx) {
+    if (oldFontCtx == null) return true;
+
+    if (newFontCtx.y > oldFontCtx.h + oldFontCtx.y) {
+      return true;
+    }
+
+    if (this._isColumnJump(newFontCtx, oldFontCtx)) return true;
+    return false;
+  }
+
+  addRect(ctx_, rgb, x, y, w, h, transform = null) {
+    var ctx = ctx_;
+    ctx.save();
+
+    if (transform) {
+      ctx.resetTransform();
+      ctx.transform(transform);
+    } else {
+      ctx.resetTransform();
+      ctx.translate(0, 0);
+    }
+
+    var fillStyle = ctx.fillStyle;
+    ctx.fillStyle = rgb;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = fillStyle;
+    ctx.restore();
+  }
+
   htmlFeatures(elem) {
     var w = elem.offsetWidth,
         h = elem.offsetHeight,
@@ -6808,55 +6859,103 @@ class HeuristicsHelper {
 
 exports.HeuristicsHelper = HeuristicsHelper;
 
+function isDictInArray(dict, arr) {
+  for (let i = 0; i < arr.length; i++) {
+    const element = arr[i];
+
+    if (JSON.stringify(element) == JSON.stringify(dict)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function _last(arr) {
+  return arr.slice(-1)[0];
+}
+
 class PageHeuristics {
   constructor() {
+    this.startRendering();
+  }
+
+  startRendering() {
     this.debugMode = false;
     this.helper = new HeuristicsHelper();
-    this._fonts = {};
+    this._prevLineFonts = null;
+    this._curLineFonts = [];
+    this._textBlocks = [];
+    this._lineBeginning = [];
+    this._curFontCtx = null;
     this._images = [];
     this.idx = 0;
     this._maxImgDim = 1000;
     this._blockJumpPctTol = 1.4;
   }
 
-  setMainCtx(mainCtx) {
-    this.mainCtx = mainCtx;
-  }
+  isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
+    if (!curTextBlock) return false;
 
-  analyzeTextLayer(textLayer) {
-    var textDivs = textLayer.textDivs;
-    var blockBreaks = [];
-    var lastFeatures = null;
-
-    for (let n = 0; n < textDivs.length; n++) {
-      const curFeatures = this.helper.htmlFeatures(textDivs[n]);
-
-      if (lastFeatures) {
-        var dominantFeatures = curFeatures.height >= lastFeatures.height ? curFeatures : lastFeatures;
-        var jump = Math.abs(curFeatures.top - lastFeatures.bottom);
-
-        if (jump >= dominantFeatures.height * this._blockJumpPctTol) {
-          blockBreaks.push(n);
-          if (this.debugMode) console.log(textDivs[n]);
-        }
-      }
-
-      lastFeatures = curFeatures;
+    if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
+      return false;
     }
+
+    if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
+      return false;
+    }
+
+    return isDictInArray(newFontCtx.font, curTextBlock.fonts);
   }
 
-  reportTextAction(ctx, font, x, y) {
-    var fillStyle = ctx.fillStyle;
-    this.helper.incrementDict(this._fonts, font.name);
+  reportTextAction(ctx, fontData, scaledX, scaledY) {
+    var font = this.helper.fontNormalizer(fontData);
+    var {
+      e: x,
+      f: y,
+      a: scale
+    } = ctx.getTransform();
+    var h = font.fontSize * scale;
+    var w = h;
+    y -= h;
+    x += scaledX * scale;
+    y += scaledY * scale;
+
+    var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+
+    var curTextBlock = _last(this._textBlocks);
+
+    if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
+      if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
+        this._textBlocks.push({
+          left: x,
+          top: y,
+          right: x + w,
+          bottom: y + h,
+          fonts: []
+        });
+
+        curTextBlock = _last(this._textBlocks);
+      }
+    }
+
+    if (!isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
+    var {
+      left,
+      top,
+      bottom,
+      right
+    } = newFontCtx;
+    curTextBlock.right = Math.max(right, curTextBlock.right);
+    curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
 
     if (font.name.indexOf('+CM') != -1) {
       if (this.debugMode) {
-        ctx.fillStyle = 'rgba(0,0,225,0.2)';
-        ctx.fillRect(x, y, 10, -10);
-        ctx.fillStyle = fillStyle;
+        this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
       }
     }
 
+    this._curFontCtx = newFontCtx;
     this.idx++;
   }
 
@@ -6874,19 +6973,28 @@ class PageHeuristics {
     });
   }
 
-  finishedRenderingContext(curCtx) {
+  finishedRenderingContext(curCtx, viewport, transform) {
     if (!this.debugMode) return;
     var ctx = curCtx.getContext('2d');
 
+    this._textBlocks.forEach(block => {
+      var {
+        left,
+        top,
+        right,
+        bottom
+      } = block;
+      this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
+    });
+
     this._images.forEach(img => {
       var rect = img['rect'];
-      var fillStyle = ctx.fillStyle;
-      ctx.fillStyle = "rgba(225, 0, 0, 0.2)";
-      ctx.fillRect(rect[0], rect[1], rect[2], rect[3]);
+      this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
       console.log(rect);
-      ctx.fillStyle = fillStyle;
     });
   }
+
+  analyzeTextLayer(textLayer) {}
 
 }
 
@@ -7665,8 +7773,8 @@ class PDFLinkService {
       if ("search" in params) {
         this.eventBus.dispatch("findfromurlhash", {
           source: this,
-          query: params["search"].replace(/"/g, ""),
-          phraseSearch: params["phrase"] === "true"
+          query: params.search.replace(/"/g, ""),
+          phraseSearch: params.phrase === "true"
         });
       }
 
@@ -9854,7 +9962,7 @@ class BaseViewer {
           this.findController.setDocument(pdfDocument);
         }
 
-        if (pdfDocument.loadingParams["disableAutoFetch"] || pagesCount > 7500) {
+        if (pdfDocument.loadingParams.disableAutoFetch || pagesCount > 7500) {
           this._pagesCapability.resolve();
 
           return;
@@ -13694,7 +13802,7 @@ function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
   this.pagesOverview = pagesOverview;
   this.printContainer = printContainer;
   this.l10n = l10n || _ui_utils.NullL10n;
-  this.disableCreateObjectURL = pdfDocument.loadingParams["disableCreateObjectURL"];
+  this.disableCreateObjectURL = pdfDocument.loadingParams.disableCreateObjectURL;
   this.currentPage = -1;
   this.scratchCanvas = document.createElement("canvas");
 }

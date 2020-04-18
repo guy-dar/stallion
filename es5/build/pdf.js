@@ -123,7 +123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-var pdfjsVersion = '2.5.0';
+var pdfjsVersion = '0.2.0';
 var pdfjsBuild = '';
 
 var pdfjsSharedUtil = __w_pdfjs_require__(1);
@@ -2169,7 +2169,7 @@ exports.isNodeJS = void 0;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-var isNodeJS = (typeof process === "undefined" ? "undefined" : _typeof(process)) === "object" && process + "" === "[object process]" && !process.versions["nw"] && !process.versions["electron"];
+var isNodeJS = (typeof process === "undefined" ? "undefined" : _typeof(process)) === "object" && process + "" === "[object process]" && !process.versions.nw && !process.versions.electron;
 exports.isNodeJS = isNodeJS;
 
 /***/ }),
@@ -10812,7 +10812,7 @@ function _fetchDocument(worker, source, pdfDataRangeTransport, docId) {
 
   return worker.messageHandler.sendWithPromise("GetDocRequest", {
     docId: docId,
-    apiVersion: '2.5.0',
+    apiVersion: '0.2.0',
     source: {
       data: source.data,
       url: source.url,
@@ -12930,6 +12930,7 @@ var InternalRenderTask = function InternalRenderTaskClosure() {
 
       _classCallCheck(this, InternalRenderTask);
 
+      heuristics.startRendering();
       this.callback = callback;
       this.params = params;
       this.objs = objs;
@@ -12993,9 +12994,7 @@ var InternalRenderTask = function InternalRenderTaskClosure() {
           background: background
         });
         this.capability.promise.then(function () {
-          _this18.heuristics.finishedRenderingContext(_this18._canvas);
-
-          console.log("Rendered!");
+          _this18.heuristics.finishedRenderingContext(_this18._canvas, viewport, transform);
         });
         this.operatorListIdx = 0;
         this.graphicsReady = true;
@@ -13124,7 +13123,7 @@ var InternalRenderTask = function InternalRenderTaskClosure() {
   return InternalRenderTask;
 }();
 
-var version = '2.5.0';
+var version = '0.2.0';
 exports.version = version;
 var build = '';
 exports.build = build;
@@ -13775,6 +13774,14 @@ var HeuristicsHelper = /*#__PURE__*/function () {
   }
 
   _createClass(HeuristicsHelper, [{
+    key: "fontNormalizer",
+    value: function fontNormalizer(fontData) {
+      return {
+        'name': fontData.font.name,
+        'fontSize': fontData.fontSize
+      };
+    }
+  }, {
     key: "select",
     value: function select(elArr) {
       elArr.addClass('highlight');
@@ -13816,6 +13823,57 @@ var HeuristicsHelper = /*#__PURE__*/function () {
       dict[val]++;
     }
   }, {
+    key: "_generateFontContext",
+    value: function _generateFontContext(x, y, w, h, font) {
+      return {
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+        right: x + w,
+        bottom: y + h,
+        font: font
+      };
+    }
+  }, {
+    key: "_isColumnJump",
+    value: function _isColumnJump(newFontCtx, oldFontCtx) {
+      return newFontCtx.y + newFontCtx.h < oldFontCtx.y;
+    }
+  }, {
+    key: "isLineBreak",
+    value: function isLineBreak(newFontCtx, oldFontCtx) {
+      if (oldFontCtx == null) return true;
+
+      if (newFontCtx.y > oldFontCtx.h + oldFontCtx.y) {
+        return true;
+      }
+
+      if (this._isColumnJump(newFontCtx, oldFontCtx)) return true;
+      return false;
+    }
+  }, {
+    key: "addRect",
+    value: function addRect(ctx_, rgb, x, y, w, h) {
+      var transform = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : null;
+      var ctx = ctx_;
+      ctx.save();
+
+      if (transform) {
+        ctx.resetTransform();
+        ctx.transform(transform);
+      } else {
+        ctx.resetTransform();
+        ctx.translate(0, 0);
+      }
+
+      var fillStyle = ctx.fillStyle;
+      ctx.fillStyle = rgb;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = fillStyle;
+      ctx.restore();
+    }
+  }, {
     key: "htmlFeatures",
     value: function htmlFeatures(elem) {
       var w = elem.offsetWidth,
@@ -13838,61 +13896,108 @@ var HeuristicsHelper = /*#__PURE__*/function () {
 
 exports.HeuristicsHelper = HeuristicsHelper;
 
+function isDictInArray(dict, arr) {
+  for (var i = 0; i < arr.length; i++) {
+    var element = arr[i];
+
+    if (JSON.stringify(element) == JSON.stringify(dict)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function _last(arr) {
+  return arr.slice(-1)[0];
+}
+
 var PageHeuristics = /*#__PURE__*/function () {
   function PageHeuristics() {
     _classCallCheck(this, PageHeuristics);
 
-    this.debugMode = false;
-    this.helper = new HeuristicsHelper();
-    this._fonts = {};
-    this._images = [];
-    this.idx = 0;
-    this._maxImgDim = 1000;
-    this._blockJumpPctTol = 1.4;
+    this.startRendering();
   }
 
   _createClass(PageHeuristics, [{
-    key: "setMainCtx",
-    value: function setMainCtx(mainCtx) {
-      this.mainCtx = mainCtx;
+    key: "startRendering",
+    value: function startRendering() {
+      this.debugMode = false;
+      this.helper = new HeuristicsHelper();
+      this._prevLineFonts = null;
+      this._curLineFonts = [];
+      this._textBlocks = [];
+      this._lineBeginning = [];
+      this._curFontCtx = null;
+      this._images = [];
+      this.idx = 0;
+      this._maxImgDim = 1000;
+      this._blockJumpPctTol = 1.4;
     }
   }, {
-    key: "analyzeTextLayer",
-    value: function analyzeTextLayer(textLayer) {
-      var textDivs = textLayer.textDivs;
-      var blockBreaks = [];
-      var lastFeatures = null;
+    key: "isTextBlockShared",
+    value: function isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
+      if (!curTextBlock) return false;
 
-      for (var n = 0; n < textDivs.length; n++) {
-        var curFeatures = this.helper.htmlFeatures(textDivs[n]);
-
-        if (lastFeatures) {
-          var dominantFeatures = curFeatures.height >= lastFeatures.height ? curFeatures : lastFeatures;
-          var jump = Math.abs(curFeatures.top - lastFeatures.bottom);
-
-          if (jump >= dominantFeatures.height * this._blockJumpPctTol) {
-            blockBreaks.push(n);
-            if (this.debugMode) console.log(textDivs[n]);
-          }
-        }
-
-        lastFeatures = curFeatures;
+      if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
+        return false;
       }
+
+      if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
+        return false;
+      }
+
+      return isDictInArray(newFontCtx.font, curTextBlock.fonts);
     }
   }, {
     key: "reportTextAction",
-    value: function reportTextAction(ctx, font, x, y) {
-      var fillStyle = ctx.fillStyle;
-      this.helper.incrementDict(this._fonts, font.name);
+    value: function reportTextAction(ctx, fontData, scaledX, scaledY) {
+      var font = this.helper.fontNormalizer(fontData);
 
-      if (font.name.indexOf('+CM') != -1) {
-        if (this.debugMode) {
-          ctx.fillStyle = 'rgba(0,0,225,0.2)';
-          ctx.fillRect(x, y, 10, -10);
-          ctx.fillStyle = fillStyle;
+      var _ctx$getTransform = ctx.getTransform(),
+          x = _ctx$getTransform.e,
+          y = _ctx$getTransform.f,
+          scale = _ctx$getTransform.a;
+
+      var h = font.fontSize * scale;
+      var w = h;
+      y -= h;
+      x += scaledX * scale;
+      y += scaledY * scale;
+
+      var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+
+      var curTextBlock = _last(this._textBlocks);
+
+      if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
+        if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
+          this._textBlocks.push({
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h,
+            fonts: []
+          });
+
+          curTextBlock = _last(this._textBlocks);
         }
       }
 
+      if (!isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
+      var left = newFontCtx.left,
+          top = newFontCtx.top,
+          bottom = newFontCtx.bottom,
+          right = newFontCtx.right;
+      curTextBlock.right = Math.max(right, curTextBlock.right);
+      curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
+
+      if (font.name.indexOf('+CM') != -1) {
+        if (this.debugMode) {
+          this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
+        }
+      }
+
+      this._curFontCtx = newFontCtx;
       this.idx++;
     }
   }, {
@@ -13912,19 +14017,32 @@ var PageHeuristics = /*#__PURE__*/function () {
     }
   }, {
     key: "finishedRenderingContext",
-    value: function finishedRenderingContext(curCtx) {
+    value: function finishedRenderingContext(curCtx, viewport, transform) {
+      var _this = this;
+
       if (!this.debugMode) return;
       var ctx = curCtx.getContext('2d');
 
+      this._textBlocks.forEach(function (block) {
+        var left = block.left,
+            top = block.top,
+            right = block.right,
+            bottom = block.bottom;
+
+        _this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
+      });
+
       this._images.forEach(function (img) {
         var rect = img['rect'];
-        var fillStyle = ctx.fillStyle;
-        ctx.fillStyle = "rgba(225, 0, 0, 0.2)";
-        ctx.fillRect(rect[0], rect[1], rect[2], rect[3]);
+
+        _this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
+
         console.log(rect);
-        ctx.fillStyle = fillStyle;
       });
     }
+  }, {
+    key: "analyzeTextLayer",
+    value: function analyzeTextLayer(textLayer) {}
   }]);
 
   return PageHeuristics;
@@ -16677,7 +16795,7 @@ var CanvasGraphics = function CanvasGraphicsClosure() {
           }
         }
 
-        this.heuristics.reportTextAction(ctx, font, scaledX, scaledY);
+        this.heuristics.reportTextAction(ctx, current, scaledX, scaledY);
 
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
@@ -22890,6 +23008,7 @@ exports.SVGGraphics = SVGGraphics;
         current.x = current.lineX = 0;
         current.y = current.lineY = 0;
         current.xcoords = [];
+        current.ycoords = [];
         current.tspan = this.svgFactory.createElement("svg:tspan");
         current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
         current.tspan.setAttributeNS(null, "font-size", "".concat(pf(current.fontSize), "px"));
@@ -22910,6 +23029,7 @@ exports.SVGGraphics = SVGGraphics;
         current.txtElement = this.svgFactory.createElement("svg:text");
         current.txtgrp = this.svgFactory.createElement("svg:g");
         current.xcoords = [];
+        current.ycoords = [];
       }
     }, {
       key: "moveText",
@@ -22918,6 +23038,7 @@ exports.SVGGraphics = SVGGraphics;
         current.x = current.lineX += x;
         current.y = current.lineY += y;
         current.xcoords = [];
+        current.ycoords = [];
         current.tspan = this.svgFactory.createElement("svg:tspan");
         current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
         current.tspan.setAttributeNS(null, "font-size", "".concat(pf(current.fontSize), "px"));
@@ -22934,11 +23055,14 @@ exports.SVGGraphics = SVGGraphics;
           return;
         }
 
+        var fontSizeScale = current.fontSizeScale;
         var charSpacing = current.charSpacing;
         var wordSpacing = current.wordSpacing;
         var fontDirection = current.fontDirection;
         var textHScale = current.textHScale * fontDirection;
         var vertical = font.vertical;
+        var spacingDir = vertical ? 1 : -1;
+        var defaultVMetrics = font.defaultVMetrics;
         var widthAdvanceScale = fontSize * current.fontMatrix[0];
         var x = 0;
 
@@ -22953,22 +23077,48 @@ exports.SVGGraphics = SVGGraphics;
               x += fontDirection * wordSpacing;
               continue;
             } else if ((0, _util.isNum)(glyph)) {
-              x += -glyph * fontSize * 0.001;
+              x += spacingDir * glyph * fontSize / 1000;
               continue;
             }
 
-            var width = glyph.width;
-            var character = glyph.fontChar;
             var spacing = (glyph.isSpace ? wordSpacing : 0) + charSpacing;
-            var charWidth = width * widthAdvanceScale + spacing * fontDirection;
+            var character = glyph.fontChar;
+            var scaledX = void 0,
+                scaledY = void 0;
+            var width = glyph.width;
 
-            if (!glyph.isInFont && !font.missingFile) {
-              x += charWidth;
-              continue;
+            if (vertical) {
+              var vx = void 0;
+              var vmetric = glyph.vmetric || defaultVMetrics;
+              vx = glyph.vmetric ? vmetric[1] : width * 0.5;
+              vx = -vx * widthAdvanceScale;
+              var vy = vmetric[2] * widthAdvanceScale;
+              width = vmetric ? -vmetric[0] : width;
+              scaledX = vx / fontSizeScale;
+              scaledY = (x + vy) / fontSizeScale;
+            } else {
+              scaledX = x / fontSizeScale;
+              scaledY = 0;
             }
 
-            current.xcoords.push(current.x + x);
-            current.tspan.textContent += character;
+            if (glyph.isInFont || font.missingFile) {
+              current.xcoords.push(current.x + scaledX);
+
+              if (vertical) {
+                current.ycoords.push(-current.y + scaledY);
+              }
+
+              current.tspan.textContent += character;
+            } else {}
+
+            var charWidth = void 0;
+
+            if (vertical) {
+              charWidth = width * widthAdvanceScale - spacing * fontDirection;
+            } else {
+              charWidth = width * widthAdvanceScale + spacing * fontDirection;
+            }
+
             x += charWidth;
           }
         } catch (err) {
@@ -22977,14 +23127,20 @@ exports.SVGGraphics = SVGGraphics;
           _iterator4.f();
         }
 
+        current.tspan.setAttributeNS(null, "x", current.xcoords.map(pf).join(" "));
+
         if (vertical) {
-          current.y -= x * textHScale;
+          current.tspan.setAttributeNS(null, "y", current.ycoords.map(pf).join(" "));
+        } else {
+          current.tspan.setAttributeNS(null, "y", pf(-current.y));
+        }
+
+        if (vertical) {
+          current.y -= x;
         } else {
           current.x += x * textHScale;
         }
 
-        current.tspan.setAttributeNS(null, "x", current.xcoords.map(pf).join(" "));
-        current.tspan.setAttributeNS(null, "y", pf(-current.y));
         current.tspan.setAttributeNS(null, "font-family", current.fontFamily);
         current.tspan.setAttributeNS(null, "font-size", "".concat(pf(current.fontSize), "px"));
 
@@ -23088,6 +23244,7 @@ exports.SVGGraphics = SVGGraphics;
         current.tspan = this.svgFactory.createElement("svg:tspan");
         current.tspan.setAttributeNS(null, "y", pf(-current.y));
         current.xcoords = [];
+        current.ycoords = [];
       }
     }, {
       key: "endText",
@@ -23143,6 +23300,7 @@ exports.SVGGraphics = SVGGraphics;
         this.current.fillColor = _util.Util.makeCssRgb(r, g, b);
         this.current.tspan = this.svgFactory.createElement("svg:tspan");
         this.current.xcoords = [];
+        this.current.ycoords = [];
       }
     }, {
       key: "setStrokeColorN",
@@ -24358,7 +24516,7 @@ var PDFNodeStreamRangeReader = /*#__PURE__*/function (_BaseRangeReader) {
       _this4._httpHeaders[property] = value;
     }
 
-    _this4._httpHeaders["Range"] = "bytes=".concat(start, "-").concat(end - 1);
+    _this4._httpHeaders.Range = "bytes=".concat(start, "-").concat(end - 1);
 
     var handleResponse = function handleResponse(response) {
       if (response.statusCode === 404) {
