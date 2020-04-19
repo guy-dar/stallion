@@ -1,1 +1,8 @@
 dist: xenial
+install:
+  - apt-get update
+  - apt-get install -yq firefox
+  - rm -rf /var/lib/apt/lists/*
+  - npm install -g npm@latest
+  - npm install -g gulp-cli
+  - npm install
