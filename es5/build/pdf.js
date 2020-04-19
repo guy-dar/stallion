@@ -14055,12 +14055,23 @@ var SelectionHeuristics = /*#__PURE__*/function () {
     _classCallCheck(this, SelectionHeuristics);
 
     this._maxRegularTextLen = 20;
+    this.reference_regexp = /^([A-Za-z\- \,]+)\.(.+)\.(.+)$/;
   }
 
   _createClass(SelectionHeuristics, [{
+    key: "removeSpecial",
+    value: function removeSpecial(s) {
+      return s.replace(/[^\w\s]/gi, '');
+    }
+  }, {
+    key: "normalizeSelected",
+    value: function normalizeSelected(s) {
+      return this.removeSpecial(s).toLowerCase();
+    }
+  }, {
     key: "selectionType",
     value: function selectionType(selection) {
-      if (selection.length > this._maxRegularTextLen) {
+      if (this.reference_regexp.exec(selection)) {
         return "reference";
       }
 

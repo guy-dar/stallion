@@ -4033,7 +4033,15 @@ function scrollIntoView(element, spot) {
 
 function makeDraggable(elmnt) {
   var dragElements = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var containment = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   if (!dragElements) dragElements = [elmnt];
+
+  var _fixContainment = fixContainment(elmnt.offsetLeft, elmnt.offsetTop),
+      top = _fixContainment.top,
+      left = _fixContainment.left;
+
+  elmnt.style.left = left + "px";
+  elmnt.style.top = top + "px";
 
   for (var i = 0; i < dragElements.length; i++) {
     dragElements[i].onmousedown = dragMouseDown;
@@ -4057,6 +4065,22 @@ function makeDraggable(elmnt) {
     }
   }
 
+  function fixContainment(left, top) {
+    if (containment) {
+      var upperLeft = elmnt.parentNode.offsetWidth - elmnt.offsetWidth;
+      var upperTop = elmnt.parentNode.offsetHeight - elmnt.offsetHeight;
+      if (top >= 0) top = 0;
+      if (left >= 0) left = 0;
+      if (left < upperLeft) left = upperLeft;
+      if (top < upperTop) top = upperTop;
+    }
+
+    return {
+      top: top,
+      left: left
+    };
+  }
+
   function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
@@ -4066,6 +4090,11 @@ function makeDraggable(elmnt) {
     pos4 = e.clientY;
     var top = elmnt.offsetTop - pos2;
     var left = elmnt.offsetLeft - pos1;
+
+    var _fixContainment2 = fixContainment(left, top),
+        left = _fixContainment2.left,
+        top = _fixContainment2.top;
+
     elmnt.style.top = top + "px";
     elmnt.style.left = left + "px";
   }
@@ -4105,7 +4134,7 @@ function peekView(element, spot, pageIdx, pdfDocument) {
     newPage.appendTo(iframeDoc);
     newPage[0].style.top = -spot.top + "px";
     newPage[0].style.left = -spot.left + "px";
-    makeDraggable(newPage[0]);
+    makeDraggable(newPage[0], null, true);
     newPage.find(".textLayer span:not(:has(*))").not(".highlight").remove();
     peekBoxContainer.classList.remove("hidden");
     makeDraggable(peekBoxContainer);
@@ -8199,54 +8228,17 @@ var _ui_utils = __webpack_require__(5);
 
 var _heuristics = __webpack_require__(21);
 
+function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function getReferenceInfo(selection) {
-  var url = "https://api.crossref.org/works?query.bibliographic=" + encodeURI(selection);
-  var xhr = new XMLHttpRequest();
-  console.log(selection);
-  selection = selection.replace(/\s+/g, ' ');
-  xhr.open('GET', url);
-  xhr.responseType = 'json';
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4) {
-      var json = xhr.response;
-      var item = json.message.items[0];
-      console.log(json);
-      $("#peekBoxContainer")[0].classList.remove("hidden");
-      var iframeDoc = $("#peekBox")[0].contentDocument.documentElement;
-      iframeDoc.innerHTML = "<body></body>";
-      var iframeBody = iframeDoc.getElementsByTagName("body")[0];
-      iframeBody.style.backgroundColor = "white";
-      var title_span = $("<div>");
-      title_span.text("Title ");
-      title_span.append(item.title);
-      title_span.appendTo(iframeBody);
-      var a_href_span = $("<div>");
-      a_href_span.text("URL ");
-      var a_href = $("<a>");
-      a_href.attr("href", item.URL);
-      a_href.append(item.URL);
-      a_href.appendTo(a_href_span);
-      a_href_span.appendTo(iframeBody);
-      var ref_count_span = $("<div>");
-      ref_count_span.text("References Count ");
-      ref_count_span.append(item["references-count"]);
-      ref_count_span.appendTo(iframeBody);
-      var cite_span = $("<div>");
-      cite_span.text("Cite Count ");
-      cite_span.append(item['is-referenced-by-count']);
-      cite_span.appendTo(iframeBody);
-    }
-  };
-
-  xhr.send();
-}
 
 var PDFSuperFindBar = /*#__PURE__*/function () {
   function PDFSuperFindBar(options, eventBus) {
@@ -8317,6 +8309,32 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
       if (window.getSelection) {
         var selection = window.getSelection().toString();
 
+        try {
+          var contents = window.getSelection().getRangeAt(0).extractContents();
+          var children = contents.children;
+          var sTexts = [];
+
+          var _iterator = _createForOfIteratorHelper(children),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var child = _step.value;
+              sTexts.push(child.innerText);
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+
+          var multilineSelection = sTexts.join(" ");
+        } catch (e) {
+          console.log(e);
+          console.log("Multiline selection error. Perhaps not supported!");
+          var multilineSelection = selection;
+        }
+
         if (window.getSelection().empty) {
           window.getSelection().empty();
         } else if (window.getSelection().removeAllRanges) {
@@ -8324,12 +8342,20 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
         }
       }
 
-      return selection;
+      console.log(selection);
+      return {
+        selection: selection,
+        multilineSelection: multilineSelection
+      };
     }
   }, {
     key: "dblSlash",
     value: function dblSlash() {
-      var selection = this.deselect();
+      var _this$deselect = this.deselect(),
+          selection = _this$deselect.selection,
+          multilineSelection = _this$deselect.multilineSelection;
+
+      console.log(multilineSelection);
 
       if (selection == '') {
         this.findField.value = "fpeek ";
@@ -8338,12 +8364,73 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
       }
 
       if (this.select_heuristics.selectionType(selection) == 'reference') {
-        getReferenceInfo(selection);
+        this.getReferenceInfo(multilineSelection);
       } else {
         var query = "fpeek " + selection;
         this.findField.value = query;
         this.dispatchEvent("super");
       }
+    }
+  }, {
+    key: "getReferenceInfo",
+    value: function getReferenceInfo(selection) {
+      var abstract_url = 'https://api.semanticscholar.org/v1/paper/';
+      var url = "https://api.crossref.org/works?query.bibliographic=";
+      selection = selection.replace(/\s+/g, ' ');
+      console.log(selection);
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url + encodeURI(selection));
+      xhr.responseType = 'json';
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+          var json = xhr.response;
+          var item = json.message.items[0];
+          console.log(json);
+          $("#peekBoxContainer")[0].classList.remove("hidden");
+          var iframeDoc = $("#peekBox")[0].contentDocument.documentElement;
+          iframeDoc.innerHTML = "<body></body>";
+          var iframeBody = iframeDoc.getElementsByTagName("body")[0];
+          iframeBody.style.backgroundColor = "white";
+          var title_span = $("<div>");
+          title_span.text("Title ");
+          title_span.append(item.title);
+          title_span.appendTo(iframeBody);
+          var a_href_span = $("<div>");
+          a_href_span.text("URL ");
+          var a_href = $("<a>");
+          a_href.attr("href", item.URL);
+          a_href.append(item.URL);
+          a_href.appendTo(a_href_span);
+          a_href_span.appendTo(iframeBody);
+          var ref_count_span = $("<div>");
+          ref_count_span.text("References Count ");
+          ref_count_span.append(item["references-count"]);
+          ref_count_span.appendTo(iframeBody);
+          var cite_span = $("<div>");
+          cite_span.text("Cite Count ");
+          cite_span.append(item['is-referenced-by-count']);
+          cite_span.appendTo(iframeBody);
+          var abs_span = $("<div>");
+          abs_span.html("<b>Abstract</b><br/> ");
+          var abstract_xhr = new XMLHttpRequest();
+          abstract_xhr.open('GET', abstract_url + item['DOI']);
+          console.log(abstract_url + item['DOI']);
+          abstract_xhr.responseType = 'json';
+
+          abstract_xhr.onreadystatechange = function () {
+            if (abstract_xhr.readyState == 4) {
+              var abs_json = abstract_xhr.response;
+              abs_span.append(abs_json['abstract']);
+              abs_span.appendTo(iframeBody);
+            }
+          };
+
+          abstract_xhr.send();
+        }
+      };
+
+      xhr.send();
     }
   }, {
     key: "updateUIState",
@@ -8780,12 +8867,23 @@ var SelectionHeuristics = /*#__PURE__*/function () {
     _classCallCheck(this, SelectionHeuristics);
 
     this._maxRegularTextLen = 20;
+    this.reference_regexp = /^([A-Za-z\- \,]+)\.(.+)\.(.+)$/;
   }
 
   _createClass(SelectionHeuristics, [{
+    key: "removeSpecial",
+    value: function removeSpecial(s) {
+      return s.replace(/[^\w\s]/gi, '');
+    }
+  }, {
+    key: "normalizeSelected",
+    value: function normalizeSelected(s) {
+      return this.removeSpecial(s).toLowerCase();
+    }
+  }, {
     key: "selectionType",
     value: function selectionType(selection) {
-      if (selection.length > this._maxRegularTextLen) {
+      if (this.reference_regexp.exec(selection)) {
         return "reference";
       }
 

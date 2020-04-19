@@ -3494,10 +3494,19 @@ exports.PageHeuristics = PageHeuristics;
 class SelectionHeuristics {
   constructor() {
     this._maxRegularTextLen = 20;
+    this.reference_regexp = /^([A-Za-z\- \,]+)\.(.+)\.(.+)$/;
+  }
+
+  removeSpecial(s) {
+    return s.replace(/[^\w\s]/gi, '');
+  }
+
+  normalizeSelected(s) {
+    return this.removeSpecial(s).toLowerCase();
   }
 
   selectionType(selection) {
-    if (selection.length > this._maxRegularTextLen) {
+    if (this.reference_regexp.exec(selection)) {
       return "reference";
     }
 

@@ -2943,8 +2943,14 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
   parent.scrollTop = offsetY;
 }
 
-function makeDraggable(elmnt, dragElements = null) {
+function makeDraggable(elmnt, dragElements = null, containment = false) {
   if (!dragElements) dragElements = [elmnt];
+  var {
+    top,
+    left
+  } = fixContainment(elmnt.offsetLeft, elmnt.offsetTop);
+  elmnt.style.left = left + "px";
+  elmnt.style.top = top + "px";
 
   for (var i = 0; i < dragElements.length; i++) {
     dragElements[i].onmousedown = dragMouseDown;
@@ -2966,6 +2972,22 @@ function makeDraggable(elmnt, dragElements = null) {
     for (var i = 0; i < dragElements.length; i++) dragElements[i].onmousemove = elementDrag;
   }
 
+  function fixContainment(left, top) {
+    if (containment) {
+      var upperLeft = elmnt.parentNode.offsetWidth - elmnt.offsetWidth;
+      var upperTop = elmnt.parentNode.offsetHeight - elmnt.offsetHeight;
+      if (top >= 0) top = 0;
+      if (left >= 0) left = 0;
+      if (left < upperLeft) left = upperLeft;
+      if (top < upperTop) top = upperTop;
+    }
+
+    return {
+      top,
+      left
+    };
+  }
+
   function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
@@ -2975,6 +2997,10 @@ function makeDraggable(elmnt, dragElements = null) {
     pos4 = e.clientY;
     var top = elmnt.offsetTop - pos2;
     var left = elmnt.offsetLeft - pos1;
+    var {
+      left,
+      top
+    } = fixContainment(left, top);
     elmnt.style.top = top + "px";
     elmnt.style.left = left + "px";
   }
@@ -3012,7 +3038,7 @@ function peekView(element, spot, pageIdx, pdfDocument) {
     newPage.appendTo(iframeDoc);
     newPage[0].style.top = -spot.top + "px";
     newPage[0].style.left = -spot.left + "px";
-    makeDraggable(newPage[0]);
+    makeDraggable(newPage[0], null, true);
     newPage.find(".textLayer span:not(:has(*))").not(".highlight").remove();
     peekBoxContainer.classList.remove("hidden");
     makeDraggable(peekBoxContainer);
@@ -6496,49 +6522,6 @@ var _ui_utils = __webpack_require__(2);
 
 var _heuristics = __webpack_require__(18);
 
-function getReferenceInfo(selection) {
-  var url = "https://api.crossref.org/works?query.bibliographic=" + encodeURI(selection);
-  const xhr = new XMLHttpRequest();
-  console.log(selection);
-  selection = selection.replace(/\s+/g, ' ');
-  xhr.open('GET', url);
-  xhr.responseType = 'json';
-
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4) {
-      var json = xhr.response;
-      var item = json.message.items[0];
-      console.log(json);
-      $("#peekBoxContainer")[0].classList.remove("hidden");
-      var iframeDoc = $("#peekBox")[0].contentDocument.documentElement;
-      iframeDoc.innerHTML = "<body></body>";
-      var iframeBody = iframeDoc.getElementsByTagName("body")[0];
-      iframeBody.style.backgroundColor = "white";
-      var title_span = $("<div>");
-      title_span.text("Title ");
-      title_span.append(item.title);
-      title_span.appendTo(iframeBody);
-      var a_href_span = $("<div>");
-      a_href_span.text("URL ");
-      var a_href = $("<a>");
-      a_href.attr("href", item.URL);
-      a_href.append(item.URL);
-      a_href.appendTo(a_href_span);
-      a_href_span.appendTo(iframeBody);
-      var ref_count_span = $("<div>");
-      ref_count_span.text("References Count ");
-      ref_count_span.append(item["references-count"]);
-      ref_count_span.appendTo(iframeBody);
-      var cite_span = $("<div>");
-      cite_span.text("Cite Count ");
-      cite_span.append(item['is-referenced-by-count']);
-      cite_span.appendTo(iframeBody);
-    }
-  };
-
-  xhr.send();
-}
-
 class PDFSuperFindBar {
   constructor(options, eventBus, l10n = _ui_utils.NullL10n) {
     this.opened = false;
@@ -6596,6 +6579,22 @@ class PDFSuperFindBar {
     if (window.getSelection) {
       var selection = window.getSelection().toString();
 
+      try {
+        var contents = window.getSelection().getRangeAt(0).extractContents();
+        var children = contents.children;
+        var sTexts = [];
+
+        for (let child of children) {
+          sTexts.push(child.innerText);
+        }
+
+        var multilineSelection = sTexts.join(" ");
+      } catch (e) {
+        console.log(e);
+        console.log("Multiline selection error. Perhaps not supported!");
+        var multilineSelection = selection;
+      }
+
       if (window.getSelection().empty) {
         window.getSelection().empty();
       } else if (window.getSelection().removeAllRanges) {
@@ -6603,11 +6602,19 @@ class PDFSuperFindBar {
       }
     }
 
-    return selection;
+    console.log(selection);
+    return {
+      selection,
+      multilineSelection
+    };
   }
 
   dblSlash() {
-    var selection = this.deselect();
+    var {
+      selection,
+      multilineSelection
+    } = this.deselect();
+    console.log(multilineSelection);
 
     if (selection == '') {
       this.findField.value = "fpeek ";
@@ -6616,12 +6623,72 @@ class PDFSuperFindBar {
     }
 
     if (this.select_heuristics.selectionType(selection) == 'reference') {
-      getReferenceInfo(selection);
+      this.getReferenceInfo(multilineSelection);
     } else {
       var query = "fpeek " + selection;
       this.findField.value = query;
       this.dispatchEvent("super");
     }
+  }
+
+  getReferenceInfo(selection) {
+    var abstract_url = 'https://api.semanticscholar.org/v1/paper/';
+    var url = "https://api.crossref.org/works?query.bibliographic=";
+    selection = selection.replace(/\s+/g, ' ');
+    console.log(selection);
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url + encodeURI(selection));
+    xhr.responseType = 'json';
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState == 4) {
+        var json = xhr.response;
+        var item = json.message.items[0];
+        console.log(json);
+        $("#peekBoxContainer")[0].classList.remove("hidden");
+        var iframeDoc = $("#peekBox")[0].contentDocument.documentElement;
+        iframeDoc.innerHTML = "<body></body>";
+        var iframeBody = iframeDoc.getElementsByTagName("body")[0];
+        iframeBody.style.backgroundColor = "white";
+        var title_span = $("<div>");
+        title_span.text("Title ");
+        title_span.append(item.title);
+        title_span.appendTo(iframeBody);
+        var a_href_span = $("<div>");
+        a_href_span.text("URL ");
+        var a_href = $("<a>");
+        a_href.attr("href", item.URL);
+        a_href.append(item.URL);
+        a_href.appendTo(a_href_span);
+        a_href_span.appendTo(iframeBody);
+        var ref_count_span = $("<div>");
+        ref_count_span.text("References Count ");
+        ref_count_span.append(item["references-count"]);
+        ref_count_span.appendTo(iframeBody);
+        var cite_span = $("<div>");
+        cite_span.text("Cite Count ");
+        cite_span.append(item['is-referenced-by-count']);
+        cite_span.appendTo(iframeBody);
+        var abs_span = $("<div>");
+        abs_span.html("<b>Abstract</b><br/> ");
+        var abstract_xhr = new XMLHttpRequest();
+        abstract_xhr.open('GET', abstract_url + item['DOI']);
+        console.log(abstract_url + item['DOI']);
+        abstract_xhr.responseType = 'json';
+
+        abstract_xhr.onreadystatechange = () => {
+          if (abstract_xhr.readyState == 4) {
+            var abs_json = abstract_xhr.response;
+            abs_span.append(abs_json['abstract']);
+            abs_span.appendTo(iframeBody);
+          }
+        };
+
+        abstract_xhr.send();
+      }
+    };
+
+    xhr.send();
   }
 
   updateUIState(state, previous, matchesCount) {
@@ -7003,10 +7070,19 @@ exports.PageHeuristics = PageHeuristics;
 class SelectionHeuristics {
   constructor() {
     this._maxRegularTextLen = 20;
+    this.reference_regexp = /^([A-Za-z\- \,]+)\.(.+)\.(.+)$/;
+  }
+
+  removeSpecial(s) {
+    return s.replace(/[^\w\s]/gi, '');
+  }
+
+  normalizeSelected(s) {
+    return this.removeSpecial(s).toLowerCase();
   }
 
   selectionType(selection) {
-    if (selection.length > this._maxRegularTextLen) {
+    if (this.reference_regexp.exec(selection)) {
       return "reference";
     }
 
