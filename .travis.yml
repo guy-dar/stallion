@@ -1,7 +1,7 @@
 dist: xenial
 language: node_js
 before_install:
-  - apt-get update
+  # - apt-get update
   - apt-get install -yq firefox
   - rm -rf /var/lib/apt/lists/*
 install:
