@@ -132,14 +132,18 @@ class PDFSuperFindBar {
 
   getReferenceInfo(selection){
     // selection = this.select_heuristics.normalizeSelected(selection);
-  
-    var url = "https://api.crossref.org/works?query.bibliographic=" + encodeURI(selection);
+
+    var abstract_url = 'https://api.semanticscholar.org/v1/paper/';
+    var url = "https://api.crossref.org/works?query.bibliographic=";
     // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
-    const xhr = new XMLHttpRequest();
-    console.log(selection);  
     selection = selection.replace(/\s+/g, ' ')
-    xhr.open('GET', url);
+    console.log(selection);  
+
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url + encodeURI(selection));
     xhr.responseType = 'json';
+
     xhr.onreadystatechange = ()=>{
       if(xhr.readyState == 4){
         var json = xhr.response;
@@ -178,8 +182,22 @@ class PDFSuperFindBar {
         cite_span.text("Cite Count ");
         cite_span.append( item['is-referenced-by-count']);        
         cite_span.appendTo(iframeBody);
-  
-  
+        
+        // Abstract
+        var abs_span = $("<div>");
+        abs_span.html("<b>Abstract</b><br/> ");
+        var abstract_xhr = new XMLHttpRequest();
+        abstract_xhr.open('GET', abstract_url + item['DOI']);
+        console.log(abstract_url + item['DOI'])
+        abstract_xhr.responseType = 'json';
+        abstract_xhr.onreadystatechange = ()=>{
+          if(abstract_xhr.readyState == 4){
+            var abs_json = abstract_xhr.response;
+            abs_span.append(abs_json['abstract']);        
+            abs_span.appendTo(iframeBody);
+          }
+        };
+        abstract_xhr.send();   
       }
     };
     xhr.send();
