@@ -1,11 +1,7 @@
 
 import { FindState } from "./pdf_find_controller.js";
-import { NullL10n } from "./ui_utils.js";
+import { NullL10n, getPeekBox } from "./ui_utils.js";
 import {SelectionHeuristics} from "../src/shared/heuristics.js"
-
-
-
-
 
 
 
@@ -43,6 +39,7 @@ class PDFSuperFindBar {
     });
 
     this.findNextButton.addEventListener("click", () => {
+      
       this.dispatchEvent("super", false);
     });
 
@@ -137,7 +134,7 @@ class PDFSuperFindBar {
     var url = "https://api.crossref.org/works?query.bibliographic=";
     // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
     selection = selection.replace(/\s+/g, ' ')
-    console.log(selection);  
+    var {iframeDoc} = getPeekBox();
 
 
     const xhr = new XMLHttpRequest();
@@ -149,17 +146,13 @@ class PDFSuperFindBar {
         var json = xhr.response;
         var item = json.message.items[0];
         console.log(json);
-        $("#peekBoxContainer")[0].classList.remove("hidden");
-        var iframeDoc = $("#peekBox")[0].contentDocument.documentElement
-        iframeDoc.innerHTML = "<body></body>";
-        var iframeBody = iframeDoc.getElementsByTagName("body")[0];
-        iframeBody.style.backgroundColor = "white";
+        iframeDoc.style.backgroundColor = "white";
   
         // Title
         var title_span = $("<div>");
         title_span.text("Title ");
         title_span.append( item.title);        
-        title_span.appendTo(iframeBody);
+        title_span.appendTo(iframeDoc);
   
   
         // URL to item
@@ -169,19 +162,19 @@ class PDFSuperFindBar {
         a_href.attr("href", item.URL);        
         a_href.append( item.URL);        
         a_href.appendTo(a_href_span);
-        a_href_span.appendTo(iframeBody);
+        a_href_span.appendTo(iframeDoc);
   
         // Reference Count
         var ref_count_span = $("<div>");
         ref_count_span.text("References Count ");
         ref_count_span.append( item["references-count"]);        
-        ref_count_span.appendTo(iframeBody);
+        ref_count_span.appendTo(iframeDoc);
   
         // Citation Count
         var cite_span = $("<div>");
         cite_span.text("Cite Count ");
         cite_span.append( item['is-referenced-by-count']);        
-        cite_span.appendTo(iframeBody);
+        cite_span.appendTo(iframeDoc);
         
         // Abstract
         var abs_span = $("<div>");
@@ -194,7 +187,7 @@ class PDFSuperFindBar {
           if(abstract_xhr.readyState == 4){
             var abs_json = abstract_xhr.response;
             abs_span.append(abs_json['abstract']);        
-            abs_span.appendTo(iframeBody);
+            abs_span.appendTo(iframeDoc);
           }
         };
         abstract_xhr.send();   

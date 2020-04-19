@@ -237,22 +237,52 @@ function makeDraggable(elmnt, dragElements = null,
 
 }
 
+  var _pinnedPeekBoxes = 0;
+  function getPeekBox(reveal = true, clearBefore = true){
+    var peekBoxContainer = document.getElementById("peekBoxContainer");
+    makeDraggable(peekBoxContainer); 
+    var peekBox = $("#peekBoxContainer .peekBox")[0];
+    var iframeBody = peekBox.contentDocument.documentElement.getElementsByTagName("body")[0]; 
+    var peekBoxPin = $("#peekBoxContainer .pinPeekBox")[0];
 
+    peekBoxPin.onclick = ()=>{
+      var newPeekBoxContainer = $(peekBoxContainer).clone();
+      newPeekBoxContainer.appendTo(peekBoxContainer.parentElement);
+      peekBoxContainer.id = "peekBoxContainer_" + _pinnedPeekBoxes;
+      getPeekBox()
+      _pinnedPeekBoxes += 1;
+    }
 
+    if(clearBefore)
+      iframeBody.innerHTML = '<div></div>';
+    
+    var iframeDoc = iframeBody.children[0];
+
+    if(reveal)
+      peekBoxContainer.classList.remove("hidden");
+
+    iframeBody.onmousedown =() =>{
+      peekBoxContainer.style.backgroundColor = "black"
+    };
+
+    iframeBody.onmouseup =() =>{
+      peekBoxContainer.style.backgroundColor = "gray"
+    };
+    
+
+    return {iframeDoc, peekBoxContainer};
+  }
 
 function peekView(element, spot, pageIdx, pdfDocument) {
   
-  var peekBoxContainer = document.getElementById("peekBoxContainer");
-  
-  var iframeDoc = $("#peekBox")[0].contentDocument.documentElement.getElementsByTagName("body")[0];
+  var {iframeDoc} = getPeekBox();
+  iframeDoc.id = "peekBoxPage"
   iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
-  iframeDoc.id = "peekBox"  //GUY TODO: confusing?
   var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"']");  
   var canvasOriginal = pageOriginal.find("canvas")
   
   // Render the PDF
   pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-    // Display page on the existing canvas with 100% scale.
       var viewport = pdfPage.getViewport({ scale: 2.5 });   //GUY TODO: Understand what's the right scale
       var canvas = canvasOriginal[0];
       canvas.width = viewport.width;
@@ -268,14 +298,14 @@ function peekView(element, spot, pageIdx, pdfDocument) {
       var newPage = pageOriginal.clone();
       var newCanvas = newPage.find("canvas");
       newCanvas[0].getContext('2d').drawImage(canvasOriginal[0], 0, 0);
-      newPage[0].style.position = "absolute"; // GUY TODO: I'm going to HTMHell
+      iframeDoc.style.position = "absolute"; // GUY TODO: I'm going to HTMHell
+      
       newPage.appendTo(iframeDoc);
-      newPage[0].style.top = (-spot.top) + "px";
-      newPage[0].style.left = (-spot.left) + "px";
-      makeDraggable(newPage[0], null, true); //, $(iframeDoc).find(".page, .textLayer, canvas"));
-      newPage.find(".textLayer span:not(:has(*))").not(".highlight").remove(); // I don't like you.
-      peekBoxContainer.classList.remove("hidden");
-      makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over
+      iframeDoc.style.top = (-spot.top) + "px";
+      iframeDoc.style.left = (-spot.left) + "px";
+      makeDraggable(iframeDoc, null, true); //, $(iframeDoc).find(".page, .textLayer, canvas"));
+      $(iframeDoc).find(".textLayer span:not(:has(*))").not(".highlight").remove(); // I don't like you.
+
     })
   // .catch(function(reason) {
   //   console.error("Error: " + reason);
@@ -1109,7 +1139,15 @@ function moveToEndOfArray(arr, condition) {
   }
 }
 
+
+function moveElement(el, x, y){
+  el.style.top = (el.offsetTop+y) + "px";
+  el.style.left = (el.offsetLeft + x) + "px";
+}
+
 export {
+  moveElement,
+  getPeekBox,
   AutoPrintRegExp,
   CSS_UNITS,
   DEFAULT_SCALE_VALUE,

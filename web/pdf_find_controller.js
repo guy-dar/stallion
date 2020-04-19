@@ -15,7 +15,7 @@
 
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
-import { scrollIntoView, peekView } from "./ui_utils.js";
+import { scrollIntoView, peekView, moveElement} from "./ui_utils.js";
 
 const FindState = {
   FOUND: 0,
@@ -76,10 +76,27 @@ class PDFFindController {
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
     window.onkeydown = function(e){
-      // console.log(e.keyCode)
+      console.log(e.keyCode)
       if(e.keyCode == 27){
         document.getElementById("peekBoxContainer").classList.add('hidden');
       }
+      
+      if(e.keyCode == 73){
+        moveElement(document.getElementById("peekBoxContainer"), 0, -10);
+      }
+
+      if(e.keyCode == 74){
+        moveElement(document.getElementById("peekBoxContainer"), -10, 0);
+      }
+
+      if(e.keyCode == 75){
+        moveElement(document.getElementById("peekBoxContainer"),  0, 10);
+      }
+
+      if(e.keyCode == 76){
+        moveElement(document.getElementById("peekBoxContainer"), 10, 0);
+      }
+
     };
   }
   
@@ -218,7 +235,6 @@ class PDFFindController {
 
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
-      $("#peekBox").html('');
       document.getElementById('peekBoxContainer').classList.add("hidden");
     }
 
