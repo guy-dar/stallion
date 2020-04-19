@@ -161,11 +161,16 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
-function makeDraggable(elmnt, dragElements = null){
-    /////  From W3Schools /////
+function makeDraggable(elmnt, dragElements = null,
+        containment = false){
+    
+          /////  From W3Schools /////
     if(!dragElements)
         dragElements = [elmnt];
     
+    var {top, left} = fixContainment(elmnt.offsetLeft, elmnt.offsetTop);
+    elmnt.style.left = left + "px";
+    elmnt.style.top = top + "px";
     for(var i=0; i < dragElements.length; i++){
         dragElements[i].onmousedown = dragMouseDown;
     }
@@ -184,6 +189,22 @@ function makeDraggable(elmnt, dragElements = null){
           dragElements[i].onmousemove = elementDrag;
       
     }
+
+    function fixContainment(left, top){
+      if(containment){
+        var upperLeft = elmnt.parentNode.offsetWidth - elmnt.offsetWidth;
+        var upperTop = elmnt.parentNode.offsetHeight - elmnt.offsetHeight;
+        if(top >=0)
+          top = 0;
+        if(left >=0)
+          left = 0;
+          if(left < upperLeft)
+            left = upperLeft;
+          if(top < upperTop)
+            top = upperTop;
+      }
+      return {top, left};
+    }
   
     function elementDrag(e) {
       e = e || window.event;
@@ -196,6 +217,8 @@ function makeDraggable(elmnt, dragElements = null){
       // set the element's new position:
       var top = (elmnt.offsetTop - pos2)
       var left = (elmnt.offsetLeft - pos1)
+      
+      var {left,  top} = fixContainment(left, top);
       
       elmnt.style.top = top + "px";
       elmnt.style.left = left + "px";  
@@ -249,7 +272,7 @@ function peekView(element, spot, pageIdx, pdfDocument) {
       newPage.appendTo(iframeDoc);
       newPage[0].style.top = (-spot.top) + "px";
       newPage[0].style.left = (-spot.left) + "px";
-      makeDraggable(newPage[0]); //, $(iframeDoc).find(".page, .textLayer, canvas"));
+      makeDraggable(newPage[0], null, true); //, $(iframeDoc).find(".page, .textLayer, canvas"));
       newPage.find(".textLayer span:not(:has(*))").not(".highlight").remove(); // I don't like you.
       peekBoxContainer.classList.remove("hidden");
       makeDraggable(peekBoxContainer);  // GUY TODO: this is repeated over and over

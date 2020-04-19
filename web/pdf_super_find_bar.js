@@ -4,59 +4,7 @@ import { NullL10n } from "./ui_utils.js";
 import {SelectionHeuristics} from "../src/shared/heuristics.js"
 
 
-function getReferenceInfo(selection){
-  var url = "https://api.crossref.org/works?query.bibliographic=" + encodeURI(selection);
-  const xhr = new XMLHttpRequest();
-  console.log(selection);  
 
-  selection = selection.replace(/\s+/g, ' ')
-  xhr.open('GET', url);
-  xhr.responseType = 'json';
-  xhr.onreadystatechange = ()=>{
-    if(xhr.readyState == 4){
-      var json = xhr.response;
-      var item = json.message.items[0];
-      console.log(json);
-      $("#peekBoxContainer")[0].classList.remove("hidden");
-      var iframeDoc = $("#peekBox")[0].contentDocument.documentElement
-      iframeDoc.innerHTML = "<body></body>";
-      var iframeBody = iframeDoc.getElementsByTagName("body")[0];
-      iframeBody.style.backgroundColor = "white";
-
-      // Title
-      var title_span = $("<div>");
-      title_span.text("Title ");
-      title_span.append( item.title);        
-      title_span.appendTo(iframeBody);
-
-
-      // URL to item
-      var a_href_span = $("<div>");
-      a_href_span.text("URL ");
-      var a_href = $("<a>");
-      a_href.attr("href", item.URL);        
-      a_href.append( item.URL);        
-      a_href.appendTo(a_href_span);
-      a_href_span.appendTo(iframeBody);
-
-      // Reference Count
-      var ref_count_span = $("<div>");
-      ref_count_span.text("References Count ");
-      ref_count_span.append( item["references-count"]);        
-      ref_count_span.appendTo(iframeBody);
-
-      // Citation Count
-      var cite_span = $("<div>");
-      cite_span.text("Cite Count ");
-      cite_span.append( item['is-referenced-by-count']);        
-      cite_span.appendTo(iframeBody);
-
-
-    }
-  };
-  xhr.send();
-
-}
 
 
 
@@ -129,39 +77,115 @@ class PDFSuperFindBar {
     });
   }
 
+
   deselect(){
     if (window.getSelection) {
+
       var selection = window.getSelection().toString();
+
+      try{
+              var contents = window.getSelection().getRangeAt(0).extractContents();
+              var children = contents.children;
+              var sTexts = [];
+              for(let child of children){
+                sTexts.push(child.innerText);
+              }
+              var multilineSelection = sTexts.join(" ")
+      }catch(e){
+        console.log(e)
+        console.log("Multiline selection error. Perhaps not supported!");
+        var multilineSelection = selection;
+      }
+
       if (window.getSelection().empty) {  // Chrome
         window.getSelection().empty();
       } else if (window.getSelection().removeAllRanges) {  // Firefox
         window.getSelection().removeAllRanges();
       }
     }
-    return selection;
+    console.log(selection)
+    return {selection, multilineSelection};
   }
 
   dblSlash(){
-    // De-select
-  var selection = this.deselect();
-  if(selection==''){
-    this.findField.value = "fpeek ";
-    this.open();
-    this.deselect();
+      // De-select
+      var {selection, multilineSelection} = this.deselect();
+      console.log(multilineSelection)
     
-  }
-  if(this.select_heuristics.selectionType(selection) == 'reference'){  
-    getReferenceInfo(selection);
-  }else{
-    // Process Selection
-    var query = "fpeek " + selection;
-    // Run query
-    this.findField.value = query;
-    this.dispatchEvent("super");
+      if(selection==''){
+        this.findField.value = "fpeek ";
+        this.open();
+        this.deselect();     
+    }
+
+    if(this.select_heuristics.selectionType(selection) == 'reference'){  
+        this.getReferenceInfo(multilineSelection);
+    } else {
+      // Process Selection
+      var query = "fpeek " + selection;
+      // Run query
+      this.findField.value = query;
+      this.dispatchEvent("super");
+    }
+
   }
 
-
+  getReferenceInfo(selection){
+    // selection = this.select_heuristics.normalizeSelected(selection);
+  
+    var url = "https://api.crossref.org/works?query.bibliographic=" + encodeURI(selection);
+    // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
+    const xhr = new XMLHttpRequest();
+    console.log(selection);  
+    selection = selection.replace(/\s+/g, ' ')
+    xhr.open('GET', url);
+    xhr.responseType = 'json';
+    xhr.onreadystatechange = ()=>{
+      if(xhr.readyState == 4){
+        var json = xhr.response;
+        var item = json.message.items[0];
+        console.log(json);
+        $("#peekBoxContainer")[0].classList.remove("hidden");
+        var iframeDoc = $("#peekBox")[0].contentDocument.documentElement
+        iframeDoc.innerHTML = "<body></body>";
+        var iframeBody = iframeDoc.getElementsByTagName("body")[0];
+        iframeBody.style.backgroundColor = "white";
+  
+        // Title
+        var title_span = $("<div>");
+        title_span.text("Title ");
+        title_span.append( item.title);        
+        title_span.appendTo(iframeBody);
+  
+  
+        // URL to item
+        var a_href_span = $("<div>");
+        a_href_span.text("URL ");
+        var a_href = $("<a>");
+        a_href.attr("href", item.URL);        
+        a_href.append( item.URL);        
+        a_href.appendTo(a_href_span);
+        a_href_span.appendTo(iframeBody);
+  
+        // Reference Count
+        var ref_count_span = $("<div>");
+        ref_count_span.text("References Count ");
+        ref_count_span.append( item["references-count"]);        
+        ref_count_span.appendTo(iframeBody);
+  
+        // Citation Count
+        var cite_span = $("<div>");
+        cite_span.text("Cite Count ");
+        cite_span.append( item['is-referenced-by-count']);        
+        cite_span.appendTo(iframeBody);
+  
+  
+      }
+    };
+    xhr.send();
+  
   }
+
 
   updateUIState(state, previous, matchesCount) {
     let notFound = false;
