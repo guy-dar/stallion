@@ -115,7 +115,7 @@ Please, visit their [repository](https://github.com/mozilla/pdf.js) for addition
 We base our contribution guidelines on those of PDF.js. Also, recall we build upon their code base and utilize changes in their repository. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide (see below).
 
 * [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
-* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
+* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future-Work)
 
 * PDF.js
 	* [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
