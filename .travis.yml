@@ -1,9 +1,12 @@
-dist: xenial
-apt: 
-  packages:
-     - build-essential 
-     - curl
-     
+# dist: xenial
+# apt: 
+#   packages:
+#      - build-essential 
+#      - curl
+language:  node_js 
+node_js:
+  - 8
+
 install:
   # - curl -sL https://deb.nodesource.com/setup_8.x | bash -
   # - apt-get install -y nodejs
