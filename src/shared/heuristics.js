@@ -98,7 +98,6 @@ class HeuristicsHelper{
         ctx.fillRect(x, y, w, h)
         ctx.fillStyle = fillStyle;
         ctx.restore();
-        // ctx.setTransform(oldTransform);
     }
 
 
@@ -177,6 +176,8 @@ class PageHeuristics{
 
 
     reportTextAction(ctx, fontData, scaledX, scaledY){
+        if(!this.debugMode)
+            return;
         var font = this.helper.fontNormalizer(fontData);
         var {e: x, f: y, a: scale} = ctx.getTransform(); //GUY TODO: As a matter of fact, a is only x's scale.
         var h = font.fontSize * scale;   // GUY TODO: Should it be scaled?
