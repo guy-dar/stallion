@@ -75,6 +75,9 @@ class PDFFindController {
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
+    
+    if(typeof window != "undefined")
+  {  
     window.onkeydown = function(e){
       if(e.keyCode == 27){
         document.getElementById("peekBoxContainer").classList.add('hidden');
@@ -97,6 +100,7 @@ class PDFFindController {
       }
 
     };
+  }
   }
   
   get highlightMatches() {
