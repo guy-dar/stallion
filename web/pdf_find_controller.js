@@ -686,7 +686,6 @@ class PDFFindController {
       this._dirtyMatch = false;
       this._selected.pageIdx = this._selected.matchIdx = -1;
       this._offset.pageIdx = this._peekMatches ? 0 : currentPageIndex;
-      console.log("Hi"+ this._offset.pageIdx)
       this._offset.matchIdx = null;
       this._offset.wrapped = false;
       this._resumePageIdx = null;
