@@ -76,7 +76,6 @@ class PDFFindController {
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
     window.onkeydown = function(e){
-      console.log(e.keyCode)
       if(e.keyCode == 27){
         document.getElementById("peekBoxContainer").classList.add('hidden');
       }
@@ -682,7 +681,8 @@ class PDFFindController {
       // Need to recalculate the matches, reset everything.
       this._dirtyMatch = false;
       this._selected.pageIdx = this._selected.matchIdx = -1;
-      this._offset.pageIdx = currentPageIndex;
+      this._offset.pageIdx = this._peekMatches ? 0 : currentPageIndex;
+      console.log("Hi"+ this._offset.pageIdx)
       this._offset.matchIdx = null;
       this._offset.wrapped = false;
       this._resumePageIdx = null;
@@ -699,6 +699,7 @@ class PDFFindController {
         this._pendingFindMatches[i] = true;
         this._extractTextPromises[i].then(pageIdx => {
           delete this._pendingFindMatches[pageIdx];
+          console.log(this._matchIdx)
           if(isSuperMatch)
             this._calculateSuperMatch(pageIdx, newQuery, superQueryType);
           else

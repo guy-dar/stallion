@@ -165,10 +165,10 @@ function makeDraggable(elmnt, dragElements = null,
         containment = false){
     
           /////  From W3Schools /////
+          
     if(!dragElements)
         dragElements = [elmnt];
-    
-    var {top, left} = fixContainment(elmnt.offsetLeft, elmnt.offsetTop);
+    var {top, left} = fixContainment(elmnt, elmnt.offsetLeft, elmnt.offsetTop);
     elmnt.style.left = left + "px";
     elmnt.style.top = top + "px";
     for(var i=0; i < dragElements.length; i++){
@@ -190,7 +190,7 @@ function makeDraggable(elmnt, dragElements = null,
       
     }
 
-    function fixContainment(left, top){
+    function fixContainment(elmnt, left, top){
       if(containment){
         var upperLeft = elmnt.parentNode.offsetWidth - elmnt.offsetWidth;
         var upperTop = elmnt.parentNode.offsetHeight - elmnt.offsetHeight;
@@ -218,7 +218,7 @@ function makeDraggable(elmnt, dragElements = null,
       var top = (elmnt.offsetTop - pos2)
       var left = (elmnt.offsetLeft - pos1)
       
-      var {left,  top} = fixContainment(left, top);
+      var {left,  top} = fixContainment(elmnt, left, top);
       
       elmnt.style.top = top + "px";
       elmnt.style.left = left + "px";  
