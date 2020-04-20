@@ -1,18 +1,12 @@
-# dist: xenial
-# apt: 
-#   packages:
-#      - build-essential 
-#      - curl
 language:  node_js 
 node_js:
   - 12
 
 cache:
-  - node_modules
+  directories:
+    - node_modules
 
 install:
-  # - curl -sL https://deb.nodesource.com/setup_8.x | bash -
-  # - apt-get install -y nodejs
   - npm install -g npm@latest
   - npm install -g gulp-cli
   - npm install
