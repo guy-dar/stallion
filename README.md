@@ -9,11 +9,14 @@ It provides researchers with tools that make paper reading simpler. Some feature
 <br/>
 
 You can play around with our demo!
-[![Demo](docs/contents/images/demo_btn.png)](https://guyd1995.github.io/stallion/web/viewer.html)
+
+
+<a href="https://guyd1995.github.io/stallion/web/viewer.html"><img src="docs/contents/images/demo_btn.png" title="Demo" width="200" height="80"/></a>
 
 You can also visit us on our website: 
-[![Homepage](docs/contents/images/homepage_btn.png)](https://guyd1995.github.io/stallion)
 
+
+<a href="https://guyd1995.github.io/stallion"><img src="docs/contents/images/homepage_btn.png" title="Homepage" width="200" height="80"/></a>
 
 If you are experiencing trouble, please let us know.
 
