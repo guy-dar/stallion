@@ -15,8 +15,10 @@
 
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
-import { scrollIntoView, peekView, moveElement} from "./ui_utils.js";
-import {VisualHeuristics} from "../src/shared/heuristics.js" 
+import { scrollIntoView} from "./ui_utils.js";
+import { peekView } from "../src/stallion/ui/peekbox.js";
+import { moveElement } from "../src/stallion/ui/common.js";
+import {VisualHeuristics} from "../src/stallion/heuristics/visual.js" 
 const FindState = {
   FOUND: 0,
   NOT_FOUND: 1,
@@ -248,9 +250,7 @@ class PDFFindController {
     } else if (pageIndex === -1 || pageIndex !== this._selected.pageIdx) {
       return true;
     }
-
-    const spot = this.visual_heuristics.estimateTextBlock(pageIndex, element);
-    peekView(element, spot, pageIndex, this._pdfDocument);
+    peekView(element, pageIndex, this._pdfDocument);
     return true;
   }
 

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import { parseQueryString, popupOneTimeBackButton } from "./ui_utils.js";
-
+import { parseQueryString } from "./ui_utils.js";
+import {popupOneTimeBackButton} from "../src/stallion/ui/common.js"
 /**
  * @typedef {Object} PDFLinkServiceOptions
  * @property {EventBus} eventBus - The application event bus.

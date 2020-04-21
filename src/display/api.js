@@ -18,7 +18,7 @@
  * @module pdfjsLib
  */
 
-import {PageHeuristics} from "../shared/heuristics.js";
+import {PageHeuristics} from "../stallion/heuristics/page.js";
 import {
   AbortException,
   assert,

@@ -15,6 +15,8 @@
 
 import { PDFViewerApplication } from "./app";
 
+
+
 const CSS_UNITS = 96.0 / 72.0;
 const DEFAULT_SCALE_VALUE = "auto";
 const DEFAULT_SCALE = 1.0;
@@ -163,181 +165,7 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
 }
 
 
-function makeDraggable(elmnt, dragElements = null,
-        containment = false){
-    
-          /////  From W3Schools /////
-          
-    if(!dragElements)
-        dragElements = [elmnt];
-    var {top, left} = fixContainment(elmnt, elmnt.offsetLeft, elmnt.offsetTop);
-    elmnt.style.left = left + "px";
-    elmnt.style.top = top + "px";
-    for(var i=0; i < dragElements.length; i++){
-        dragElements[i].onmousedown = dragMouseDown;
-    }
-    var pos1 = 0, pos2= 0, pos3 = 0, pos4 = 0;
-    
-    function dragMouseDown(e) {
-      e = e || window.event;
-      e.preventDefault();
-      // get the mouse cursor position at startup:
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      elmnt.onmouseup = closeDragElement;
-      elmnt.onmouseout = closeDragElement;
-      // call a function whenever the cursor moves:
-      for(var i=0; i < dragElements.length; i++)
-          dragElements[i].onmousemove = elementDrag;
-      
-    }
 
-    function fixContainment(elmnt, left, top){
-      if(containment){
-        var upperLeft = elmnt.parentNode.offsetWidth - elmnt.offsetWidth;
-        var upperTop = elmnt.parentNode.offsetHeight - elmnt.offsetHeight;
-        if(top >=0)
-          top = 0;
-        if(left >=0)
-          left = 0;
-          if(left < upperLeft)
-            left = upperLeft;
-          if(top < upperTop)
-            top = upperTop;
-      }
-      return {top, left};
-    }
-  
-    function elementDrag(e) {
-      e = e || window.event;
-      e.preventDefault();
-      // calculate the new cursor position:
-      pos1 = pos3 - e.clientX;
-      pos2 = pos4 - e.clientY;
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      // set the element's new position:
-      var top = (elmnt.offsetTop - pos2)
-      var left = (elmnt.offsetLeft - pos1)
-      
-      var {left,  top} = fixContainment(elmnt, left, top);
-      
-      elmnt.style.top = top + "px";
-      elmnt.style.left = left + "px";  
-      // elmnt.focus();
-    }
-  
-    function closeDragElement() {
-      // stop moving when mouse button is released:
-      for(var i=0; i < dragElements.length; i++)
-          dragElements[i].onmousemove = null;
-      }
-  
-    //// From W3Schools   /////
-  
-
-
-}
-
-  var _pinnedPeekBoxes = 0;
-  function getPeekBox(width = 400, height = 200, reveal = true, clearBefore = true){
-    var peekBoxContainer = document.getElementById("peekBoxContainer");
-    
-    var peekBox = document.querySelector("#peekBoxContainer .peekBox");
-    var iframeBody = peekBox.contentDocument.documentElement.getElementsByTagName("body")[0]; 
-    var peekBoxPin = document.querySelector("#peekBoxContainer .pinPeekBox");
-    
-    peekBoxContainer.style.position = "absolute";
-    peekBoxContainer.style.width = width + "px";
-    peekBoxContainer.style.height = height + "px";
-    
-    peekBoxPin.onclick = ()=>{
-      var newPeekBoxContainer = peekBoxContainer.cloneNode(true);
-      peekBoxContainer.parentElement.appendChild(newPeekBoxContainer);
-      peekBoxContainer.id = "peekBoxContainer_" + _pinnedPeekBoxes;
-      getPeekBox()
-      _pinnedPeekBoxes += 1;
-    }
-    
-    if(clearBefore)
-    iframeBody.innerHTML = '<div></div>';
-    
-    var iframeDoc = iframeBody.children[0];
-    
-    if(reveal)
-    peekBoxContainer.classList.remove("hidden");
-
-    iframeBody.onmousedown =() =>{
-      peekBoxContainer.style.backgroundColor = "black"
-    };
-
-    iframeBody.onmouseup =() =>{
-      peekBoxContainer.style.backgroundColor = "gray"
-    };
-    iframeBody.onkeydown = (evt)=>{
-      if(evt.keyCode == 27)
-      {
-        peekBoxContainer.classList.add("hidden");
-      }
-    }
-    makeDraggable(peekBoxContainer); 
-    
-    return {iframeDoc, iframeBody, peekBoxContainer};
-  }
-
-
-function htmlClone(node){
-  return node.cloneNode(true);
-}
-
-function peekView(element, spot, pageIdx, pdfDocument) {
-  var newCanvas = document.createElement("canvas")
-  var oldPage = document.querySelector(
-    "#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
-
-    var scaleRatio = null;
-  // Render the PDF
-  pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-      var viewport = pdfPage.getViewport({ scale: PDFViewerApplication.pdfViewer.currentScale });   //GUY TODO: Understand what's the right scale
-      newCanvas.width = viewport.width;
-      newCanvas.height = viewport.height;
-      
-      scaleRatio = newCanvas.width/oldPage.querySelector("canvas").width;
-      var ctx = newCanvas.getContext("2d");
-      var renderTask = pdfPage.render({
-        canvasContext: ctx,
-        viewport: viewport,
-      });
-
-      
-      return renderTask.promise;
-    }).then(()=>{
-      var {iframeBody, iframeDoc} = getPeekBox(spot.width + 100, spot.height + 200);
-      iframeDoc.id = "peekBoxPage"
-      iframeDoc.style.left = (-scaleRatio * spot.x) + "px";
-      iframeDoc.style.top = (-scaleRatio * spot.y) + "px";
-      iframeDoc.style.position = "absolute";
-      iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
-      iframeDoc.appendChild(newCanvas);
-      
-      var textLayer = htmlClone(oldPage.querySelector("span > .highlight"));
-      textLayer.style.left = ( spot.x) + "px";
-      textLayer.style.top = ( spot.y) + "px";
-      textLayer.style.position = "absolute";
-      textLayer.style.backgroundColor = 'lightblue'
-      textLayer.style.zoom = scaleRatio;
-      
-      
-      iframeDoc.appendChild(textLayer);
-
-      makeDraggable(iframeDoc, [newCanvas,textLayer], true);
-
-    }
-    )
-  .catch(function(reason) {
-    console.error("Error: " + reason);
-  });
-}
 
 
 /**
@@ -1163,31 +991,8 @@ function moveToEndOfArray(arr, condition) {
 }
 
 
-function moveElement(el, x, y){
-  el.style.top = (el.offsetTop+y) + "px";
-  el.style.left = (el.offsetLeft + x) + "px";
-}
-
-
-
-
-function popupOneTimeBackButton(isDown){
-  var btn = document.querySelector("#oneTimeBackButton");
-  var arrow = btn.querySelector("i");
-  arrow.classList.remove("arrowdown");
-  arrow.classList.remove("arrowup");
-  arrow.classList.add(isDown ? "arrowdown" : "arrowup");
-  btn.classList.remove("hidden");
-
-}
-
-
-
-
-
 export {
-  moveElement,
-  getPeekBox,
+
   AutoPrintRegExp,
   CSS_UNITS,
   DEFAULT_SCALE_VALUE,
@@ -1220,7 +1025,6 @@ export {
   getPageSizeInches,
   approximateFraction,
   getOutputScale,
-  peekView,
   scrollIntoView,
   watchScroll,
   binarySearchFirstItem,
@@ -1228,6 +1032,5 @@ export {
   animationStarted,
   WaitOnType,
   waitOnEventOrTimeout,
-  moveToEndOfArray,
-  popupOneTimeBackButton
+  moveToEndOfArray
 };

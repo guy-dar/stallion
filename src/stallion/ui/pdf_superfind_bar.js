@@ -1,8 +1,8 @@
 
-import { FindState } from "./pdf_find_controller.js";
-import { NullL10n, getPeekBox } from "./ui_utils.js";
-import {SelectionHeuristics} from "../src/shared/heuristics.js"
-
+import { FindState } from "../../../web/pdf_find_controller.js";
+import { NullL10n } from "../../../web/ui_utils.js";
+import {SelectionHeuristics} from "../heuristics/selection.js"
+import { getPeekBox} from "./peekbox.js"
 
 
 /**
@@ -130,7 +130,6 @@ class PDFSuperFindBar {
   getReferenceInfo(selection){
     // selection = this.select_heuristics.normalizeSelected(selection);
 
-    var abstract_url = 'https://api.semanticscholar.org/v1/paper/';
     var url = "https://api.crossref.org/works?query.bibliographic=";
     // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
     selection = selection.replace(/\s+/g, ' ')
@@ -171,18 +170,23 @@ class PDFSuperFindBar {
         // Abstract
         var abs_span = document.createElement("div");
         abs_span.innerHTML = "<b>Abstract</b><br/> ";
+        var abstract_url = 'https://api.semanticscholar.org/v1/paper/';
         var abstract_xhr = new XMLHttpRequest();
-        abstract_xhr.open('GET', abstract_url + item['DOI']);
-        console.log(abstract_url + item['DOI'])
+        abstract_xhr.open('GET', abstract_url + item.DOI);
         abstract_xhr.responseType = 'json';
+
         abstract_xhr.onreadystatechange = ()=>{
-          if(abstract_xhr.readyState == 4){
-            var abs_json = abstract_xhr.response;
-            abs_span.appendChild(document.createTextNode(abs_json['abstract']));        
-            iframeDoc.appendChild(abs_span);
-          }
+            if(abstract_xhr.readyState == 4){
+                  var abs_json = abstract_xhr.response;
+                  
+                  abs_span.appendChild(document.createTextNode(abs_json['abstract']));
+                  iframeDoc.appendChild(abs_span);
+
+                }
         };
-        abstract_xhr.send();   
+
+        abstract_xhr.send(); 
+          
       }
     };
     xhr.send();
