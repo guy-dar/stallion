@@ -111,7 +111,7 @@ To generate the browser extension from the code, run:
 
     $ gulp chromium
 
-To generate a Chrome extension, that's enough. For firefox, remove the line `incognito: 'split'` from manifest.json.
+It generates a Chrome extension, but it can be exported to Firefox as is.
 
 ## PDF.js
 [PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
