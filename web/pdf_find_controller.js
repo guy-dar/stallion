@@ -16,7 +16,7 @@
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView, peekView, moveElement} from "./ui_utils.js";
-
+import {VisualHeuristics} from "../src/shared/heuristics.js" 
 const FindState = {
   FOUND: 0,
   NOT_FOUND: 1,
@@ -70,7 +70,8 @@ class PDFFindController {
   constructor({ linkService, eventBus }) {
     this._linkService = linkService;
     this._eventBus = eventBus;
-    
+
+    this.visual_heuristics = new VisualHeuristics();
     this._reset();
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
@@ -183,9 +184,8 @@ class PDFFindController {
           this._findTimeout = null;
         }, FIND_TIMEOUT);
       }else if (cmd === "findsuper") {
-        this._peekPosTop = $("#viewerContainer").scrollTop(); 
-        this._peekPosLeft = $("#viewerContainer").scrollLeft(); 
-        // this._peekMatches = true;
+        this._peekPosTop = document.querySelector("#viewerContainer").scrollTop; 
+        this._peekPosLeft = document.querySelector("#viewerContainer").scrollLeft; 
         this._nextMatch(true);
         this._updateAllPages();
       
@@ -242,18 +242,16 @@ class PDFFindController {
     }
 
     if (!this._peekMatches  || !element) {
-      return;
+      return false;
     } else if (matchIndex === -1 || matchIndex !== this._selected.matchIdx) {
-      return;
+      return true;
     } else if (pageIndex === -1 || pageIndex !== this._selected.pageIdx) {
-      return;
+      return true;
     }
 
-    const spot = {
-      top: element.offsetTop - 50,
-      left: element.offsetLeft,
-    };
+    const spot = this.visual_heuristics.estimateTextBlock(pageIndex, element);
     peekView(element, spot, pageIndex, this._pdfDocument);
+    return true;
   }
 
 
@@ -528,14 +526,16 @@ class PDFFindController {
         if(this.shortcutsDict == undefined)
             this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
 
-        if(this.shortcutsDict[queryRest] == undefined)
-          this.shortcutsDict[queryRest] = [$("#viewerContainer").scrollTop()];
-        else
+        if(this.shortcutsDict[queryRest] == undefined){
+          this.shortcutsDict[queryRest] = [document.querySelector("#viewerContainer").scrollLeft,
+                                            document.querySelector("#viewerContainer").scrollTop];
+        }else{
           console.log("Cannot set shortcut. already exists.")
+        }
         return ["",""];
       break;
       case "jump":
-        $("#viewerContainer").scrollTop(this.shortcutsDict[queryRest]);
+        document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);
         return ["",""];
       break;
       default:
@@ -702,7 +702,6 @@ class PDFFindController {
         this._pendingFindMatches[i] = true;
         this._extractTextPromises[i].then(pageIdx => {
           delete this._pendingFindMatches[pageIdx];
-          console.log(this._matchIdx)
           if(isSuperMatch)
             this._calculateSuperMatch(pageIdx, newQuery, superQueryType);
           else
@@ -832,15 +831,16 @@ class PDFFindController {
 
   _handleScroll(evt){
     if(evt.source._peekMatches){
-      $("#viewerContainer").scrollTop(evt.source._peekPosTop);
-      $("#viewerContainer").scrollLeft(evt.source._peekPosLeft);
+      document.querySelector("#viewerContainer")
+              .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
       
     }
   }
 
   _onFindBarOpened(evt) {
     const pdfDocument = this._pdfDocument;
-    $("#peekBox").html('');
+    if(document.querySelector("#peekBox"))
+        document.querySelector("#peekBox").innerHTML='';
     document.getElementById("peekBoxContainer").classList.add("hidden");
   }
 

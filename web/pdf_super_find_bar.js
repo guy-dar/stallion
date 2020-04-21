@@ -149,36 +149,28 @@ class PDFSuperFindBar {
         iframeDoc.style.backgroundColor = "white";
   
         // Title
-        var title_span = $("<div>");
-        title_span.text("Title ");
-        title_span.append( item.title);        
-        title_span.appendTo(iframeDoc);
+        var title_span = document.createElement("div");
+        title_span.innerText = "Title: " + item.title;        
+        iframeDoc.appendChild(title_span);
   
   
         // URL to item
-        var a_href_span = $("<div>");
-        a_href_span.text("URL ");
-        var a_href = $("<a>");
-        a_href.attr("href", item.URL);        
-        a_href.append( item.URL);        
-        a_href.appendTo(a_href_span);
-        a_href_span.appendTo(iframeDoc);
-  
-        // Reference Count
-        var ref_count_span = $("<div>");
-        ref_count_span.text("References Count ");
-        ref_count_span.append( item["references-count"]);        
-        ref_count_span.appendTo(iframeDoc);
-  
+        var a_href_span = document.createElement("div");
+        var a_href = document.createElement("a");
+        a_href_span.innerText = "URL ";
+        a_href.href = item.URL;        
+        a_href.innerText = item.URL;        
+        a_href_span.appendChild( a_href );
+        iframeDoc.appendChild(a_href_span);
+    
         // Citation Count
-        var cite_span = $("<div>");
-        cite_span.text("Cite Count ");
-        cite_span.append( item['is-referenced-by-count']);        
-        cite_span.appendTo(iframeDoc);
+        var cite_span = document.createElement("div");
+        cite_span.innerText = "Cite Count "+item['is-referenced-by-count'];        
+        iframeDoc.appendChild(cite_span);
         
         // Abstract
-        var abs_span = $("<div>");
-        abs_span.html("<b>Abstract</b><br/> ");
+        var abs_span = document.createElement("div");
+        abs_span.innerHTML = "<b>Abstract</b><br/> ";
         var abstract_xhr = new XMLHttpRequest();
         abstract_xhr.open('GET', abstract_url + item['DOI']);
         console.log(abstract_url + item['DOI'])
@@ -186,8 +178,8 @@ class PDFSuperFindBar {
         abstract_xhr.onreadystatechange = ()=>{
           if(abstract_xhr.readyState == 4){
             var abs_json = abstract_xhr.response;
-            abs_span.append(abs_json['abstract']);        
-            abs_span.appendTo(iframeDoc);
+            abs_span.appendChild(document.createTextNode(abs_json['abstract']));        
+            iframeDoc.appendChild(abs_span);
           }
         };
         abstract_xhr.send();   

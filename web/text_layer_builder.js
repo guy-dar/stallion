@@ -273,17 +273,19 @@ class TextLayerBuilder {
       const highlightSuffix = isSelected ? " selected" : "";
       if (isSelected) {
         // Attempt to scroll the selected match into view.
-        findController.scrollMatchIntoView({
-          element: textDivs[begin.divIdx],
-          pageIndex: pageIdx,
-          matchIndex: selectedMatchIdx,
-        });
 
         findController.peekMatchView({
           element: textDivs[begin.divIdx],
           pageIndex: pageIdx,
           matchIndex: selectedMatchIdx,
         });
+        
+          findController.scrollMatchIntoView({
+            element: textDivs[begin.divIdx],
+            pageIndex: pageIdx,
+            matchIndex: selectedMatchIdx,
+          });
+
 
       }
 

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { PDFViewerApplication } from "./app";
+
 const CSS_UNITS = 96.0 / 72.0;
 const DEFAULT_SCALE_VALUE = "auto";
 const DEFAULT_SCALE = 1.0;
@@ -238,28 +240,32 @@ function makeDraggable(elmnt, dragElements = null,
 }
 
   var _pinnedPeekBoxes = 0;
-  function getPeekBox(reveal = true, clearBefore = true){
+  function getPeekBox(width = 400, height = 200, reveal = true, clearBefore = true){
     var peekBoxContainer = document.getElementById("peekBoxContainer");
-    makeDraggable(peekBoxContainer); 
-    var peekBox = $("#peekBoxContainer .peekBox")[0];
+    
+    var peekBox = document.querySelector("#peekBoxContainer .peekBox");
     var iframeBody = peekBox.contentDocument.documentElement.getElementsByTagName("body")[0]; 
-    var peekBoxPin = $("#peekBoxContainer .pinPeekBox")[0];
-
+    var peekBoxPin = document.querySelector("#peekBoxContainer .pinPeekBox");
+    
+    peekBoxContainer.style.position = "absolute";
+    peekBoxContainer.style.width = width + "px";
+    peekBoxContainer.style.height = height + "px";
+    
     peekBoxPin.onclick = ()=>{
-      var newPeekBoxContainer = $(peekBoxContainer).clone();
-      newPeekBoxContainer.appendTo(peekBoxContainer.parentElement);
+      var newPeekBoxContainer = peekBoxContainer.cloneNode(true);
+      peekBoxContainer.parentElement.appendChild(newPeekBoxContainer);
       peekBoxContainer.id = "peekBoxContainer_" + _pinnedPeekBoxes;
       getPeekBox()
       _pinnedPeekBoxes += 1;
     }
-
+    
     if(clearBefore)
-      iframeBody.innerHTML = '<div></div>';
+    iframeBody.innerHTML = '<div></div>';
     
     var iframeDoc = iframeBody.children[0];
-
+    
     if(reveal)
-      peekBoxContainer.classList.remove("hidden");
+    peekBoxContainer.classList.remove("hidden");
 
     iframeBody.onmousedown =() =>{
       peekBoxContainer.style.backgroundColor = "black"
@@ -268,53 +274,70 @@ function makeDraggable(elmnt, dragElements = null,
     iframeBody.onmouseup =() =>{
       peekBoxContainer.style.backgroundColor = "gray"
     };
+    iframeBody.onkeydown = (evt)=>{
+      if(evt.keyCode == 27)
+      {
+        peekBoxContainer.classList.add("hidden");
+      }
+    }
+    makeDraggable(peekBoxContainer); 
     
-
-    return {iframeDoc, peekBoxContainer};
+    return {iframeDoc, iframeBody, peekBoxContainer};
   }
 
+
+function htmlClone(node){
+  return node.cloneNode(true);
+}
+
 function peekView(element, spot, pageIdx, pdfDocument) {
-  
-  var {iframeDoc} = getPeekBox();
-  iframeDoc.id = "peekBoxPage"
-  iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
-  var pageOriginal = $(".page[data-page-number='"+(pageIdx+1)+"']");  
-  var canvasOriginal = pageOriginal.find("canvas")
-  
+  var newCanvas = document.createElement("canvas")
+  var oldPage = document.querySelector(
+    "#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
+
+    var scaleRatio = null;
   // Render the PDF
   pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-      var viewport = pdfPage.getViewport({ scale: 2.5 });   //GUY TODO: Understand what's the right scale
-      var canvas = canvasOriginal[0];
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      var ctx = canvas.getContext("2d");
+      var viewport = pdfPage.getViewport({ scale: PDFViewerApplication.pdfViewer.currentScale });   //GUY TODO: Understand what's the right scale
+      newCanvas.width = viewport.width;
+      newCanvas.height = viewport.height;
+      
+      scaleRatio = newCanvas.width/oldPage.querySelector("canvas").width;
+      var ctx = newCanvas.getContext("2d");
       var renderTask = pdfPage.render({
         canvasContext: ctx,
         viewport: viewport,
       });
-      return renderTask.promise;
-    })
-    .then(()=>{
-      var newPage = pageOriginal.clone();
-      var newCanvas = newPage.find("canvas");
-      newCanvas[0].getContext('2d').drawImage(canvasOriginal[0], 0, 0);
-      iframeDoc.style.position = "absolute"; // GUY TODO: I'm going to HTMHell
+
       
-      newPage.appendTo(iframeDoc);
-      iframeDoc.style.top = (-spot.top) + "px";
-      iframeDoc.style.left = (-spot.left) + "px";
-      makeDraggable(iframeDoc, null, true); //, $(iframeDoc).find(".page, .textLayer, canvas"));
-      $(iframeDoc).find(".textLayer span:not(:has(*))").not(".highlight").remove(); // I don't like you.
+      return renderTask.promise;
+    }).then(()=>{
+      var {iframeBody, iframeDoc} = getPeekBox(spot.width + 100, spot.height + 200);
+      iframeDoc.id = "peekBoxPage"
+      iframeDoc.style.left = (-scaleRatio * spot.x) + "px";
+      iframeDoc.style.top = (-scaleRatio * spot.y) + "px";
+      iframeDoc.style.position = "absolute";
+      iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
+      iframeDoc.appendChild(newCanvas);
+      
+      var textLayer = htmlClone(oldPage.querySelector("span > .highlight"));
+      textLayer.style.left = ( spot.x) + "px";
+      textLayer.style.top = ( spot.y) + "px";
+      textLayer.style.position = "absolute";
+      textLayer.style.backgroundColor = 'lightblue'
+      textLayer.style.zoom = scaleRatio;
+      
+      
+      iframeDoc.appendChild(textLayer);
 
-    })
-  // .catch(function(reason) {
-  //   console.error("Error: " + reason);
-  // });
+      makeDraggable(iframeDoc, [newCanvas,textLayer], true);
 
-
+    }
+    )
+  .catch(function(reason) {
+    console.error("Error: " + reason);
+  });
 }
-
-
 
 
 /**
@@ -1145,6 +1168,23 @@ function moveElement(el, x, y){
   el.style.left = (el.offsetLeft + x) + "px";
 }
 
+
+
+
+function popupOneTimeBackButton(isDown){
+  var btn = document.querySelector("#oneTimeBackButton");
+  var arrow = btn.querySelector("i");
+  arrow.classList.remove("arrowdown");
+  arrow.classList.remove("arrowup");
+  arrow.classList.add(isDown ? "arrowdown" : "arrowup");
+  btn.classList.remove("hidden");
+
+}
+
+
+
+
+
 export {
   moveElement,
   getPeekBox,
@@ -1189,4 +1229,5 @@ export {
   WaitOnType,
   waitOnEventOrTimeout,
   moveToEndOfArray,
+  popupOneTimeBackButton
 };

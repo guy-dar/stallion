@@ -62,7 +62,7 @@ var GH_PAGES_DIR = BUILD_DIR + "gh-pages/";
 var SRC_DIR = "src/";
 var LIB_DIR = BUILD_DIR + "lib/";
 var DIST_DIR = BUILD_DIR + "dist/";
-var COMMON_WEB_FILES = ["web/images/*.{png,svg,gif,cur}", "web/debugger.js", "web/jquery-2.1.0.min.js"];
+var COMMON_WEB_FILES = ["web/images/*.{png,svg,gif,cur}", "web/debugger.js"];
 var MOZCENTRAL_DIFF_FILE = "mozcentral.diff";
 
 var REPO = "git@github.com:guyd1995/Stallion.git";

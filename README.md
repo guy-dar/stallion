@@ -100,6 +100,14 @@ It is also possible to view all test PDF files on the right side by opening:
 
 + http://localhost:8888/test/pdfs/?frame
 
+### Building Stallion Extensions from scratch
+
+To generate the browser extension from the code, run:
+
+    $ gulp chromium
+
+To generate a Chrome extension, that's enough. For firefox, remove the line `incognito: 'split'` from manifest.json.
+
 ## PDF.js
 [PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.
 
@@ -121,6 +129,5 @@ We base our contribution guidelines on those of PDF.js. Also, recall we build up
 	* [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
 	* [Frequently Asked Questions](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions)
 	* [Good Beginner Bugs](https://github.com/mozilla/pdf.js/issues?direction=desc&labels=5-good-beginner-bug&page=1&sort=created&state=open)
-
 
 

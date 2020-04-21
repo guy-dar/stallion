@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { parseQueryString } from "./ui_utils.js";
+import { parseQueryString, popupOneTimeBackButton } from "./ui_utils.js";
 
 /**
  * @typedef {Object} PDFLinkServiceOptions
@@ -111,11 +111,12 @@ class PDFLinkService {
    * @param {string|Array} dest - The named, or explicit, PDF destination.
    */
   navigateTo(dest) {
+    
     const goToDestination = ({ namedDest, explicitDest }) => {
       // Dest array looks like that: <page-ref> </XYZ|/FitXXX> <args..>
       const destRef = explicitDest[0];
       let pageNumber;
-
+      
       if (destRef instanceof Object) {
         pageNumber = this._cachedPageNumber(destRef);
 
@@ -159,7 +160,8 @@ class PDFLinkService {
         this.pdfHistory.pushCurrentPosition();
         this.pdfHistory.push({ namedDest, explicitDest, pageNumber });
       }
-
+      
+      popupOneTimeBackButton(pageNumber < this.page);
       this.pdfViewer.scrollPageIntoView({
         pageNumber,
         destArray: explicitDest,
@@ -294,6 +296,7 @@ class PDFLinkService {
         }
       }
       if (dest) {
+
         this.pdfViewer.scrollPageIntoView({
           pageNumber: pageNumber || this.page,
           destArray: dest,
