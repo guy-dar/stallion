@@ -8,9 +8,11 @@ It provides researchers with tools that make paper reading simpler. Some feature
 <br/>
 <br/>
 
-You can play around with our [Demo](https://guyd1995.github.io/stallion/web/viewer.html)!
+You can play around with our demo!
+[![Demo](docs/contents/images/demo_btn.png)](https://guyd1995.github.io/stallion/web/viewer.html)
 
-You can also visit us on our website: [Homepage](https://guyd1995.github.io/stallion)
+You can also visit us on our website: 
+[![Homepage](docs/contents/images/homepage_btn.png)](https://guyd1995.github.io/stallion)
 
 
 If you are experiencing trouble, please let us know.
