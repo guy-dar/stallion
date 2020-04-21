@@ -105,7 +105,7 @@ It is also possible to view all test PDF files on the right side by opening:
 
 + http://localhost:8888/test/pdfs/?frame
 
-### Building Stallion Extensions from scratch
+### Building Stallion Extensions from Scratch
 
 To generate the browser extension from the code, run:
 
