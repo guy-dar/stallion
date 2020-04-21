@@ -16,4 +16,4 @@ You can take a look at our example PDF [here](web/viewer.html) and try out all t
 
 ## More Information
 
-More documentation can be found in our [wiki](https://github.com/guyd1995/Stallion/wiki) too.
+More documentation can be found in our [wiki](https://github.com/guyd1995/stallion/wiki) too.

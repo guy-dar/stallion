@@ -7,8 +7,8 @@ template: layout.jade
 
 To get a local copy of the current code, clone it using git:
 
-    $ git clone https://github.com/guyd1995/Stallion.git
-    $ cd Stallion
+    $ git clone https://github.com/guyd1995/stallion.git
+    $ cd stallion
 
 Next, install Node.js via the [official package](https://nodejs.org) or via
 [nvm](https://github.com/creationix/nvm). You need to install the gulp package
@@ -37,7 +37,7 @@ It is also possible to view all test PDF files on the right side by opening:
 
 ## Simple Setup 
 You can skip the [Getting the Code](#getting-the-code) section below and experiment with Stallion with Gitpod (an easy to use online IDE), where we made everything is available right out of the box. 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://www.gitpod.io/#https://github.com/guyd1995/Stallion)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://www.gitpod.io/#https://github.com/guyd1995/stallion)
 
 
 ## PDF.js
@@ -54,8 +54,8 @@ Please, visit their [repository](https://github.com/mozilla/pdf.js) for addition
 
 We base our contribution guidelines on those of PDF.js. Also, we utilize their code base. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide(see below).
 
-* [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
-* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future_Work)
+* [Issue Reporting Guide](https://github.com/guyd1995/stallion/blob/master/.github/CONTRIBUTING.md)
+* [Future Work](https://github.com/guyd1995/stallion/wiki/Future_Work)
 
 * PDF.js
 	+ [PDF.js Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)

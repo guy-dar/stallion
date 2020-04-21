@@ -11,5 +11,5 @@ template: layout.jade
   <a type="button" class="btn btn-lg btn-default" href="users/#install">Install</a><br/>
   <a type="button" class="btn btn-lg btn-default" href="web/viewer.html">Demo</a>
 <br/>
-  <a type="button" class="btn btn-lg btn-default" href="https://github.com/guyd1995/Stallion/">GitHub Project</a>
+  <a type="button" class="btn btn-lg btn-default" href="https://github.com/guyd1995/stallion/">GitHub Project</a>
 </p>

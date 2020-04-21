@@ -57,7 +57,7 @@ Coming soon.. (app needs to be deployed and it costs 5 bucks)
 ### Option 2: Install Chrome Extension Like a Pro 
 Download and unzip from here 
 
-  <a type="button" class="btn btn-lg btn-default" href="https://github.com/guyd1995/Stallion/releases/latest">Chrome Extension</a>
+  <a type="button" class="btn btn-lg btn-default" href="https://github.com/guyd1995/stallion/releases/latest">Chrome Extension</a>
 
 
 Add to Chrome:
