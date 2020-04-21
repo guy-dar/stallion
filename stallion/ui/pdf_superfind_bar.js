@@ -1,6 +1,6 @@
 
-import { FindState } from "../../../web/pdf_find_controller.js";
-import { NullL10n } from "../../../web/ui_utils.js";
+import { FindState } from "../../web/pdf_find_controller.js";
+import { NullL10n } from "../../web/ui_utils.js";
 import {SelectionHeuristics} from "../heuristics/selection.js"
 import { getPeekBox} from "./peekbox.js"
 

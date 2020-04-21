@@ -16,9 +16,9 @@
 import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView} from "./ui_utils.js";
-import { peekView } from "../src/stallion/ui/peekbox.js";
-import { moveElement } from "../src/stallion/ui/common.js";
-import {VisualHeuristics} from "../src/stallion/heuristics/visual.js" 
+import { peekView } from "../stallion/ui/peekbox.js";
+import { moveElement } from "../stallion/ui/common.js";
+import {VisualHeuristics} from "../stallion/heuristics/visual.js" 
 const FindState = {
   FOUND: 0,
   NOT_FOUND: 1,

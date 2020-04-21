@@ -14,7 +14,7 @@
  */
 
 import { parseQueryString } from "./ui_utils.js";
-import {popupOneTimeBackButton} from "../src/stallion/ui/common.js"
+import {popupOneTimeBackButton} from "../stallion/ui/common.js"
 /**
  * @typedef {Object} PDFLinkServiceOptions
  * @property {EventBus} eventBus - The application event bus.
