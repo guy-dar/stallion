@@ -10,13 +10,15 @@ It provides researchers with tools that make paper reading simpler. Some feature
 
 You can play around with our demo!
 
-
-<a href="https://guyd1995.github.io/stallion/web/viewer.html"><img style="align:center;" src="docs/contents/images/demo_btn.png" title="Demo" width="200" height="80"/></a>
-
+<p align="center">
+<a href="https://guyd1995.github.io/stallion/web/viewer.html"><img src="docs/contents/images/demo_btn.png" title="Demo" width="200" height="80"/></a>
+</p>
 You can also visit us on our website: 
 
 
-<a href="https://guyd1995.github.io/stallion"><img style="align:center;" src="docs/contents/images/homepage_btn.png" title="Homepage" width="200" height="80"/></a>
+<p align="center">
+<a href="https://guyd1995.github.io/stallion"><img src="docs/contents/images/homepage_btn.png" title="Homepage" width="200" height="80"/></a>
+</p>
 
 If you are experiencing trouble, please let us know.
 
