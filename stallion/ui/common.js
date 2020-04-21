@@ -98,4 +98,4 @@ function moveElement(el, x, y){
   
 
 
-export {makeDraggable, htmlClone, moveElement,  popupOneTimeBackButton}
+export {makeDraggable, htmlClone, moveElement,  CSS_UNITS, popupOneTimeBackButton}
