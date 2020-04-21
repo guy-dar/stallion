@@ -1,4 +1,4 @@
-# Stallion [![Build Status](https://travis-ci.com/guyd1995/Stallion.svg?branch=master)](https://travis-ci.org/guyd1995/Stallion) 
+# Stallion [![Build Status](https://travis-ci.com/guyd1995/stallion.svg?branch=master)](https://travis-ci.org/guyd1995/stallion) 
 <img align="right" src="docs/contents/images/logo.png" width="120px" height="110px"/>
 Stallion is an extended PDF viewer based on <a href="https://mozilla.github.io/pdf.js/">PDF.js</a>. 
 It provides researchers with tools that make paper reading simpler. Some features include intuitive peeking routines for definition review, better handling of references and adding shorcuts to arbitrary locations in the document. 
@@ -8,9 +8,9 @@ It provides researchers with tools that make paper reading simpler. Some feature
 <br/>
 <br/>
 
-You can play around with our [Demo](https://guyd1995.github.io/Stallion/web/viewer.html)!
+You can play around with our [Demo](https://guyd1995.github.io/stallion/web/viewer.html)!
 
-You can also visit us on our website: [Homepage](https://guyd1995.github.io/Stallion)
+You can also visit us on our website: [Homepage](https://guyd1995.github.io/stallion)
 
 
 If you are experiencing trouble, please let us know.
@@ -72,8 +72,8 @@ If no text is selected, the slash bar is opened, waiting for a keyword for `fpee
 
 To get a local copy of the current code, clone it using git:
 
-    $ git clone https://github.com/guyd1995/Stallion.git
-    $ cd Stallion
+    $ git clone https://github.com/guyd1995/stallion.git
+    $ cd stallion
 
 Next, install Node.js via the [official package](https://nodejs.org) or via
 [nvm](https://github.com/creationix/nvm). You need to install the gulp package
@@ -122,8 +122,8 @@ Please, visit their [repository](https://github.com/mozilla/pdf.js) for addition
 
 We base our contribution guidelines on those of PDF.js. Also, recall we build upon their code base and utilize changes in their repository. All in all, you are very much encouraged to contribute to PDF.js. We advise you to take a glance at their code contribution guide (see below).
 
-* [Issue Reporting Guide](https://github.com/guyd1995/Stallion/blob/master/.github/CONTRIBUTING.md)
-* [Future Work](https://github.com/guyd1995/Stallion/wiki/Future-Work)
+* [Issue Reporting Guide](https://github.com/guyd1995/stallion/blob/master/.github/CONTRIBUTING.md)
+* [Future Work](https://github.com/guyd1995/stallion/wiki/Future-Work)
 
 * PDF.js
 	* [Code Contribution Guide](https://github.com/mozilla/pdf.js/wiki/Contributing)
