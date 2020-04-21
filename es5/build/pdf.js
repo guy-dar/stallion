@@ -130,35 +130,35 @@ var pdfjsSharedUtil = __w_pdfjs_require__(1);
 
 var pdfjsDisplayAPI = __w_pdfjs_require__(194);
 
-var pdfjsDisplayTextLayer = __w_pdfjs_require__(210);
+var pdfjsDisplayTextLayer = __w_pdfjs_require__(211);
 
-var pdfjsDisplayAnnotationLayer = __w_pdfjs_require__(211);
+var pdfjsDisplayAnnotationLayer = __w_pdfjs_require__(212);
 
-var pdfjsDisplayDisplayUtils = __w_pdfjs_require__(199);
+var pdfjsDisplayDisplayUtils = __w_pdfjs_require__(200);
 
-var pdfjsDisplaySVG = __w_pdfjs_require__(212);
+var pdfjsDisplaySVG = __w_pdfjs_require__(213);
 
-var pdfjsDisplayWorkerOptions = __w_pdfjs_require__(204);
+var pdfjsDisplayWorkerOptions = __w_pdfjs_require__(205);
 
-var pdfjsDisplayAPICompatibility = __w_pdfjs_require__(201);
+var pdfjsDisplayAPICompatibility = __w_pdfjs_require__(202);
 
 {
   var _require = __w_pdfjs_require__(48),
       isNodeJS = _require.isNodeJS;
 
   if (isNodeJS) {
-    var PDFNodeStream = __w_pdfjs_require__(213).PDFNodeStream;
+    var PDFNodeStream = __w_pdfjs_require__(214).PDFNodeStream;
 
     pdfjsDisplayAPI.setPDFNetworkStreamFactory(function (params) {
       return new PDFNodeStream(params);
     });
   } else {
-    var PDFNetworkStream = __w_pdfjs_require__(216).PDFNetworkStream;
+    var PDFNetworkStream = __w_pdfjs_require__(217).PDFNetworkStream;
 
     var PDFFetchStream;
 
     if (pdfjsDisplayDisplayUtils.isFetchSupported()) {
-      PDFFetchStream = __w_pdfjs_require__(217).PDFFetchStream;
+      PDFFetchStream = __w_pdfjs_require__(218).PDFFetchStream;
     }
 
     pdfjsDisplayAPI.setPDFNetworkStreamFactory(function (params) {
@@ -10577,29 +10577,29 @@ exports.build = exports.version = exports.PDFPageProxy = exports.PDFDocumentProx
 
 var _regenerator = _interopRequireDefault(__w_pdfjs_require__(195));
 
-var _heuristics = __w_pdfjs_require__(198);
+var _page = __w_pdfjs_require__(198);
 
 var _util = __w_pdfjs_require__(1);
 
-var _display_utils = __w_pdfjs_require__(199);
+var _display_utils = __w_pdfjs_require__(200);
 
-var _font_loader = __w_pdfjs_require__(200);
+var _font_loader = __w_pdfjs_require__(201);
 
-var _api_compatibility = __w_pdfjs_require__(201);
+var _api_compatibility = __w_pdfjs_require__(202);
 
-var _canvas = __w_pdfjs_require__(202);
+var _canvas = __w_pdfjs_require__(203);
 
-var _worker_options = __w_pdfjs_require__(204);
+var _worker_options = __w_pdfjs_require__(205);
 
 var _is_node = __w_pdfjs_require__(48);
 
-var _message_handler = __w_pdfjs_require__(205);
+var _message_handler = __w_pdfjs_require__(206);
 
-var _metadata = __w_pdfjs_require__(206);
+var _metadata = __w_pdfjs_require__(207);
 
-var _transport_stream = __w_pdfjs_require__(208);
+var _transport_stream = __w_pdfjs_require__(209);
 
-var _webgl = __w_pdfjs_require__(209);
+var _webgl = __w_pdfjs_require__(210);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -11668,7 +11668,7 @@ var PDFPageProxy = /*#__PURE__*/function () {
   }, {
     key: "heuristics",
     get: function get() {
-      if (this._heuristics == undefined) this._heuristics = new _heuristics.PageHeuristics();
+      if (this._heuristics == undefined) this._heuristics = new _page.PageHeuristics();
       return this._heuristics;
     }
   }, {
@@ -13760,7 +13760,166 @@ module.exports = function (module) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.HeuristicsHelper = exports.SelectionHeuristics = exports.PageHeuristics = void 0;
+exports.PageHeuristics = void 0;
+
+var _helper = __w_pdfjs_require__(199);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var PageHeuristics = /*#__PURE__*/function () {
+  function PageHeuristics() {
+    _classCallCheck(this, PageHeuristics);
+
+    this.startRendering();
+  }
+
+  _createClass(PageHeuristics, [{
+    key: "startRendering",
+    value: function startRendering() {
+      this.debugMode = false;
+      this.helper = new _helper.HeuristicsHelper();
+      this._prevLineFonts = null;
+      this._curLineFonts = [];
+      this._textBlocks = [];
+      this._lineBeginning = [];
+      this._curFontCtx = null;
+      this._images = [];
+      this.idx = 0;
+      this._maxImgDim = 1000;
+      this._blockJumpPctTol = 1.4;
+    }
+  }, {
+    key: "isTextBlockShared",
+    value: function isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
+      if (!curTextBlock) return false;
+
+      if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
+        return false;
+      }
+
+      if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
+        return false;
+      }
+
+      return this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts);
+    }
+  }, {
+    key: "reportTextAction",
+    value: function reportTextAction(ctx, fontData, scaledX, scaledY) {
+      if (!this.debugMode) return;
+      var font = this.helper.fontNormalizer(fontData);
+
+      var _ctx$getTransform = ctx.getTransform(),
+          x = _ctx$getTransform.e,
+          y = _ctx$getTransform.f,
+          scale = _ctx$getTransform.a;
+
+      var h = font.fontSize * scale;
+      var w = h;
+      y -= h;
+      x += scaledX * scale;
+      y += scaledY * scale;
+
+      var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+
+      var curTextBlock = this.helper._last(this._textBlocks);
+
+      if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
+        if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
+          this._textBlocks.push({
+            left: x,
+            top: y,
+            right: x + w,
+            bottom: y + h,
+            fonts: []
+          });
+
+          curTextBlock = this.helper._last(this._textBlocks);
+        }
+      }
+
+      if (!this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
+      var left = newFontCtx.left,
+          top = newFontCtx.top,
+          bottom = newFontCtx.bottom,
+          right = newFontCtx.right;
+      curTextBlock.right = Math.max(right, curTextBlock.right);
+      curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
+
+      if (font.name.indexOf('+CM') != -1) {
+        if (this.debugMode) {
+          this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
+        }
+      }
+
+      this._curFontCtx = newFontCtx;
+      this.idx++;
+    }
+  }, {
+    key: "reportImageAction",
+    value: function reportImageAction(ctx, x, y, w, h, type) {
+      if (w >= this._maxImgDim || w >= this._maxImgDim) {
+        return;
+      }
+
+      var rect = [x, y, w, h];
+
+      this._images.push({
+        'ctx': ctx,
+        'rect': rect,
+        'type': type
+      });
+    }
+  }, {
+    key: "finishedRenderingContext",
+    value: function finishedRenderingContext(curCtx, viewport, transform) {
+      var _this = this;
+
+      if (!this.debugMode) return;
+      var ctx = curCtx.getContext('2d');
+
+      this._textBlocks.forEach(function (block) {
+        var left = block.left,
+            top = block.top,
+            right = block.right,
+            bottom = block.bottom;
+
+        _this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
+      });
+
+      this._images.forEach(function (img) {
+        var rect = img['rect'];
+
+        _this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
+
+        console.log(rect);
+      });
+    }
+  }, {
+    key: "analyzeTextLayer",
+    value: function analyzeTextLayer(textLayer) {}
+  }]);
+
+  return PageHeuristics;
+}();
+
+exports.PageHeuristics = PageHeuristics;
+
+/***/ }),
+/* 199 */
+/***/ (function(module, exports, __w_pdfjs_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.HeuristicsHelper = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -13889,6 +14048,36 @@ var HeuristicsHelper = /*#__PURE__*/function () {
         right: left + w
       };
     }
+  }, {
+    key: "descendants",
+    value: function descendants(element) {
+      return Array.from(element.querySelectorAll("*"));
+    }
+  }, {
+    key: "leafNodes",
+    value: function leafNodes(element) {
+      return this.descendants(element).filter(function (n) {
+        return !n.hasChildNodes();
+      });
+    }
+  }, {
+    key: "isDictInArray",
+    value: function isDictInArray(dict, arr) {
+      for (var i = 0; i < arr.length; i++) {
+        var element = arr[i];
+
+        if (JSON.stringify(element) == JSON.stringify(dict)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "_last",
+    value: function _last(arr) {
+      return arr.slice(-1)[0];
+    }
   }]);
 
   return HeuristicsHelper;
@@ -13896,196 +14085,8 @@ var HeuristicsHelper = /*#__PURE__*/function () {
 
 exports.HeuristicsHelper = HeuristicsHelper;
 
-function isDictInArray(dict, arr) {
-  for (var i = 0; i < arr.length; i++) {
-    var element = arr[i];
-
-    if (JSON.stringify(element) == JSON.stringify(dict)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function _last(arr) {
-  return arr.slice(-1)[0];
-}
-
-var PageHeuristics = /*#__PURE__*/function () {
-  function PageHeuristics() {
-    _classCallCheck(this, PageHeuristics);
-
-    this.startRendering();
-  }
-
-  _createClass(PageHeuristics, [{
-    key: "startRendering",
-    value: function startRendering() {
-      this.debugMode = false;
-      this.helper = new HeuristicsHelper();
-      this._prevLineFonts = null;
-      this._curLineFonts = [];
-      this._textBlocks = [];
-      this._lineBeginning = [];
-      this._curFontCtx = null;
-      this._images = [];
-      this.idx = 0;
-      this._maxImgDim = 1000;
-      this._blockJumpPctTol = 1.4;
-    }
-  }, {
-    key: "isTextBlockShared",
-    value: function isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
-      if (!curTextBlock) return false;
-
-      if (this.helper._isColumnJump(newFontCtx, prevFontCtx)) {
-        return false;
-      }
-
-      if (newFontCtx.y - prevFontCtx.y > 2 * Math.max(prevFontCtx.h, newFontCtx.h)) {
-        return false;
-      }
-
-      return isDictInArray(newFontCtx.font, curTextBlock.fonts);
-    }
-  }, {
-    key: "reportTextAction",
-    value: function reportTextAction(ctx, fontData, scaledX, scaledY) {
-      var font = this.helper.fontNormalizer(fontData);
-
-      var _ctx$getTransform = ctx.getTransform(),
-          x = _ctx$getTransform.e,
-          y = _ctx$getTransform.f,
-          scale = _ctx$getTransform.a;
-
-      var h = font.fontSize * scale;
-      var w = h;
-      y -= h;
-      x += scaledX * scale;
-      y += scaledY * scale;
-
-      var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
-
-      var curTextBlock = _last(this._textBlocks);
-
-      if (this.helper.isLineBreak(newFontCtx, this._curFontCtx)) {
-        if (!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)) {
-          this._textBlocks.push({
-            left: x,
-            top: y,
-            right: x + w,
-            bottom: y + h,
-            fonts: []
-          });
-
-          curTextBlock = _last(this._textBlocks);
-        }
-      }
-
-      if (!isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
-      var left = newFontCtx.left,
-          top = newFontCtx.top,
-          bottom = newFontCtx.bottom,
-          right = newFontCtx.right;
-      curTextBlock.right = Math.max(right, curTextBlock.right);
-      curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
-
-      if (font.name.indexOf('+CM') != -1) {
-        if (this.debugMode) {
-          this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
-        }
-      }
-
-      this._curFontCtx = newFontCtx;
-      this.idx++;
-    }
-  }, {
-    key: "reportImageAction",
-    value: function reportImageAction(ctx, x, y, w, h, type) {
-      if (w >= this._maxImgDim || w >= this._maxImgDim) {
-        return;
-      }
-
-      var rect = [x, y, w, h];
-
-      this._images.push({
-        'ctx': ctx,
-        'rect': rect,
-        'type': type
-      });
-    }
-  }, {
-    key: "finishedRenderingContext",
-    value: function finishedRenderingContext(curCtx, viewport, transform) {
-      var _this = this;
-
-      if (!this.debugMode) return;
-      var ctx = curCtx.getContext('2d');
-
-      this._textBlocks.forEach(function (block) {
-        var left = block.left,
-            top = block.top,
-            right = block.right,
-            bottom = block.bottom;
-
-        _this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', left, top, right - left, bottom - top, null);
-      });
-
-      this._images.forEach(function (img) {
-        var rect = img['rect'];
-
-        _this.helper.addRect(ctx, 'rgb(225,0,0,0.2)', rect[0], rect[1], rect[2], rect[3]);
-
-        console.log(rect);
-      });
-    }
-  }, {
-    key: "analyzeTextLayer",
-    value: function analyzeTextLayer(textLayer) {}
-  }]);
-
-  return PageHeuristics;
-}();
-
-exports.PageHeuristics = PageHeuristics;
-
-var SelectionHeuristics = /*#__PURE__*/function () {
-  function SelectionHeuristics() {
-    _classCallCheck(this, SelectionHeuristics);
-
-    this._maxRegularTextLen = 20;
-    this.reference_regexp = /^([A-Za-z\- \,]+)\.(.+)\.(.+)$/;
-  }
-
-  _createClass(SelectionHeuristics, [{
-    key: "removeSpecial",
-    value: function removeSpecial(s) {
-      return s.replace(/[^\w\s]/gi, '');
-    }
-  }, {
-    key: "normalizeSelected",
-    value: function normalizeSelected(s) {
-      return this.removeSpecial(s).toLowerCase();
-    }
-  }, {
-    key: "selectionType",
-    value: function selectionType(selection) {
-      if (this.reference_regexp.exec(selection)) {
-        return "reference";
-      }
-
-      return "text";
-    }
-  }]);
-
-  return SelectionHeuristics;
-}();
-
-exports.SelectionHeuristics = SelectionHeuristics;
-
 /***/ }),
-/* 199 */
+/* 200 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -14804,7 +14805,7 @@ var PDFDateString = /*#__PURE__*/function () {
 exports.PDFDateString = PDFDateString;
 
 /***/ }),
-/* 200 */
+/* 201 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -15313,7 +15314,7 @@ var FontFaceObject = /*#__PURE__*/function () {
 exports.FontFaceObject = FontFaceObject;
 
 /***/ }),
-/* 201 */
+/* 202 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -15344,7 +15345,7 @@ var compatibilityParams = Object.create(null);
 exports.apiCompatibilityParams = Object.freeze(compatibilityParams);
 
 /***/ }),
-/* 202 */
+/* 203 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -15357,7 +15358,7 @@ exports.CanvasGraphics = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _pattern_helper = __w_pdfjs_require__(203);
+var _pattern_helper = __w_pdfjs_require__(204);
 
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -17431,7 +17432,7 @@ var CanvasGraphics = function CanvasGraphicsClosure() {
 exports.CanvasGraphics = CanvasGraphics;
 
 /***/ }),
-/* 203 */
+/* 204 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -17912,7 +17913,7 @@ var TilingPattern = function TilingPatternClosure() {
 exports.TilingPattern = TilingPattern;
 
 /***/ }),
-/* 204 */
+/* 205 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -17928,7 +17929,7 @@ GlobalWorkerOptions.workerPort = GlobalWorkerOptions.workerPort === undefined ? 
 GlobalWorkerOptions.workerSrc = GlobalWorkerOptions.workerSrc === undefined ? "" : GlobalWorkerOptions.workerSrc;
 
 /***/ }),
-/* 205 */
+/* 206 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -18481,7 +18482,7 @@ var MessageHandler = /*#__PURE__*/function () {
 exports.MessageHandler = MessageHandler;
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -18494,7 +18495,7 @@ exports.Metadata = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _xml_parser = __w_pdfjs_require__(207);
+var _xml_parser = __w_pdfjs_require__(208);
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -18652,7 +18653,7 @@ var Metadata = /*#__PURE__*/function () {
 exports.Metadata = Metadata;
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -19185,7 +19186,7 @@ var SimpleXMLParser = /*#__PURE__*/function (_XMLParserBase) {
 exports.SimpleXMLParser = SimpleXMLParser;
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -19665,7 +19666,7 @@ var PDFDataTransportStreamRangeReader = /*#__PURE__*/function () {
 }();
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -20123,7 +20124,7 @@ var WebGLUtils = function WebGLUtilsClosure() {
 }();
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -20816,7 +20817,7 @@ var renderTextLayer = function renderTextLayerClosure() {
 exports.renderTextLayer = renderTextLayer;
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -20827,7 +20828,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AnnotationLayer = void 0;
 
-var _display_utils = __w_pdfjs_require__(199);
+var _display_utils = __w_pdfjs_require__(200);
 
 var _util = __w_pdfjs_require__(1);
 
@@ -22241,7 +22242,7 @@ var AnnotationLayer = /*#__PURE__*/function () {
 exports.AnnotationLayer = AnnotationLayer;
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -22254,7 +22255,7 @@ exports.SVGGraphics = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _display_utils = __w_pdfjs_require__(199);
+var _display_utils = __w_pdfjs_require__(200);
 
 var _is_node = __w_pdfjs_require__(48);
 
@@ -23985,7 +23986,7 @@ exports.SVGGraphics = SVGGraphics;
 }
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -24000,7 +24001,7 @@ var _regenerator = _interopRequireDefault(__w_pdfjs_require__(195));
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(214);
+var _network_utils = __w_pdfjs_require__(215);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -24630,7 +24631,7 @@ var PDFNodeStreamFsRangeReader = /*#__PURE__*/function (_BaseRangeReader2) {
 }(BaseRangeReader);
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -24646,7 +24647,7 @@ exports.validateResponseStatus = validateResponseStatus;
 
 var _util = __w_pdfjs_require__(1);
 
-var _content_disposition = __w_pdfjs_require__(215);
+var _content_disposition = __w_pdfjs_require__(216);
 
 function validateRangeRequestCapabilities(_ref) {
   var getResponseHeader = _ref.getResponseHeader,
@@ -24721,7 +24722,7 @@ function validateResponseStatus(status) {
 }
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -24932,7 +24933,7 @@ function getFilenameFromContentDispositionHeader(contentDisposition) {
 }
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -24947,7 +24948,7 @@ var _regenerator = _interopRequireDefault(__w_pdfjs_require__(195));
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(214);
+var _network_utils = __w_pdfjs_require__(215);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25612,7 +25613,7 @@ var PDFNetworkStreamRangeRequestReader = /*#__PURE__*/function () {
 }();
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -25627,7 +25628,7 @@ var _regenerator = _interopRequireDefault(__w_pdfjs_require__(195));
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(214);
+var _network_utils = __w_pdfjs_require__(215);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

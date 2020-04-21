@@ -38,7 +38,6 @@ See https://github.com/adobe-type-tools/cmap-resources
 
 
     <script src="viewer.js"></script>
-<script src="jquery-2.1.0.min.js"></script>
 
 
   </head>
@@ -72,6 +71,9 @@ See https://github.com/adobe-type-tools/cmap-resources
       </div>  <!-- sidebarContainer -->
 
       <div id="mainContainer">
+        <button onclick="if(window){window.history.back(); this.classList.add('hidden');}" class="hidden roundButton" id="oneTimeBackButton">
+          <i></i>
+          </button>
         <div class="findbar hidden doorHanger" id="findbar">
           <div id="findbarInputContainer">
             <input id="findInput" autocomplete="off" class="toolbarField" title="Find" placeholder="Find in document…" tabindex="91" data-l10n-id="find_input">
@@ -305,14 +307,19 @@ See https://github.com/adobe-type-tools/cmap-resources
           <textarea id="errorMoreInfo" hidden='true' readonly="readonly"></textarea>
         </div>
       </div> <!-- mainContainer -->
-      <table id="peekBoxContainer" class="hidden">
+      <table id="peekBoxContainer" class="peekBoxContainer hidden">
         <tr>
           <td>
-            <iframe id="peekBox"></iframe>   
+            <iframe class="peekBox"></iframe>   
           </td>
         </tr>
         <tr>
-          <td id="peekBoxOptions">
+          <td class="peekBoxOptions">
+            <div class="splitToolbarButtonSeparator"></div>
+            <button class="pinPeekBox toolbarButton" title="Pin">
+              <span> + </span>
+            </button>
+
             <div class="splitToolbarButton">
               <button id="superFindPrevious" class="toolbarButton findPrevious" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="super_find_previous">
                 <span data-l10n-id="super_find_previous_label">Previous</span>
