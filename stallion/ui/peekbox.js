@@ -1,4 +1,4 @@
-import {htmlClone, moveElement, makeDraggable} from "./common.js"
+import {htmlClone,CSS_UNITS, makeDraggable} from "./common.js"
 
 
 function peekView(element, pageIdx, pdfDocument) {

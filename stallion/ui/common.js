@@ -1,3 +1,6 @@
+const CSS_UNITS = 96.0 / 72.0;
+
+
 function makeDraggable(elmnt, dragElements = null,
     containment = false){
 
