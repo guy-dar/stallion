@@ -104,8 +104,8 @@ function renderStallionWidget(frame, loc){
 
   return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
     var viewport = pdfPage.getViewport({scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS });   //GUY TODO: Understand what's the right scale
-    newCanvas.width = 0.8 * viewport.width;
-    newCanvas.height = 0.8 *viewport.height;
+    newCanvas.width =  viewport.width;
+    newCanvas.height = viewport.height;
     
     var ctx = newCanvas.getContext("2d");
     var renderTask = pdfPage.render({

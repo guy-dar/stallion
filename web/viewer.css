@@ -16,7 +16,7 @@
 @import url(pdf_viewer.css);
 
 :root {
-  --splitpeeker-width: 40%;
+  --splitpeeker-width: 45%;
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
@@ -330,16 +330,17 @@ html[dir='rtl'] #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentatio
 html[dir='ltr'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
   transition-property: left;
   left: var(--splitpeeker-width);
-  zoom: 0.8;
-
-  /* margin:0px; */
 }
 html[dir='rtl'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
   transition-property: right;
   right: var(--splitpeeker-width);
-  zoom:0.8;
-  /* margin:0px; */
 }
+
+#outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) #viewer {
+  /* zoom: 0.8;   */
+  margin:0px; 
+}
+
 
 .toolbar {
   position: relative;
@@ -1636,16 +1637,20 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   font-size: 10px;
 }
 
+
 #splitPeekerFrame{
-  width:100%;
-  height:100%;
+  left:-5%;
+  
+  z-index:10000;
+  /* position:absolute; */
   overflow: hidden;
-  background-color: white;;
-}
-#splitPeekerDiv{
+  opacity:0.7;
+  background-color: white;
   height:100%;
-  width:var(--splitpeeker-width);
-  position:aboslute;
+  width: 55%;
+  overflow: hidden;
+  /* width:var(--splitpeeker-width); */
+  position:relative;
 
 }
 

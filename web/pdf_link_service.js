@@ -163,21 +163,21 @@ class PDFLinkService {
       }
       
       if( true ) {
-        var splitPeekerDiv = document.getElementById("splitPeekerDiv");
+        // var splitPeekerDiv = document.getElementById("splitPeekerDiv");
         var splitPeekerFrame = document.getElementById("splitPeekerFrame");
         var outerContainer = document.getElementById("outerContainer");
-        splitPeekerDiv.classList.remove("hidden")
+        splitPeekerFrame.classList.remove("hidden")
         outerContainer.classList.add("splitPeekerOpen");
         var frame = splitPeekerFrame.contentDocument.documentElement;
         
         renderStallionWidget(frame,{
           widgetHider: ()=>{outerContainer.classList.remove("splitPeekerOpen")},
-          container: splitPeekerDiv,
+          container: splitPeekerFrame,
           pdfDocument: this.pdfDocument,
           pageIdx: pageNumber-1,
           destArray: explicitDest, // GUY TODO: Improve
         });
-        frame.querySelector('canvas').style.margin = '0px'
+        frame.style.direction = 'rtl';
         return;
       }
       popupOneTimeBackButton(pageNumber < this.page);
