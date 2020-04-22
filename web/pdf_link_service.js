@@ -14,7 +14,8 @@
  */
 
 import { parseQueryString } from "./ui_utils.js";
-import {popupOneTimeBackButton} from "../stallion/ui/common.js"
+import {popupOneTimeBackButton, renderStallionWidget} from "../stallion/ui/common.js"
+
 /**
  * @typedef {Object} PDFLinkServiceOptions
  * @property {EventBus} eventBus - The application event bus.
@@ -161,16 +162,25 @@ class PDFLinkService {
         this.pdfHistory.push({ namedDest, explicitDest, pageNumber });
       }
       
-      popupOneTimeBackButton(pageNumber < this.page);
       if( true ) {
-        splitPeekDiv.classList.remove("hidden")
-        splitPeekDiv.style.width = document.querySelector(".page").offsetWidth/2+"px";
-        splitPeekDiv.style.height = document.querySelector(".page").offsetHeight/2+"px";
-        document.querySelector(".page").style.width = document.querySelector(".page").offsetWidth/2+"px";
-        document.querySelector(".page").style.height = document.querySelector(".page").offsetHeight/2+"px";
-        splitPeekFrame.contentDocument.documentElement.appendNode(document.createTextNode("aaaaaaaa"))
+        var splitPeekerDiv = document.getElementById("splitPeekerDiv");
+        var splitPeekerFrame = document.getElementById("splitPeekerFrame");
+        var outerContainer = document.getElementById("outerContainer");
+        splitPeekerDiv.classList.remove("hidden")
+        outerContainer.classList.add("splitPeekerOpen");
+        var frame = splitPeekerFrame.contentDocument.documentElement;
+        
+        renderStallionWidget(frame,{
+          widgetHider: ()=>{outerContainer.classList.remove("splitPeekerOpen")},
+          container: splitPeekerDiv,
+          pdfDocument: this.pdfDocument,
+          pageIdx: pageNumber-1,
+          destArray: explicitDest, // GUY TODO: Improve
+        });
+        frame.querySelector('canvas').style.margin = '0px'
         return;
       }
+      popupOneTimeBackButton(pageNumber < this.page);
       this.pdfViewer.scrollPageIntoView({
         pageNumber,
         destArray: explicitDest,

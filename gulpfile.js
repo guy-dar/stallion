@@ -1616,9 +1616,9 @@ gulp.task(
       rimraf.sync(path.join(DIST_DIR, "*"));
 
       // Rebuilding manifests
-      var DIST_NAME = "pdfjs-dist";
-      var DIST_DESCRIPTION = "Generic build of Mozilla's PDF.js library.";
-      var DIST_KEYWORDS = ["Mozilla", "pdf", "pdf.js"];
+      var DIST_NAME = "stallion-dist";
+      var DIST_DESCRIPTION = "Generic build of Stallion PDF viewer.";
+      var DIST_KEYWORDS = ["stallion", "research", "tools", "pdf", "pdf.js"];
       var DIST_HOMEPAGE = "http://guyd1995.github.io/stallion/";
       var DIST_BUGS_URL = "https://github.com/guyd1995/stallion/issues";
       var DIST_LICENSE = "Apache-2.0";

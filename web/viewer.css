@@ -16,6 +16,7 @@
 @import url(pdf_viewer.css);
 
 :root {
+  --splitpeeker-width: 40%;
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
@@ -324,6 +325,20 @@ html[dir='ltr'] #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentatio
 html[dir='rtl'] #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentationMode) {
   transition-property: right;
   right: var(--sidebar-width);
+}
+
+html[dir='ltr'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
+  transition-property: left;
+  left: var(--splitpeeker-width);
+  zoom: 0.8;
+
+  /* margin:0px; */
+}
+html[dir='rtl'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
+  transition-property: right;
+  right: var(--splitpeeker-width);
+  zoom:0.8;
+  /* margin:0px; */
 }
 
 .toolbar {
@@ -1621,13 +1636,17 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   font-size: 10px;
 }
 
+#splitPeekerFrame{
+  width:100%;
+  height:100%;
+  overflow: hidden;
+  background-color: white;;
+}
+#splitPeekerDiv{
+  height:100%;
+  width:var(--splitpeeker-width);
+  position:aboslute;
 
-
-
-#splitPeekDiv{
-  top:10px;
-  width:500px;
-  position:sticky;
 }
 
 

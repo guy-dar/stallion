@@ -96,6 +96,48 @@ function moveElement(el, x, y){
     el.style.left = (el.offsetLeft + x) + "px";
 }
   
+function renderStallionWidget(frame, loc){
+  var {pdfDocument, pageIdx, container, widgetHider} = loc;
+  var newCanvas = document.createElement("canvas")
+  // var oldPage = document.querySelector(
+  //   "#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
+
+  return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
+    var viewport = pdfPage.getViewport({scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS });   //GUY TODO: Understand what's the right scale
+    newCanvas.width = 0.8 * viewport.width;
+    newCanvas.height = 0.8 *viewport.height;
+    
+    var ctx = newCanvas.getContext("2d");
+    var renderTask = pdfPage.render({
+      canvasContext: ctx,
+      viewport: viewport,
+    });
+    return renderTask.promise;
+  }).then(()=>{
+      newCanvas.style.top='0px'
+      newCanvas.style.left='0px'
+      newCanvas.style.width = '100%'
+      newCanvas.style.position = "absolute";
+      newCanvas.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
+      frame.appendChild(newCanvas);
+      window.onkeydown = (evt)=>{
+        if(evt.keyCode == 27)
+        {
+          container.classList.add("hidden");
+          widgetHider()
+        }
+      }
+
+  })
 
 
-export {makeDraggable, htmlClone, moveElement,  CSS_UNITS, popupOneTimeBackButton}
+
+}
+
+export 
+{makeDraggable, 
+  htmlClone, 
+  moveElement,  
+  CSS_UNITS, 
+  renderStallionWidget,
+   popupOneTimeBackButton};
