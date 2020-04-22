@@ -162,6 +162,15 @@ class PDFLinkService {
       }
       
       popupOneTimeBackButton(pageNumber < this.page);
+      if( true ) {
+        splitPeekDiv.classList.remove("hidden")
+        splitPeekDiv.style.width = document.querySelector(".page").offsetWidth/2+"px";
+        splitPeekDiv.style.height = document.querySelector(".page").offsetHeight/2+"px";
+        document.querySelector(".page").style.width = document.querySelector(".page").offsetWidth/2+"px";
+        document.querySelector(".page").style.height = document.querySelector(".page").offsetHeight/2+"px";
+        splitPeekFrame.contentDocument.documentElement.appendNode(document.createTextNode("aaaaaaaa"))
+        return;
+      }
       this.pdfViewer.scrollPageIntoView({
         pageNumber,
         destArray: explicitDest,

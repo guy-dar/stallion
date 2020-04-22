@@ -1,6 +1,14 @@
 language:  node_js 
 node_js:
-  - 12
+  - node
+apt:
+  packages:
+  - build-essential
+  - libcairo2-dev 
+  - libpango1.0-dev
+  - libjpeg-dev 
+  - libgif-dev 
+  - librsvg2-dev
 
 cache:
   directories:

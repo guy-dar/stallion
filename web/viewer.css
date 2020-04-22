@@ -154,14 +154,14 @@ body{
   float: left;
   clear: left;
   height:100%;
-  width:100%;
+  width:100%; 
   /* width:500px;
   height:450px; */
 
 }
 
 .peekBoxOptions{
-  z-index:2000;
+  height:40px;
   position: absolute;
   bottom: 3%; 
 }
@@ -1623,6 +1623,12 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 
 
+
+#splitPeekDiv{
+  top:10px;
+  width:500px;
+  position:sticky;
+}
 
 
 #viewer.textLayer-visible .textLayer {
