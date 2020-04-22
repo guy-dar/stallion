@@ -232,7 +232,11 @@ const PDFViewerApplication = {
    * @private
    */
   async _readPreferences() {
-    if (AppOptions.get("disablePreferences") === true) {
+    if (
+      (typeof PDFJSDev === "undefined" ||
+        PDFJSDev.test("!PRODUCTION || GENERIC")) &&
+      AppOptions.get("disablePreferences")
+    ) {
       // Give custom implementations of the default viewer a simpler way to
       // opt-out of having the `Preferences` override existing `AppOptions`.
       return;
@@ -331,9 +335,11 @@ const PDFViewerApplication = {
    * @private
    */
   async _initializeL10n() {
-    this.l10n = this.externalServices.createL10n({
-      locale: AppOptions.get("locale"),
-    });
+    this.l10n = this.externalServices.createL10n(
+      typeof PDFJSDev === "undefined" || PDFJSDev.test("!PRODUCTION || GENERIC")
+        ? { locale: AppOptions.get("locale") }
+        : null
+    );
     const dir = await this.l10n.getDirection();
     document.getElementsByTagName("html")[0].dir = dir;
   },
@@ -2602,13 +2608,22 @@ function webViewerKeyDown(evt) {
     }
   }
 
-  if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("MOZCENTRAL")) {
+  if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC || CHROME")) {
+    const { eventBus } = PDFViewerApplication;
+
     // CTRL or META without shift
     if (cmd === 1 || cmd === 8) {
       switch (evt.keyCode) {
         case 83: // s
-          PDFViewerApplication.download();
+          eventBus.dispatch("download", { source: window });
           handled = true;
+          break;
+
+        case 79: // o
+          if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
+            eventBus.dispatch("openfile", { source: window });
+            handled = true;
+          }
           break;
       }
     }
