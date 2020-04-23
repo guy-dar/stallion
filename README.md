@@ -27,8 +27,17 @@ Help us! [Contribute](#contributing)
 **Note**: We are not affiliated with Mozilla. We share nothing apart from keen appreciation for the open source community.
 None of our actions reflects on them.
 
-## Features
-In addition to all the amazing features in PDF.js, here are some more.
+## Overview
+Our goal is to maximize research productivity. We try to make a user-friendly PDF viewer with extra features that are: **intuitive**, **useful** and **configurable** with little effort. 
+There is no need to learn how to use the viewer. 
+You can just use it like any other viewer. However, the viewer will react differently, (hopefully) in a more intuitive way. 
+Some key features of the viewer (we are still halfway through):
+* **Links**: We replace internal links with split view peekers that show you the requested page along with the original page.
+* ***Reference Metadata & Abstract**: Presenting article metadata and abstract for articles for references in the document.
+* **"Remind" boxes**: Identifies mentions of defintions, theorems, references in the document and so on, and provides a reminder from their location in the document. 
+
+## Advanced Features
+Together with the above mentioned tweaks, we provide extra features for even better experience that require (very little) introduction.
 
 ### The Slash Bar
 With simplicity as a core principle in Stallion, we introduce the (*soon to be famous*) **Slash Bar** (triggered by pressing `/` anywhere in the document). 
@@ -54,26 +63,6 @@ The slash bar allows you to type commands instead of using on-screen buttons.
 
 Note: Typing wrong commands can get offensive.
 
-### Peek Box
-The Peek Box is used as a substitute for the standard find operation. 
-It allows you to peek at different locations without leaving the current.
-Ideally, it should allow you to review definitions, references, theorems, and other parts of the document without the burden of context switching.
-
-![Peek Box](docs/contents/images/peek_box.gif)
-
-
-### Double Slash: experimental
-Select text and double-click `/`. This will invoke a double slash operation. It serves several purposes
-
-#### 1. Peek at selection
-In its most naive use, it will just `fpeek` the selected text. 
-If the selection follows certain patterns, it is supposed to present some more advanced behavior (*intelligent peeking*) which is still under active development.
-
-#### 2. Reference Resolution (preliminary)
-If the reference trigger is fired (As of now, this happens if the selection has more than 20 characters), a reference summary box will appear. This summary includes: Title, URL, reference count and citation count. As of now, the resolution is still handled poorly. Plus, even if the right article is found,  data isn't always correct.
-
-#### 3. Quick fpeek 
-If no text is selected, the slash bar is opened, waiting for a keyword for `fpeek`.
 
 ## Getting the Code
 
