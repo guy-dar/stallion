@@ -97,12 +97,17 @@ function moveElement(el, x, y){
 }
   
 function renderStallionWidget(frame, loc){
+  var fitCanvasToFrame = loc.fitCanvasToFrame;
   var {pdfDocument, pageIdx, container, widgetHider} = loc;
   var newCanvas = document.createElement("canvas")
+  var iframeDoc = document.createElement("div")
+  var iframeBody = frame.getElementsByTagName("body")[0];
+
   // var oldPage = document.querySelector(
   //   "#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
-
-  return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
+    
+    container.classList.remove("hidden");
+    return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
     var viewport = pdfPage.getViewport({scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS });   //GUY TODO: Understand what's the right scale
     newCanvas.width =  viewport.width;
     newCanvas.height = viewport.height;
@@ -114,20 +119,24 @@ function renderStallionWidget(frame, loc){
     });
     return renderTask.promise;
   }).then(()=>{
-      newCanvas.style.top='0px'
-      newCanvas.style.left='0px'
-      newCanvas.style.width = '100%'
-      newCanvas.style.position = "absolute";
-      newCanvas.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
-      frame.appendChild(newCanvas);
-      window.addEventListener("keydown", (evt)=>{
-        if(evt.keyCode == 27)
-        {
-          container.classList.add("hidden");
-          widgetHider()
-        }
-      });
-
+    iframeDoc.style.top='0px'
+    iframeDoc.style.left='0px'
+    if(fitCanvasToFrame)
+        newCanvas.style.width = '100%'
+        
+    iframeDoc.style.position = "absolute";
+    iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
+    iframeBody.innerHTML = "";
+    iframeBody.appendChild(iframeDoc);
+    iframeDoc.appendChild(newCanvas);
+    window.addEventListener("keydown", (evt)=>{
+      if(evt.keyCode == 27)
+      {
+        container.classList.add("hidden");
+        widgetHider()
+      }
+    });
+      
   })
 
 

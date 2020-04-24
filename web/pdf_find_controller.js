@@ -151,7 +151,7 @@ class PDFFindController {
     }
     const pdfDocument = this._pdfDocument;
 
-    this._peekMatches = false;
+    this._peekMatches = true;
     if (this._state === null || this._shouldDirtyMatch(cmd, state)) {
       this._dirtyMatch = true;
     }

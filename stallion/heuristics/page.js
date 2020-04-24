@@ -1,14 +1,15 @@
 import {HeuristicsHelper} from "./helper.js"
-// import {StallionConfig} from "../"
+import {StallionConfig} from "../config/utils.js"
 
 class PageHeuristics{
     constructor(){
+        this.config = new StallionConfig();
         this.startRendering();
     }
 
     startRendering(){
-        this.debugMode = true;
-        this.helper = new HeuristicsHelper()
+        this.debugMode = this.config.getValue("debugMode");
+        this.helper = new HeuristicsHelper();
         this._prevLineFonts = null;
         this._curLineFonts = [];
         this._textBlocks = [];
@@ -20,7 +21,6 @@ class PageHeuristics{
 
         // Set primary estimates
         this._maxImgDim = 1000;
-        this._blockJumpPctTol = 1.4;
     }
 
 

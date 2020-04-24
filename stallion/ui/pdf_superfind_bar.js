@@ -81,7 +81,7 @@ class PDFSuperFindBar {
       var selection = window.getSelection().toString();
 
       try{
-              var contents = window.getSelection().getRangeAt(0).extractContents();
+              var contents = window.getSelection().getRangeAt(0).cloneContents();
               var children = contents.children;
               var sTexts = [];
               for(let child of children){
@@ -133,8 +133,10 @@ class PDFSuperFindBar {
     var url = "https://api.crossref.org/works?query.bibliographic=";
     // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
     selection = selection.replace(/\s+/g, ' ')
-    var {iframeDoc} = getPeekBox();
-
+    var {iframeBody} = getPeekBox();
+    iframeBody.innerHTML = "<div style='font-family:Nimbus;'></div>"
+    var iframeDoc = iframeBody.querySelector("div");
+    peekBoxContainer.classList.remove("hidden")
 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url + encodeURI(selection));
@@ -147,15 +149,15 @@ class PDFSuperFindBar {
         console.log(json);
         iframeDoc.style.backgroundColor = "white";
         // Title
-        var title_span = document.createElement("div");
-        title_span.innerText = "Title: " + item.title;        
+        var title_span = document.createElement("b");
+        title_span.appendChild(document.createTextNode(item.title));        
         iframeDoc.appendChild(title_span);
   
   
         // URL to item
         var a_href_span = document.createElement("div");
         var a_href = document.createElement("a");
-        a_href_span.innerText = "URL ";
+        // a_href_span.innerText = "URL ";
         a_href.href = item.URL;        
         a_href.innerText = item.URL;        
         a_href_span.appendChild( a_href );
@@ -163,7 +165,7 @@ class PDFSuperFindBar {
     
         // Citation Count
         var cite_span = document.createElement("div");
-        cite_span.innerText = "Cite Count "+item['is-referenced-by-count'];        
+        cite_span.innerText = "Cited by " + item['is-referenced-by-count'];        
         iframeDoc.appendChild(cite_span);
         
         // Abstract

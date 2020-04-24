@@ -14,7 +14,12 @@
  */
 
 import { parseQueryString } from "./ui_utils.js";
-import {popupOneTimeBackButton, renderStallionWidget} from "../stallion/ui/common.js"
+import {popupOneTimeBackButton} from "../stallion/ui/common.js"
+import {getSplitViewer} from "../stallion/ui/splitViewer.js"
+import {StallionConfig} from "../stallion/config/utils.js"
+
+var stallionConfig = new StallionConfig();
+
 
 /**
  * @typedef {Object} PDFLinkServiceOptions
@@ -162,22 +167,8 @@ class PDFLinkService {
         this.pdfHistory.push({ namedDest, explicitDest, pageNumber });
       }
       
-      if( true ) {
-        // var splitPeekerDiv = document.getElementById("splitPeekerDiv");
-        var splitPeekerFrame = document.getElementById("splitPeekerFrame");
-        var outerContainer = document.getElementById("outerContainer");
-        splitPeekerFrame.classList.remove("hidden")
-        outerContainer.classList.add("splitPeekerOpen");
-        var frame = splitPeekerFrame.contentDocument.documentElement;
-        
-        renderStallionWidget(frame,{
-          widgetHider: ()=>{outerContainer.classList.remove("splitPeekerOpen")},
-          container: splitPeekerFrame,
-          pdfDocument: this.pdfDocument,
-          pageIdx: pageNumber-1,
-          destArray: explicitDest, // GUY TODO: Improve
-        });
-        frame.style.direction = 'rtl';
+      if( stallionConfig.isValue("internalLinkViewer", "splitViewer") ) {
+        getSplitViewer(this.pdfDocument, pageNumber - 1);
         return;
       }
       popupOneTimeBackButton(pageNumber < this.page);
