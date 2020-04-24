@@ -60,6 +60,7 @@ select {
   margin:0px;
 }
 .peekBoxContainer{
+  zoom:0.8;
   position: absolute;
   top:30%;
   left:10%;

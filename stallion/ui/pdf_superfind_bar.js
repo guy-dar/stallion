@@ -134,7 +134,7 @@ class PDFSuperFindBar {
     // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
     selection = selection.replace(/\s+/g, ' ')
     var {iframeBody} = getPeekBox();
-    iframeBody.innerHTML = "<div style='font-family:Nimbus;'></div>"
+    iframeBody.innerHTML = "<div style='font-family:Cambria;'></div>"
     var iframeDoc = iframeBody.querySelector("div");
     peekBoxContainer.classList.remove("hidden")
 
