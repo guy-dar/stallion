@@ -23,7 +23,7 @@ function dragMouseDown(e) {
   pos3 = e.clientX;
   pos4 = e.clientY;
   elmnt.onmouseup = closeDragElement;
-  elmnt.onmouseout = closeDragElement;
+  elmnt.ownerDocument.onmouseenter = closeDragElement;
   // call a function whenever the cursor moves:
   for(var i=0; i < dragElements.length; i++)
       dragElements[i].onmousemove = elementDrag;
@@ -120,13 +120,13 @@ function renderStallionWidget(frame, loc){
       newCanvas.style.position = "absolute";
       newCanvas.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
       frame.appendChild(newCanvas);
-      window.onkeydown = (evt)=>{
+      window.addEventListener("keydown", (evt)=>{
         if(evt.keyCode == 27)
         {
           container.classList.add("hidden");
           widgetHider()
         }
-      }
+      });
 
   })
 

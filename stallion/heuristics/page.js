@@ -1,5 +1,5 @@
 import {HeuristicsHelper} from "./helper.js"
-
+// import {StallionConfig} from "../"
 
 class PageHeuristics{
     constructor(){
@@ -7,11 +7,12 @@ class PageHeuristics{
     }
 
     startRendering(){
-        this.debugMode = false;
+        this.debugMode = true;
         this.helper = new HeuristicsHelper()
         this._prevLineFonts = null;
         this._curLineFonts = [];
         this._textBlocks = [];
+        this._fonts = [];
         this._lineBeginning = [];
         this._curFontCtx = null;
         this._images = [];
@@ -45,13 +46,15 @@ class PageHeuristics{
     reportTextAction(ctx, fontData, scaledX, scaledY){
         if(!this.debugMode)
             return;
+
+        
         var font = this.helper.fontNormalizer(fontData);
-        var {e: x, f: y, a: scale} = ctx.getTransform(); //GUY TODO: As a matter of fact, a is only x's scale.
-        var h = font.fontSize * scale;   // GUY TODO: Should it be scaled?
+        var {e: x, f: y, a: scaleA, d: scaleB} = ctx.getTransform(); //GUY TODO: As a matter of fact, a is only x's scale.
+        var h = font.fontSize * scaleB;   // GUY TODO: Should it be scaled?
         var w = h;                       // GUY TODO: that's dumb. But cannot get char width. is it because the char is square?
         y -= h;
-        x += scaledX*scale;
-        y += scaledY*scale;
+        x += scaledX*scaleA;
+        y += scaledY*scaleB;
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
         var curTextBlock = this.helper._last(this._textBlocks);
@@ -75,18 +78,18 @@ class PageHeuristics{
             curTextBlock.fonts.push(newFontCtx.font);
 
         // Update
-        var {left, top, bottom, right} = newFontCtx;
+        var {x: left , y: top, bottom, right} = newFontCtx;
         curTextBlock.right = Math.max(right, curTextBlock.right);
         curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
-        // curTextBlock.left = Math.min(left, curTextBlock.left);
-        // curTextBlock.top = Math.min(top, curTextBlock.top);
+        curTextBlock.left = Math.min(left, curTextBlock.left);
+        curTextBlock.top = Math.min(top, curTextBlock.top);
 
         /**** Handle different fonts ****/
 
         if((font.name.indexOf('+CM') != -1)){                       // GUY TODO: Fix to regexp
             // Paint equations in debug mode
             if(this.debugMode){
-                this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10)  
+                this.helper.addRect(ctx, 'rgb(0,225,0,0.2)', x, y, w, h)  
                                     //Guy TODO: though works marvelously, 10 is just a heuristic. FIX 
             }
         }

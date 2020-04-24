@@ -25,7 +25,7 @@ function peekView(element, pageIdx, pdfDocument) {
       }).then(()=>{
   
         const spot =  {x: element.offsetLeft - 60, y: element.offsetTop - 100, 
-          width: oldPage.offsetWidth, height: 350}; //this.visual_heuristics.estimateTextBlock(pageIndex, element);
+          width: oldPage.offsetWidth, height: 500}; //this.visual_heuristics.estimateTextBlock(pageIndex, element);
           
           
           var {iframeBody, iframeDoc} = getPeekBox(spot.width, spot.height);

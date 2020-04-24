@@ -146,7 +146,6 @@ class PDFSuperFindBar {
         var item = json.message.items[0];
         console.log(json);
         iframeDoc.style.backgroundColor = "white";
-  
         // Title
         var title_span = document.createElement("div");
         title_span.innerText = "Title: " + item.title;        

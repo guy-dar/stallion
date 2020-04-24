@@ -3,7 +3,7 @@ class HeuristicsHelper{
 
     fontNormalizer(fontData){
         return {'name': fontData.font.name,
-                'fontSize': fontData.fontSize,       // GUY TODO: change this to scaled font size if necessary! probably is!
+                'fontSize': fontData.fontSize * fontData.textMatrixScale,       // GUY TODO: change this to scaled font size if necessary! probably is!
             };
     }
 
