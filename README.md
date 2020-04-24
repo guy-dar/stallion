@@ -19,6 +19,10 @@ You can also visit us on our website:
 <p align="center">
 <a href="https://guyd1995.github.io/stallion"><img src="docs/contents/images/homepage_btn.png" title="Homepage" width="200" height="80"/></a>
 </p>
+For installation instructions click here:
+<p align="center">
+<a href="https://guyd1995.github.io/stallion/users#install"><img src="docs/contents/images/install_btn.png" title="Install" width="200" height="80"/></a>
+</p>
 
 If you are experiencing trouble, please let us know.
 
