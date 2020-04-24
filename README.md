@@ -33,10 +33,27 @@ There is no need to learn how to use the viewer.
 You can just use it like any other viewer. However, the viewer will react differently, (hopefully) in a more intuitive way. 
 Some key features of the viewer (we are still halfway through):
 * **Links**: We replace internal links with split view peekers that show you the requested page along with the original page.
-* ***Reference Metadata & Abstract**: Presenting article metadata and abstract for articles for references in the document.
+* **Reference Metadata & Abstract**: Presenting article metadata and abstract for articles for references in the document.
 * **"Remind" boxes**: Identifies mentions of defintions, theorems, references in the document and so on, and provides a reminder from their location in the document. 
 
-## Advanced Features
+## Basic Features
+### Internal Links
+When clicking on internal links, the will *not* jump to the requested position. Instead, the requested page will be presented on the side for convenient review.
+
+![Internal Link](docs/contents/images/internal_link.gif)
+
+
+### References
+Select a reference and double click `/` (slash). If it is identified as a reference by Stallion, it will try to resolve it in two steps:
+1. Stallion will send a request to [CrossRef](https://www.crossref.org/). If the reference was identified correctly Stallion will present article metadata.
+
+* After metadata was extracted, Stallion sends a request to [Semantic Scholar](https://www.semanticscholar.org/). If the record is found, an abstract will soon appear.
+
+![Reference Resolution](docs/contents/images/get_abstract.gif)
+
+
+
+## Advanced Features (under construction)
 Together with the above mentioned tweaks, we provide extra features for even better experience that require (very little) introduction.
 
 ### The Slash Bar
