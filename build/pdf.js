@@ -130,36 +130,36 @@ var pdfjsSharedUtil = __w_pdfjs_require__(1);
 
 var pdfjsDisplayAPI = __w_pdfjs_require__(3);
 
-var pdfjsDisplayTextLayer = __w_pdfjs_require__(18);
+var pdfjsDisplayTextLayer = __w_pdfjs_require__(20);
 
-var pdfjsDisplayAnnotationLayer = __w_pdfjs_require__(19);
+var pdfjsDisplayAnnotationLayer = __w_pdfjs_require__(21);
 
-var pdfjsDisplayDisplayUtils = __w_pdfjs_require__(6);
+var pdfjsDisplayDisplayUtils = __w_pdfjs_require__(8);
 
-var pdfjsDisplaySVG = __w_pdfjs_require__(20);
+var pdfjsDisplaySVG = __w_pdfjs_require__(22);
 
-const pdfjsDisplayWorkerOptions = __w_pdfjs_require__(12);
+const pdfjsDisplayWorkerOptions = __w_pdfjs_require__(14);
 
-const pdfjsDisplayAPICompatibility = __w_pdfjs_require__(8);
+const pdfjsDisplayAPICompatibility = __w_pdfjs_require__(10);
 
 {
   const {
     isNodeJS
-  } = __w_pdfjs_require__(9);
+  } = __w_pdfjs_require__(11);
 
   if (isNodeJS) {
-    const PDFNodeStream = __w_pdfjs_require__(21).PDFNodeStream;
+    const PDFNodeStream = __w_pdfjs_require__(23).PDFNodeStream;
 
     pdfjsDisplayAPI.setPDFNetworkStreamFactory(params => {
       return new PDFNodeStream(params);
     });
   } else {
-    const PDFNetworkStream = __w_pdfjs_require__(24).PDFNetworkStream;
+    const PDFNetworkStream = __w_pdfjs_require__(26).PDFNetworkStream;
 
     let PDFFetchStream;
 
     if (pdfjsDisplayDisplayUtils.isFetchSupported()) {
-      PDFFetchStream = __w_pdfjs_require__(25).PDFFetchStream;
+      PDFFetchStream = __w_pdfjs_require__(27).PDFFetchStream;
     }
 
     pdfjsDisplayAPI.setPDFNetworkStreamFactory(params => {
@@ -1054,25 +1054,25 @@ var _page = __w_pdfjs_require__(4);
 
 var _util = __w_pdfjs_require__(1);
 
-var _display_utils = __w_pdfjs_require__(6);
+var _display_utils = __w_pdfjs_require__(8);
 
-var _font_loader = __w_pdfjs_require__(7);
+var _font_loader = __w_pdfjs_require__(9);
 
-var _api_compatibility = __w_pdfjs_require__(8);
+var _api_compatibility = __w_pdfjs_require__(10);
 
-var _canvas = __w_pdfjs_require__(10);
+var _canvas = __w_pdfjs_require__(12);
 
-var _worker_options = __w_pdfjs_require__(12);
+var _worker_options = __w_pdfjs_require__(14);
 
-var _is_node = __w_pdfjs_require__(9);
+var _is_node = __w_pdfjs_require__(11);
 
-var _message_handler = __w_pdfjs_require__(13);
+var _message_handler = __w_pdfjs_require__(15);
 
-var _metadata = __w_pdfjs_require__(14);
+var _metadata = __w_pdfjs_require__(16);
 
-var _transport_stream = __w_pdfjs_require__(16);
+var _transport_stream = __w_pdfjs_require__(18);
 
-var _webgl = __w_pdfjs_require__(17);
+var _webgl = __w_pdfjs_require__(19);
 
 const DEFAULT_RANGE_CHUNK_SIZE = 65536;
 const RENDERING_CANCELLED_TIMEOUT = 100;
@@ -3243,23 +3243,26 @@ exports.PageHeuristics = void 0;
 
 var _helper = __w_pdfjs_require__(5);
 
+var _utils = __w_pdfjs_require__(6);
+
 class PageHeuristics {
   constructor() {
+    this.config = new _utils.StallionConfig();
     this.startRendering();
   }
 
   startRendering() {
-    this.debugMode = false;
+    this.debugMode = this.config.getValue("debugMode");
     this.helper = new _helper.HeuristicsHelper();
     this._prevLineFonts = null;
     this._curLineFonts = [];
     this._textBlocks = [];
+    this._fonts = [];
     this._lineBeginning = [];
     this._curFontCtx = null;
     this._images = [];
     this.idx = 0;
     this._maxImgDim = 1000;
-    this._blockJumpPctTol = 1.4;
   }
 
   isTextBlockShared(newFontCtx, curTextBlock, prevFontCtx) {
@@ -3282,13 +3285,14 @@ class PageHeuristics {
     var {
       e: x,
       f: y,
-      a: scale
+      a: scaleA,
+      d: scaleB
     } = ctx.getTransform();
-    var h = font.fontSize * scale;
+    var h = font.fontSize * scaleB;
     var w = h;
     y -= h;
-    x += scaledX * scale;
-    y += scaledY * scale;
+    x += scaledX * scaleA;
+    y += scaledY * scaleB;
 
     var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
 
@@ -3310,17 +3314,19 @@ class PageHeuristics {
 
     if (!this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts)) curTextBlock.fonts.push(newFontCtx.font);
     var {
-      left,
-      top,
+      x: left,
+      y: top,
       bottom,
       right
     } = newFontCtx;
     curTextBlock.right = Math.max(right, curTextBlock.right);
     curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
+    curTextBlock.left = Math.min(left, curTextBlock.left);
+    curTextBlock.top = Math.min(top, curTextBlock.top);
 
     if (font.name.indexOf('+CM') != -1) {
       if (this.debugMode) {
-        this.helper.addRect(ctx, 'rgb(0,0,225,0.2)', scaledX, scaledY, 10, -10);
+        this.helper.addRect(ctx, 'rgb(0,225,0,0.2)', x, y, w, h);
       }
     }
 
@@ -3385,7 +3391,7 @@ class HeuristicsHelper {
   fontNormalizer(fontData) {
     return {
       'name': fontData.font.name,
-      'fontSize': fontData.fontSize
+      'fontSize': fontData.fontSize * fontData.textMatrixScale
     };
   }
 
@@ -3518,6 +3524,61 @@ exports.HeuristicsHelper = HeuristicsHelper;
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __w_pdfjs_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.StallionConfig = void 0;
+
+var _myconfig = __w_pdfjs_require__(7);
+
+class StallionConfig {
+  constructor() {
+    this.json = (0, _myconfig.getConfig)();
+  }
+
+  getValue(key) {
+    return this.json[key];
+  }
+
+  isValue(key, value) {
+    return this.getValue(key) == value;
+  }
+
+}
+
+exports.StallionConfig = StallionConfig;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __w_pdfjs_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getConfig = getConfig;
+var myConfig = {
+  "internalLinkViewer": "splitViewer",
+  "debugMode": false,
+  "peekFind": "peekBox",
+  "FindBar": "splitViewer"
+};
+
+function getConfig() {
+  return myConfig;
+}
+
+;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -4026,7 +4087,7 @@ class PDFDateString {
 exports.PDFDateString = PDFDateString;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -4413,7 +4474,7 @@ class FontFaceObject {
 exports.FontFaceObject = FontFaceObject;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -4423,7 +4484,7 @@ const compatibilityParams = Object.create(null);
 {
   const {
     isNodeJS
-  } = __w_pdfjs_require__(9);
+  } = __w_pdfjs_require__(11);
 
   const userAgent = typeof navigator !== "undefined" && navigator.userAgent || "";
   const isIE = /Trident/.test(userAgent);
@@ -4445,7 +4506,7 @@ const compatibilityParams = Object.create(null);
 exports.apiCompatibilityParams = Object.freeze(compatibilityParams);
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -4459,7 +4520,7 @@ const isNodeJS = typeof process === "object" && process + "" === "[object proces
 exports.isNodeJS = isNodeJS;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -4472,7 +4533,7 @@ exports.CanvasGraphics = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _pattern_helper = __w_pdfjs_require__(11);
+var _pattern_helper = __w_pdfjs_require__(13);
 
 var MIN_FONT_SIZE = 16;
 var MAX_FONT_SIZE = 100;
@@ -6536,7 +6597,7 @@ var CanvasGraphics = function CanvasGraphicsClosure() {
 exports.CanvasGraphics = CanvasGraphics;
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -7017,7 +7078,7 @@ var TilingPattern = function TilingPatternClosure() {
 exports.TilingPattern = TilingPattern;
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -7033,7 +7094,7 @@ GlobalWorkerOptions.workerPort = GlobalWorkerOptions.workerPort === undefined ? 
 GlobalWorkerOptions.workerSrc = GlobalWorkerOptions.workerSrc === undefined ? "" : GlobalWorkerOptions.workerSrc;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -7534,7 +7595,7 @@ class MessageHandler {
 exports.MessageHandler = MessageHandler;
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -7547,7 +7608,7 @@ exports.Metadata = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _xml_parser = __w_pdfjs_require__(15);
+var _xml_parser = __w_pdfjs_require__(17);
 
 class Metadata {
   constructor(data) {
@@ -7662,7 +7723,7 @@ class Metadata {
 exports.Metadata = Metadata;
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -8105,7 +8166,7 @@ class SimpleXMLParser extends XMLParserBase {
 exports.SimpleXMLParser = SimpleXMLParser;
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -8460,7 +8521,7 @@ class PDFDataTransportStreamRangeReader {
 }
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -8907,7 +8968,7 @@ var WebGLUtils = function WebGLUtilsClosure() {
 }();
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -9602,7 +9663,7 @@ var renderTextLayer = function renderTextLayerClosure() {
 exports.renderTextLayer = renderTextLayer;
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -9613,7 +9674,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AnnotationLayer = void 0;
 
-var _display_utils = __w_pdfjs_require__(6);
+var _display_utils = __w_pdfjs_require__(8);
 
 var _util = __w_pdfjs_require__(1);
 
@@ -10635,7 +10696,7 @@ class AnnotationLayer {
 exports.AnnotationLayer = AnnotationLayer;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -10648,9 +10709,9 @@ exports.SVGGraphics = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _display_utils = __w_pdfjs_require__(6);
+var _display_utils = __w_pdfjs_require__(8);
 
-var _is_node = __w_pdfjs_require__(9);
+var _is_node = __w_pdfjs_require__(11);
 
 let SVGGraphics = function () {
   throw new Error("Not implemented: SVGGraphics");
@@ -12170,7 +12231,7 @@ exports.SVGGraphics = SVGGraphics;
 }
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -12183,7 +12244,7 @@ exports.PDFNodeStream = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(22);
+var _network_utils = __w_pdfjs_require__(24);
 
 const fs = require("fs");
 
@@ -12637,7 +12698,7 @@ class PDFNodeStreamFsRangeReader extends BaseRangeReader {
 }
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -12653,7 +12714,7 @@ exports.validateResponseStatus = validateResponseStatus;
 
 var _util = __w_pdfjs_require__(1);
 
-var _content_disposition = __w_pdfjs_require__(23);
+var _content_disposition = __w_pdfjs_require__(25);
 
 function validateRangeRequestCapabilities({
   getResponseHeader,
@@ -12729,7 +12790,7 @@ function validateResponseStatus(status) {
 }
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -12917,7 +12978,7 @@ function getFilenameFromContentDispositionHeader(contentDisposition) {
 }
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -12930,7 +12991,7 @@ exports.PDFNetworkStream = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(22);
+var _network_utils = __w_pdfjs_require__(24);
 
 ;
 const OK_RESPONSE = 200;
@@ -13474,7 +13535,7 @@ class PDFNetworkStreamRangeRequestReader {
 }
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __w_pdfjs_require__) {
 
 "use strict";
@@ -13487,7 +13548,7 @@ exports.PDFFetchStream = void 0;
 
 var _util = __w_pdfjs_require__(1);
 
-var _network_utils = __w_pdfjs_require__(22);
+var _network_utils = __w_pdfjs_require__(24);
 
 function createFetchOptions(headers, withCredentials, abortController) {
   return {

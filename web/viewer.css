@@ -403,6 +403,7 @@
 }
 
 :root {
+  --splitpeeker-width: 45%;
   --sidebar-width: 200px;
   --sidebar-transition-duration: 200ms;
   --sidebar-transition-timing-function: ease;
@@ -442,18 +443,24 @@ select {
   display: none !important;
 }
 
+.peekBoxContainer *{
+  margin:0px;
+}
 .peekBoxContainer{
+  zoom:0.8;
   position: absolute;
   top:30%;
   left:10%;
-  width:500px;
-  height:500px;
+  opacity:0.9;
   padding-top:6px;
   overflow:hidden;
-  border:1px solid black;
-  box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.25);
+  border-radius:18px;
+  shadow:4px solid black;
+  /* border:3px solid black; */
+  /* box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.5); */
   background-image: url(images/texture.png),
                     linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85));
+  width:350px;
 }
 /* #peekBox .page{
   zoom:0.8;
@@ -535,23 +542,28 @@ body{
 
 
 .peekBox{
-  position:absolute;
+  position:relative;
   top:0px;
+  padding:0px;
   cursor:-webkit-grab !important;
   cursor:grab !important;
   float: left;
   clear: left;
-  height:100%;
   width:100%;
+  height:400px; 
   /* width:500px;
   height:450px; */
 
 }
 
 .peekBoxOptions{
-  z-index:2000;
+  opacity:0.5;
+  height:40px;
   position: absolute;
-  bottom: 3%; 
+  bottom: 3%;
+  background-image: url(images/texture.png),
+  linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.25));
+
 }
 
 
@@ -791,6 +803,23 @@ html[dir='rtl'] #outerContainer.sidebarOpen #viewerContainer:not(.pdfPresentatio
   right: 200px;
   right: var(--sidebar-width);
 }
+
+html[dir='ltr'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
+  transition-property: left;
+  left: 45%;
+  left: var(--splitpeeker-width);
+}
+html[dir='rtl'] #outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) {
+  transition-property: right;
+  right: 45%;
+  right: var(--splitpeeker-width);
+}
+
+#outerContainer.splitPeekerOpen #viewerContainer:not(.pdfPresentationMode) #viewer {
+  /* zoom: 0.8;   */
+  margin:0px; 
+}
+
 
 .toolbar {
   position: relative;
@@ -2121,7 +2150,23 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 }
 
 
+#splitPeekerFrame{
+  left:-5%;
+  border-radius: 10px;
+  outline: none;
+  z-index:10000;
+  border:0px;
+  /* position:absolute; */
+  overflow: hidden;
+  opacity:0.7;
+  background-color: white;
+  height:100%;
+  width: 55%;
+  overflow: hidden;
+  /* width:var(--splitpeeker-width); */
+  position:relative;
 
+}
 
 
 #viewer.textLayer-visible .textLayer {

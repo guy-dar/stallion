@@ -37381,25 +37381,25 @@ var Font = function FontClosure() {
     return cmap + "\x00\x04" + string16(format314.length + 4) + format314 + header31012 + format31012;
   }
 
-  function validateOS2Table(os2) {
-    var stream = new _stream.Stream(os2.data);
-    var version = stream.getUint16();
-    stream.getBytes(60);
-    var selection = stream.getUint16();
+  function validateOS2Table(os2, file) {
+    file.pos = (file.start || 0) + os2.offset;
+    var version = file.getUint16();
+    file.skip(60);
+    var selection = file.getUint16();
 
     if (version < 4 && selection & 0x0300) {
       return false;
     }
 
-    var firstChar = stream.getUint16();
-    var lastChar = stream.getUint16();
+    var firstChar = file.getUint16();
+    var lastChar = file.getUint16();
 
     if (firstChar > lastChar) {
       return false;
     }
 
-    stream.getBytes(6);
-    var usWinAscent = stream.getUint16();
+    file.skip(6);
+    var usWinAscent = file.getUint16();
 
     if (usWinAscent === 0) {
       return false;
@@ -37798,7 +37798,7 @@ var Font = function FontClosure() {
         var segment;
         var start = (file.start ? file.start : 0) + cmap.offset;
         file.pos = start;
-        file.getUint16();
+        file.skip(2);
         var numTables = file.getUint16();
         var potentialTable;
         var canBreak = false;
@@ -37856,8 +37856,7 @@ var Font = function FontClosure() {
         }
 
         var format = file.getUint16();
-        file.getUint16();
-        file.getUint16();
+        file.skip(2 + 2);
         var hasShortCmap = false;
         var mappings = [];
         var j, glyphId;
@@ -37879,7 +37878,7 @@ var Font = function FontClosure() {
           hasShortCmap = true;
         } else if (format === 4) {
           var segCount = file.getUint16() >> 1;
-          file.getBytes(6);
+          file.skip(6);
           var segIndex,
               segments = [];
 
@@ -37889,7 +37888,7 @@ var Font = function FontClosure() {
             });
           }
 
-          file.getUint16();
+          file.skip(2);
 
           for (segIndex = 0; segIndex < segCount; segIndex++) {
             segments[segIndex].start = file.getUint16();
@@ -38277,7 +38276,7 @@ var Font = function FontClosure() {
         var length = post.length,
             end = start + length;
         var version = font.getInt32();
-        font.getBytes(28);
+        font.skip(28);
         var glyphNames;
         var valid = true;
         var i;
@@ -38975,7 +38974,7 @@ var Font = function FontClosure() {
         data: createCmapTable(newMapping.charCodeToGlyphId, numGlyphsOut)
       };
 
-      if (!tables["OS/2"] || !validateOS2Table(tables["OS/2"])) {
+      if (!tables["OS/2"] || !validateOS2Table(tables["OS/2"], font)) {
         tables["OS/2"] = {
           tag: "OS/2",
           data: createOS2Table(properties, newMapping.charCodeToGlyphId, metricsOverride)

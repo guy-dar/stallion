@@ -121,11 +121,11 @@ var pdfjsWebApp, pdfjsWebAppOptions;
 }
 ;
 {
-  __webpack_require__(42);
+  __webpack_require__(45);
 }
 ;
 {
-  __webpack_require__(47);
+  __webpack_require__(50);
 }
 
 function getViewerConfiguration() {
@@ -319,21 +319,21 @@ var _pdf_history = __webpack_require__(26);
 
 var _pdf_link_service = __webpack_require__(27);
 
-var _pdf_outline_viewer = __webpack_require__(28);
+var _pdf_outline_viewer = __webpack_require__(31);
 
-var _pdf_presentation_mode = __webpack_require__(29);
+var _pdf_presentation_mode = __webpack_require__(32);
 
-var _pdf_sidebar_resizer = __webpack_require__(30);
+var _pdf_sidebar_resizer = __webpack_require__(33);
 
-var _pdf_thumbnail_viewer = __webpack_require__(31);
+var _pdf_thumbnail_viewer = __webpack_require__(34);
 
-var _pdf_viewer = __webpack_require__(33);
+var _pdf_viewer = __webpack_require__(36);
 
-var _secondary_toolbar = __webpack_require__(38);
+var _secondary_toolbar = __webpack_require__(41);
 
-var _toolbar = __webpack_require__(40);
+var _toolbar = __webpack_require__(43);
 
-var _view_history = __webpack_require__(41);
+var _view_history = __webpack_require__(44);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -537,7 +537,7 @@ var PDFViewerApplication = {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              if (!(_app_options.AppOptions.get("disablePreferences") === true)) {
+              if (!_app_options.AppOptions.get("disablePreferences")) {
                 _context2.next = 2;
                 break;
               }
@@ -2920,11 +2920,24 @@ function webViewerKeyDown(evt) {
     }
   }
 
+  var eventBus = PDFViewerApplication.eventBus;
+
   if (cmd === 1 || cmd === 8) {
     switch (evt.keyCode) {
       case 83:
-        PDFViewerApplication.download();
+        eventBus.dispatch("download", {
+          source: window
+        });
         handled = true;
+        break;
+
+      case 79:
+        {
+          eventBus.dispatch("openfile", {
+            source: window
+          });
+          handled = true;
+        }
         break;
     }
   }
@@ -4727,6 +4740,10 @@ var defaultOptions = {
     value: false,
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
+  printResolution: {
+    value: 150,
+    kind: OptionKind.VIEWER
+  },
   renderer: {
     value: "canvas",
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
@@ -4828,10 +4845,6 @@ var defaultOptions = {
   };
   defaultOptions.locale = {
     value: typeof navigator !== "undefined" ? navigator.language : "en-US",
-    kind: OptionKind.VIEWER
-  };
-  defaultOptions.printResolution = {
-    value: 150,
     kind: OptionKind.VIEWER
   };
 }
@@ -7234,7 +7247,7 @@ var PDFFindController = /*#__PURE__*/function () {
       }
 
       var pdfDocument = this._pdfDocument;
-      this._peekMatches = false;
+      this._peekMatches = true;
 
       if (this._state === null || this._shouldDirtyMatch(cmd, state)) {
         this._dirtyMatch = true;
@@ -8141,39 +8154,30 @@ exports.peekView = peekView;
 var _common = __webpack_require__(21);
 
 function peekView(element, pageIdx, pdfDocument) {
-  var newCanvas = document.createElement("canvas");
+  var peekBoxContainer = document.getElementById("peekBoxContainer");
   var oldPage = document.querySelector("#viewerContainer .page[data-page-number='" + (pageIdx + 1) + "']");
-  var scaleRatio = null;
-  pdfDocument.getPage(pageIdx + 1).then(function (pdfPage) {
-    var viewport = pdfPage.getViewport({
-      scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS
-    });
-    newCanvas.width = viewport.width;
-    newCanvas.height = viewport.height;
-    var ctx = newCanvas.getContext("2d");
-    var renderTask = pdfPage.render({
-      canvasContext: ctx,
-      viewport: viewport
-    });
-    return renderTask.promise;
-  }).then(function () {
-    var spot = {
-      x: element.offsetLeft - 60,
-      y: element.offsetTop - 100,
-      width: oldPage.offsetWidth,
-      height: 350
-    };
-
+  var peekBox = document.querySelector("#peekBoxContainer .peekBox").contentDocument.documentElement;
+  var spot = {
+    x: element.offsetLeft - 60,
+    y: element.offsetTop - 100,
+    width: oldPage.offsetWidth,
+    height: 500
+  };
+  var loc = {
+    pdfDocument: pdfDocument,
+    pageIdx: pageIdx,
+    container: peekBoxContainer,
+    widgetHider: function widgetHider() {},
+    fitCanvasToFrame: false
+  };
+  (0, _common.renderStallionWidget)(peekBox, loc).then(function () {
     var _getPeekBox = getPeekBox(spot.width, spot.height),
         iframeBody = _getPeekBox.iframeBody,
         iframeDoc = _getPeekBox.iframeDoc;
 
-    iframeDoc.id = "peekBoxPage";
+    iframeDoc.style.position = "absolute";
     iframeDoc.style.left = -spot.x + "px";
     iframeDoc.style.top = -spot.y + "px";
-    iframeDoc.style.position = "absolute";
-    iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
-    iframeDoc.appendChild(newCanvas);
     var highlightObject = oldPage.querySelector("span > .highlight");
     var textLayer = (0, _common.htmlClone)(highlightObject);
     textLayer.style.left = element.offsetLeft + "px";
@@ -8185,7 +8189,7 @@ function peekView(element, pageIdx, pdfDocument) {
     textLayer.style.opacity = 0.3;
     textLayer.style.color = 'transparent';
     iframeDoc.appendChild(textLayer);
-    (0, _common.makeDraggable)(iframeDoc, [newCanvas, textLayer], true);
+    (0, _common.makeDraggable)(iframeDoc, [iframeDoc.querySelector("canvas"), textLayer], true);
   })["catch"](function (reason) {
     console.error("Error: " + reason);
   });
@@ -8196,8 +8200,6 @@ var _pinnedPeekBoxes = 0;
 function getPeekBox() {
   var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 400;
   var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
-  var reveal = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var clearBefore = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
   var peekBoxContainer = document.getElementById("peekBoxContainer");
   var peekBox = document.querySelector("#peekBoxContainer .peekBox");
   var iframeBody = peekBox.contentDocument.documentElement.getElementsByTagName("body")[0];
@@ -8214,9 +8216,7 @@ function getPeekBox() {
     _pinnedPeekBoxes += 1;
   };
 
-  if (clearBefore) iframeBody.innerHTML = '<div></div>';
   var iframeDoc = iframeBody.children[0];
-  if (reveal) peekBoxContainer.classList.remove("hidden");
 
   iframeBody.onmousedown = function () {
     peekBoxContainer.style.backgroundColor = "black";
@@ -8253,7 +8253,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.makeDraggable = makeDraggable;
 exports.htmlClone = htmlClone;
 exports.moveElement = moveElement;
+exports.renderStallionWidget = renderStallionWidget;
 exports.popupOneTimeBackButton = popupOneTimeBackButton;
+exports.CSS_UNITS = void 0;
+var CSS_UNITS = 96.0 / 72.0;
+exports.CSS_UNITS = CSS_UNITS;
 
 function makeDraggable(elmnt) {
   var dragElements = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -8282,7 +8286,7 @@ function makeDraggable(elmnt) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     elmnt.onmouseup = closeDragElement;
-    elmnt.onmouseout = closeDragElement;
+    elmnt.ownerDocument.onmouseenter = closeDragElement;
 
     for (var i = 0; i < dragElements.length; i++) {
       dragElements[i].onmousemove = elementDrag;
@@ -8346,6 +8350,46 @@ function htmlClone(node) {
 function moveElement(el, x, y) {
   el.style.top = el.offsetTop + y + "px";
   el.style.left = el.offsetLeft + x + "px";
+}
+
+function renderStallionWidget(frame, loc) {
+  var fitCanvasToFrame = loc.fitCanvasToFrame;
+  var pdfDocument = loc.pdfDocument,
+      pageIdx = loc.pageIdx,
+      container = loc.container,
+      widgetHider = loc.widgetHider;
+  var newCanvas = document.createElement("canvas");
+  var iframeDoc = document.createElement("div");
+  var iframeBody = frame.getElementsByTagName("body")[0];
+  container.classList.remove("hidden");
+  return pdfDocument.getPage(pageIdx + 1).then(function (pdfPage) {
+    var viewport = pdfPage.getViewport({
+      scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS
+    });
+    newCanvas.width = viewport.width;
+    newCanvas.height = viewport.height;
+    var ctx = newCanvas.getContext("2d");
+    var renderTask = pdfPage.render({
+      canvasContext: ctx,
+      viewport: viewport
+    });
+    return renderTask.promise;
+  }).then(function () {
+    iframeDoc.style.top = '0px';
+    iframeDoc.style.left = '0px';
+    if (fitCanvasToFrame) newCanvas.style.width = '100%';
+    iframeDoc.style.position = "absolute";
+    iframeDoc.innerHTML = '<link rel="stylesheet" type="text/css" href="viewer.css">';
+    iframeBody.innerHTML = "";
+    iframeBody.appendChild(iframeDoc);
+    iframeDoc.appendChild(newCanvas);
+    window.addEventListener("keydown", function (evt) {
+      if (evt.keyCode == 27) {
+        container.classList.add("hidden");
+        widgetHider();
+      }
+    });
+  });
 }
 
 /***/ }),
@@ -8439,7 +8483,7 @@ var HeuristicsHelper = /*#__PURE__*/function () {
     value: function fontNormalizer(fontData) {
       return {
         'name': fontData.font.name,
-        'fontSize': fontData.fontSize
+        'fontSize': fontData.fontSize * fontData.textMatrixScale
       };
     }
   }, {
@@ -8689,7 +8733,7 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
         var selection = window.getSelection().toString();
 
         try {
-          var contents = window.getSelection().getRangeAt(0).extractContents();
+          var contents = window.getSelection().getRangeAt(0).cloneContents();
           var children = contents.children;
           var sTexts = [];
 
@@ -8757,8 +8801,11 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
       selection = selection.replace(/\s+/g, ' ');
 
       var _getPeekBox = (0, _peekbox.getPeekBox)(),
-          iframeDoc = _getPeekBox.iframeDoc;
+          iframeBody = _getPeekBox.iframeBody;
 
+      iframeBody.innerHTML = "<div style='font-family:Cambria;'></div>";
+      var iframeDoc = iframeBody.querySelector("div");
+      peekBoxContainer.classList.remove("hidden");
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url + encodeURI(selection));
       xhr.responseType = 'json';
@@ -8769,18 +8816,17 @@ var PDFSuperFindBar = /*#__PURE__*/function () {
           var item = json.message.items[0];
           console.log(json);
           iframeDoc.style.backgroundColor = "white";
-          var title_span = document.createElement("div");
-          title_span.innerText = "Title: " + item.title;
+          var title_span = document.createElement("b");
+          title_span.appendChild(document.createTextNode(item.title));
           iframeDoc.appendChild(title_span);
           var a_href_span = document.createElement("div");
           var a_href = document.createElement("a");
-          a_href_span.innerText = "URL ";
           a_href.href = item.URL;
           a_href.innerText = item.URL;
           a_href_span.appendChild(a_href);
           iframeDoc.appendChild(a_href_span);
           var cite_span = document.createElement("div");
-          cite_span.innerText = "Cite Count " + item['is-referenced-by-count'];
+          cite_span.innerText = "Cited by " + item['is-referenced-by-count'];
           iframeDoc.appendChild(cite_span);
           var abs_span = document.createElement("div");
           abs_span.innerHTML = "<b>Abstract</b><br/> ";
@@ -9649,6 +9695,10 @@ var _ui_utils = __webpack_require__(5);
 
 var _common = __webpack_require__(21);
 
+var _splitViewer = __webpack_require__(28);
+
+var _utils = __webpack_require__(29);
+
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -9656,6 +9706,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var stallionConfig = new _utils.StallionConfig();
 
 var PDFLinkService = /*#__PURE__*/function () {
   function PDFLinkService() {
@@ -9750,6 +9802,11 @@ var PDFLinkService = /*#__PURE__*/function () {
             explicitDest: explicitDest,
             pageNumber: pageNumber
           });
+        }
+
+        if (stallionConfig.isValue("internalLinkViewer", "splitViewer")) {
+          (0, _splitViewer.getSplitViewer)(_this.pdfDocument, pageNumber - 1);
+          return;
         }
 
         (0, _common.popupOneTimeBackButton)(pageNumber < _this.page);
@@ -10136,6 +10193,106 @@ exports.SimpleLinkService = SimpleLinkService;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getSplitViewer = getSplitViewer;
+
+var _common = __webpack_require__(21);
+
+function getSplitViewer(pdfDocument, pageIdx) {
+  var splitPeekerFrame = document.getElementById("splitPeekerFrame");
+  var outerContainer = document.getElementById("outerContainer");
+  splitPeekerFrame.classList.remove("hidden");
+  outerContainer.classList.add("splitPeekerOpen");
+  var frame = splitPeekerFrame.contentDocument.documentElement;
+  (0, _common.renderStallionWidget)(frame, {
+    fitCanvasToFrame: true,
+    widgetHider: function widgetHider() {
+      outerContainer.classList.remove("splitPeekerOpen");
+    },
+    container: splitPeekerFrame,
+    pdfDocument: pdfDocument,
+    pageIdx: pageIdx
+  });
+  frame.style.direction = 'rtl';
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.StallionConfig = void 0;
+
+var _myconfig = __webpack_require__(30);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var StallionConfig = /*#__PURE__*/function () {
+  function StallionConfig() {
+    _classCallCheck(this, StallionConfig);
+
+    this.json = (0, _myconfig.getConfig)();
+  }
+
+  _createClass(StallionConfig, [{
+    key: "getValue",
+    value: function getValue(key) {
+      return this.json[key];
+    }
+  }, {
+    key: "isValue",
+    value: function isValue(key, value) {
+      return this.getValue(key) == value;
+    }
+  }]);
+
+  return StallionConfig;
+}();
+
+exports.StallionConfig = StallionConfig;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getConfig = getConfig;
+var myConfig = {
+  "internalLinkViewer": "splitViewer",
+  "debugMode": false,
+  "peekFind": "peekBox",
+  "FindBar": "splitViewer"
+};
+
+function getConfig() {
+  return myConfig;
+}
+
+;
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.PDFOutlineViewer = void 0;
 
 var _pdfjsLib = __webpack_require__(7);
@@ -10370,7 +10527,7 @@ var PDFOutlineViewer = /*#__PURE__*/function () {
 exports.PDFOutlineViewer = PDFOutlineViewer;
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10827,7 +10984,7 @@ var PDFPresentationMode = /*#__PURE__*/function () {
 exports.PDFPresentationMode = PDFPresentationMode;
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11001,7 +11158,7 @@ var PDFSidebarResizer = /*#__PURE__*/function () {
 exports.PDFSidebarResizer = PDFSidebarResizer;
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11014,7 +11171,7 @@ exports.PDFThumbnailViewer = void 0;
 
 var _ui_utils = __webpack_require__(5);
 
-var _pdf_thumbnail_view = __webpack_require__(32);
+var _pdf_thumbnail_view = __webpack_require__(35);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -11287,7 +11444,7 @@ var PDFThumbnailViewer = /*#__PURE__*/function () {
 exports.PDFThumbnailViewer = PDFThumbnailViewer;
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11725,7 +11882,7 @@ var PDFThumbnailView = /*#__PURE__*/function () {
 exports.PDFThumbnailView = PDFThumbnailView;
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11736,7 +11893,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PDFViewer = void 0;
 
-var _base_viewer = __webpack_require__(34);
+var _base_viewer = __webpack_require__(37);
 
 var _pdfjsLib = __webpack_require__(7);
 
@@ -11873,7 +12030,7 @@ var PDFViewer = /*#__PURE__*/function (_BaseViewer) {
 exports.PDFViewer = PDFViewer;
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11888,15 +12045,15 @@ var _ui_utils = __webpack_require__(5);
 
 var _pdf_rendering_queue = __webpack_require__(11);
 
-var _annotation_layer_builder = __webpack_require__(35);
+var _annotation_layer_builder = __webpack_require__(38);
 
 var _pdfjsLib = __webpack_require__(7);
 
-var _pdf_page_view = __webpack_require__(36);
+var _pdf_page_view = __webpack_require__(39);
 
 var _pdf_link_service = __webpack_require__(27);
 
-var _text_layer_builder = __webpack_require__(37);
+var _text_layer_builder = __webpack_require__(40);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -13079,7 +13236,7 @@ var BaseViewer = /*#__PURE__*/function () {
 exports.BaseViewer = BaseViewer;
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13223,7 +13380,7 @@ var DefaultAnnotationLayerFactory = /*#__PURE__*/function () {
 exports.DefaultAnnotationLayerFactory = DefaultAnnotationLayerFactory;
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13885,7 +14042,7 @@ var PDFPageView = /*#__PURE__*/function () {
 exports.PDFPageView = PDFPageView;
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14311,7 +14468,7 @@ var DefaultTextLayerFactory = /*#__PURE__*/function () {
 exports.DefaultTextLayerFactory = DefaultTextLayerFactory;
 
 /***/ }),
-/* 38 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14326,7 +14483,7 @@ var _ui_utils = __webpack_require__(5);
 
 var _pdf_cursor_tools = __webpack_require__(9);
 
-var _pdf_single_page_viewer = __webpack_require__(39);
+var _pdf_single_page_viewer = __webpack_require__(42);
 
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -14677,7 +14834,7 @@ var SecondaryToolbar = /*#__PURE__*/function () {
 exports.SecondaryToolbar = SecondaryToolbar;
 
 /***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14688,7 +14845,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PDFSinglePageViewer = void 0;
 
-var _base_viewer = __webpack_require__(34);
+var _base_viewer = __webpack_require__(37);
 
 var _pdfjsLib = __webpack_require__(7);
 
@@ -14852,7 +15009,7 @@ var PDFSinglePageViewer = /*#__PURE__*/function (_BaseViewer) {
 exports.PDFSinglePageViewer = PDFSinglePageViewer;
 
 /***/ }),
-/* 40 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15213,7 +15370,7 @@ var Toolbar = /*#__PURE__*/function () {
 exports.Toolbar = Toolbar;
 
 /***/ }),
-/* 41 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15468,7 +15625,7 @@ var ViewHistory = /*#__PURE__*/function () {
 exports.ViewHistory = ViewHistory;
 
 /***/ }),
-/* 42 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15483,11 +15640,11 @@ var _regenerator = _interopRequireDefault(__webpack_require__(2));
 
 var _app = __webpack_require__(1);
 
-var _preferences = __webpack_require__(43);
+var _preferences = __webpack_require__(46);
 
-var _download_manager = __webpack_require__(44);
+var _download_manager = __webpack_require__(47);
 
-var _genericl10n = __webpack_require__(45);
+var _genericl10n = __webpack_require__(48);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -15621,7 +15778,7 @@ var GenericExternalServices = /*#__PURE__*/function (_DefaultExternalServi) {
 _app.PDFViewerApplication.externalServices = GenericExternalServices;
 
 /***/ }),
-/* 43 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15962,7 +16119,7 @@ var BasePreferences = /*#__PURE__*/function () {
 exports.BasePreferences = BasePreferences;
 
 /***/ }),
-/* 44 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16064,7 +16221,7 @@ var DownloadManager = /*#__PURE__*/function () {
 exports.DownloadManager = DownloadManager;
 
 /***/ }),
-/* 45 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16077,7 +16234,7 @@ exports.GenericL10n = void 0;
 
 var _regenerator = _interopRequireDefault(__webpack_require__(2));
 
-__webpack_require__(46);
+__webpack_require__(49);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -16233,7 +16390,7 @@ var GenericL10n = /*#__PURE__*/function () {
 exports.GenericL10n = GenericL10n;
 
 /***/ }),
-/* 46 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17056,7 +17213,7 @@ document.webL10n = function (window, document, undefined) {
 }(window, document);
 
 /***/ }),
-/* 47 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
