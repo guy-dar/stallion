@@ -1,4 +1,4 @@
-import myConfig, { getConfig } from "./myconfig.js"
+import  { getConfig } from "./myconfig.js"
 
 class StallionConfig{
 

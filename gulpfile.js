@@ -594,7 +594,7 @@ gulp.task("default_preferences-pre", function () {
     gulp.src(
       [
         "src/{display,shared}/*.js",
-        "stallion/{heuristics,ui}/*.js",
+        "stallion/**/*.js",
         "!src/shared/{cffStandardStrings,fonts_utils}.js",
         "src/pdf.js",
       ],
