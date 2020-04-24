@@ -33,7 +33,7 @@ There is no need to learn how to use the viewer.
 You can just use it like any other viewer. However, the viewer will react differently, (hopefully) in a more intuitive way. 
 Some key features of the viewer (we are still halfway through):
 * **Links**: We replace internal links with split view peekers that show you the requested page along with the original page.
-* ***Reference Metadata & Abstract**: Presenting article metadata and abstract for articles for references in the document.
+* **Reference Metadata & Abstract**: Presenting article metadata and abstract for articles for references in the document.
 * **"Remind" boxes**: Identifies mentions of defintions, theorems, references in the document and so on, and provides a reminder from their location in the document. 
 
 ## Advanced Features
