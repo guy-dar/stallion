@@ -1,14 +1,14 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig} from "../config/utils.js"
+var stallionConfig = new StallionConfig();
 
 class PageHeuristics{
     constructor(){
-        this.config = new StallionConfig();
         this.startRendering();
     }
 
     startRendering(){
-        this.debugMode = this.config.getValue("debugMode");
+        this.debugMode = stallionConfig.getValue("debugMode");
         this.helper = new HeuristicsHelper();
         this._prevLineFonts = null;
         this._curLineFonts = [];
@@ -43,11 +43,16 @@ class PageHeuristics{
     }
 
 
+    handleTextAction(ctx, fontData, scaledX, scaledY){
+        this.reportTextAction(ctx, fontData, scaledX, scaledY);
+        if(stallionConfig.getValue("darkMode"))
+            ctx.fillStyle = "#ffffff"
+        return ctx;
+
+    }
     reportTextAction(ctx, fontData, scaledX, scaledY){
         if(!this.debugMode)
             return;
-
-        
         var font = this.helper.fontNormalizer(fontData);
         var {e: x, f: y, a: scaleA, d: scaleB} = ctx.getTransform(); //GUY TODO: As a matter of fact, a is only x's scale.
         var h = font.fontSize * scaleB;   // GUY TODO: Should it be scaled?
@@ -95,6 +100,8 @@ class PageHeuristics{
         }
 
         /**** Update character context ****/
+        ctx.fillStyle = "#ffffff"        
+        ctx.strokeStyle = "#ffffff"        
 
         this._curFontCtx = newFontCtx;
         this.idx++;
@@ -110,7 +117,7 @@ class PageHeuristics{
 
 
     finishedRenderingContext(curCtx,viewport, transform){
-        
+        // curCtx.style.backgroundColor = "#000000"
         if(!this.debugMode)
         return;
         

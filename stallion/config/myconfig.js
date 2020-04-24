@@ -2,7 +2,8 @@ var myConfig = {
   "internalLinkViewer": "splitViewer",
   "debugMode": false,
   "peekFind": "peekBox",
-  "FindBar": "splitViewer"
+  "FindBar": "splitViewer",
+  "darkMode": true
 };
 
 
