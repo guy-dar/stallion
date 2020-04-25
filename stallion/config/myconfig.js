@@ -3,7 +3,7 @@ var myConfig = {
   "debugMode": false,
   "peekFind": "peekBox",
   "FindBar": "splitViewer",
-  "darkMode": true
+  "darkMode": false
 };
 
 

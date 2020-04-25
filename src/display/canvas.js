@@ -29,6 +29,7 @@ import {
 } from "../shared/util.js";
 import { getShadingPatternFromIR, TilingPattern } from "./pattern_helper.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
+import { PageHeuristics } from "../../stallion/heuristics/page.js";
 
 var stallionConfig = new StallionConfig();
 
@@ -474,6 +475,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     this.smaskCounter = 0;
     this.tempSMask = null;
     this.cachedCanvases = new CachedCanvases(this.canvasFactory);
+
     if (canvasCtx) {
       // NOTE: if mozCurrentTransform is polyfilled, then the current state of
       // the transformation must already be set in canvasCtx._transformMatrix.
@@ -663,8 +665,9 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
   }
 
   function resetCtxToDefault(ctx) {
-    ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "#000000";
+    var stallionDefault = PageHeuristics.defaultSettings(ctx);
+    ctx.strokeStyle = stallionDefault.strokeStyle || "#000000";
+    ctx.fillStyle = stallionDefault.fillStyle || "#000000";
     ctx.fillRule = "nonzero";
     ctx.globalAlpha = 1;
     ctx.lineWidth = 1;
@@ -1184,11 +1187,13 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
     // Path
     constructPath: function CanvasGraphics_constructPath(ops, args) {
+      this.ctx = this.heuristics.handlePathAction(this.ctx).ctx;
       var ctx = this.ctx;
       var current = this.current;
       var x = current.x,
         y = current.y;
       for (var i = 0, j = 0, ii = ops.length; i < ii; i++) {
+        console.log(this.ctx)
         switch (ops[i] | 0) {
           case OPS.rectangle:
             x = args[j++];
@@ -1266,6 +1271,9 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       consumePath = typeof consumePath !== "undefined" ? consumePath : true;
       var ctx = this.ctx;
       var strokeColor = this.current.strokeColor;
+      var stallionPathHandler = this.heuristics.handleStrokeAction(ctx, strokeColor);
+      strokeColor = stallionPathHandler.strokeColor;
+      ctx = stallionPathHandler.ctx;
       // For stroke we want to temporarily change the global alpha to the
       // stroking alpha.
       ctx.globalAlpha = this.current.strokeAlpha;
@@ -1588,6 +1596,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       var current = this.current;
       var font = current.font;
         
+      current = this.heuristics.handleShowTextAction(this.ctx, current).current;
       if (font.isType3Font) {
         return this.showType3Text(glyphs);
       }
@@ -1710,7 +1719,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
-        ctx = this.heuristics.handleTextAction(ctx, current, scaledX, scaledY);
+        ctx = this.heuristics.handleTextAction(ctx, current, scaledX, scaledY).ctx;
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
             // common case

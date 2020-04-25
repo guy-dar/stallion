@@ -155,6 +155,7 @@ body{
 
 
 .peekBox{
+  border-radius: 10%;
   position:relative;
   top:0px;
   padding:0px;
