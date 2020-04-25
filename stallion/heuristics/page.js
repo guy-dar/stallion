@@ -136,9 +136,6 @@ class PageHeuristics{
             }
         }
 
-        /**** Update character context ****/
-        ctx.fillStyle = "#ffffff"        
-        ctx.strokeStyle = "#ffffff"        
 
         this._curFontCtx = newFontCtx;
         this.idx++;

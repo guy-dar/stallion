@@ -520,6 +520,10 @@ class PDFFindController {
           zoomBtn.click();
         return ["",""];
       break;
+      case "download":
+        this._eventBus.dispatch("download",{source: this})
+        return ["",""];
+      break;
       case "shortcut":
       case "name":
       case "dub":
