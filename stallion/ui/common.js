@@ -103,8 +103,6 @@ function renderStallionWidget(frame, loc){
   var iframeDoc = document.createElement("div")
   var iframeBody = frame.getElementsByTagName("body")[0];
 
-  // var oldPage = document.querySelector(
-  //   "#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
     
     container.classList.remove("hidden");
     return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {

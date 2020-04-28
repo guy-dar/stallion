@@ -1,11 +1,12 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig} from "../config/utils.js"
-import { stallionRegexpMatch } from "../utils/text.js";
+import { stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
 var stallionConfig = new StallionConfig();
 
 class PageHeuristics{
     constructor(doc_heuristics, pageIdx){
         this.doc_heuristics = doc_heuristics;
+        this._fontRanges = {};
         this.pageIdx = pageIdx;
         this.startRendering();
     }
@@ -22,6 +23,8 @@ class PageHeuristics{
         this._curFontCtx = null;
         this._images = [];
         this.idx = 0;
+        // this._fontRangePromise = new Promise();
+        this._fontRanges = [];
 
         // Set primary estimates
         this._maxImgDim = 1000;
@@ -91,47 +94,54 @@ class PageHeuristics{
         return {ctx};
 
     }
+
+
     reportTextAction(ctx, fontData, scaledX, scaledY){
-        if(!this.debugMode)
-            return;
         var font = this.helper.fontNormalizer(fontData);
-        var {e: x, f: y, a: scaleA, d: scaleB} = ctx.getTransform(); //GUY TODO: As a matter of fact, a is only x's scale.
-        var h = font.fontSize * scaleB;   // GUY TODO: Should it be scaled?
-        var w = h;                       // GUY TODO: that's dumb. But cannot get char width. is it because the char is square?
-        y -= h;
-        x += scaledX*scaleA;
-        y += scaledY*scaleB;
+        var {x,y,w,h} = PageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
-        var curTextBlock = this.helper._last(this._textBlocks);
-        
 
-        /**** Identify text blocks ****/ 
+        if(!this.debugMode){
+            var curTextBlock = this.helper._last(this._textBlocks);
+            
 
-        if(this.helper.isLineBreak(newFontCtx, this._curFontCtx)){
-            if(!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)){
-                
-                this._textBlocks.push({ left: x, top: y,
-                                         right: x+w,
-                                         bottom: y+h,
-                                         fonts: []});
-                curTextBlock = this.helper._last(this._textBlocks);
-            }             
+            /**** Identify text blocks ****/ 
+
+            if(this.helper.isLineBreak(newFontCtx, this._curFontCtx)){
+                if(!this.isTextBlockShared(newFontCtx, curTextBlock, this._curFontCtx)){
+                    
+                    this._textBlocks.push({ left: x, top: y,
+                                            right: x+w,
+                                            bottom: y+h,
+                                            fonts: []});
+                    curTextBlock = this.helper._last(this._textBlocks);
+                }             
+            }
+
+            // Push character's font to block
+            if(!this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts))
+                curTextBlock.fonts.push(newFontCtx.font);
+
+            // Update
+            var {x: left , y: top, bottom, right} = newFontCtx;
+            curTextBlock.right = Math.max(right, curTextBlock.right);
+            curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
+            curTextBlock.left = Math.min(left, curTextBlock.left);
+            curTextBlock.top = Math.min(top, curTextBlock.top);
         }
-
-        // Push character's font to block
-        if(!this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts))
-            curTextBlock.fonts.push(newFontCtx.font);
-
-        // Update
-        var {x: left , y: top, bottom, right} = newFontCtx;
-        curTextBlock.right = Math.max(right, curTextBlock.right);
-        curTextBlock.bottom = Math.max(bottom, curTextBlock.bottom);
-        curTextBlock.left = Math.min(left, curTextBlock.left);
-        curTextBlock.top = Math.min(top, curTextBlock.top);
-
         /**** Handle different fonts ****/
+        var currentFontRange = [];
+
+        if((font.name.indexOf('Med') != -1)||
+            (font.name.indexOf('Bold') != -1)){    
+            currentFontRange.push("bold")
+            this.helper.addToRangeTracker(this._fontRanges, currentFontRange, 
+                PageCoordinateTranslation.canvasToDiv(ctx.canvas, x,y,w,h))               
+        }
         
+
+
         if((font.name.indexOf('+CM') != -1)){                       // GUY TODO: Fix to regexp
             // Paint equations in debug mode
             if(this.debugMode){
@@ -171,24 +181,31 @@ class PageHeuristics{
             console.log(rect);
         });
 
+
+        // this._fontRangePromise.resolve(this._fontRanges);
+
     }
 
 
 
 
     analyzeTextLayer(textLayer, pageView){
+        
+        
+        if(!stallionConfig.getValue("autoInternalLink"))
+        return;
+
         var queries = {'section':       [/((s|S)ec(tion|\.)) (\d+(\.\d+)*)/g, 4],
                        'definition':    [/((d|D)ef(inition|\.)) (\d+(\.\d+)*)/g, 4],
-                       'algorithm':       [/((a|A)lg)(orithm|(\.)) (\d+(\.\d+)*)/g, 5],        
-                       'figure':       [/((f|F)ig)(ure|(\.)) (\d+(\.\d+)*)/g, 5],        
-                       'table':        [/((t|T)able) (\d+(\.\d+)*)/g, 3],        
-                       'theorem':       [/(((t|T)heorem)|((T|t)hm)(\.)) (\d+(\.\d+)*)/g, 7]        
+                       'algorithm':     [/((a|A)lg)(orithm|(\.)) (\d+(\.\d+)*)/g, 5],        
+                       'figure':        [/((f|F)ig)(ure|(\.)) (\d+(\.\d+)*)/g, 5],        
+                       'table':         [/((t|T)able) (\d+(\.\d+)*)/g, 3],        
+                       'lemma':         [/((l|L)emma) (\d+(\.\d+)*)/g, 3],        
+                       'proposition':   [/((p|P)roposition) (\d+(\.\d+)*)/g, 3],
+                       'corollary':     [/((c|C)orollary) (\d+(\.\d+)*)/g, 3],        
+                       'theorem':       [/(((t|T)heorem)|((T|t)hm)(\.)) (\d+(\.\d+)*)/g, 7]
                       };
-    
-    
-        if(!stallionConfig.getValue("autoInternalLink"))
-            return;
-
+        
         var pageIdx = pageView.id - 1;
         var findController = textLayer.findController;
         findController._extractText();
@@ -202,13 +219,34 @@ class PageHeuristics{
                     var qName = queries[qType][1];
                     var posWithName = this._getPhrasePositions(pageContent, textLayer, query, qName);
                     for(var jj=0; jj<posWithName.length;jj++){
-                        this._autoInternalLinks.push([posWithName[jj][0], qType + posWithName[jj][1]]);
+                        this._autoInternalLinks.push(posWithName[jj]);
+                        this._appendAutoInternalLinkDiv(this._autoInternalLinks[jj], query, qName, textLayer, findController);            
                     }
             }     
-            
-            docHeuristics.setPageDone(this.pageIdx, this);
+
             
     });                
+    }
+
+    _appendAutoInternalLinkDiv(link, query, qName, textLayer, findController){
+        var qNameValue = link[1];
+        var {top, left, width, height} = link[0][0];
+        var link_div = document.createElement("div");
+
+        // link_div.classList.add(qNameValue);
+        link_div.style.top = top + "px";
+        link_div.style.left = left + "px";
+        link_div.style.height = height + "px";
+        link_div.style.width = width + "px";
+        link_div.style.position = "absolute";
+        // var link_id = "stallion_link_" + link_name;
+        link_div.style.cursor = 'pointer'
+        link_div.onclick = () => {
+            this.doc_heuristics.findMatchInFontRange(query, qName, qNameValue, ["bold"], textLayer, findController)
+        }
+        link_div.style.backgroundColor = 'rgb(0,0,255,0.4)'
+        this.getPageDiv().appendChild(link_div);
+
     }
 
 
@@ -263,7 +301,6 @@ class PageHeuristics{
 
 
 }
-
 
 
 
