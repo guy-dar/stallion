@@ -54,6 +54,7 @@ import { Linearization } from "./parser.js";
 import { OperatorList } from "./operator_list.js";
 import { PartialEvaluator } from "./evaluator.js";
 import { PDFFunctionFactory } from "./function.js";
+import { DocumentHeuristics } from "../../stallion/heuristics/document_heuristics.js";
 
 const DEFAULT_USER_UNIT = 1.0;
 const LETTER_SIZE_MEDIABOX = [0, 0, 612, 792];
@@ -75,6 +76,7 @@ class Page {
     fontCache,
     builtInCMapCache,
     pdfFunctionFactory,
+    documentHeuristics
   }) {
     this.pdfManager = pdfManager;
     this.pageIndex = pageIndex;
@@ -86,7 +88,7 @@ class Page {
     this.pdfFunctionFactory = pdfFunctionFactory;
     this.evaluatorOptions = pdfManager.evaluatorOptions;
     this.resourcesPromise = null;
-
+    this.doc_heuristics = documentHeuristics;
     const idCounters = {
       obj: 0,
     };
@@ -811,6 +813,7 @@ class PDFDocument {
         fontCache: catalog.fontCache,
         builtInCMapCache: catalog.builtInCMapCache,
         pdfFunctionFactory: this.pdfFunctionFactory,
+        documentHeuristics: this.doc_heuristics
       });
     }));
   }

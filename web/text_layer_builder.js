@@ -74,12 +74,13 @@ class TextLayerBuilder {
       endOfContent.className = "endOfContent";
       this.textLayerDiv.appendChild(endOfContent);
     }
-    this.heuristics.analyzeTextLayer(this);
+
     this.eventBus.dispatch("textlayerrendered", {
       source: this,
       pageNumber: this.pageNumber,
       numTextDivs: this.textDivs.length,
     });
+
   }
 
   /**

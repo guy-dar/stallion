@@ -58,6 +58,7 @@ import { MessageHandler } from "../shared/message_handler.js";
 import { Metadata } from "./metadata.js";
 import { PDFDataTransportStream } from "./transport_stream.js";
 import { WebGLContext } from "./webgl.js";
+import { DocumentHeuristics } from "../../stallion/heuristics/document_heuristics.js";
 
 const DEFAULT_RANGE_CHUNK_SIZE = 65536; // 2^16 = 65536
 const RENDERING_CANCELLED_TIMEOUT = 100; // ms
@@ -929,7 +930,7 @@ class PDFPageProxy {
 
   get heuristics(){
     if(this._heuristics == undefined)
-      this._heuristics = new PageHeuristics();
+      this._heuristics = new PageHeuristics(this._transport.doc_heuristics, this._pageIndex);
     return this._heuristics;
     }
 
@@ -1972,6 +1973,7 @@ class WorkerTransport {
       isCompressed: params.cMapPacked,
     });
 
+    this.doc_heuristics = new DocumentHeuristics(); 
     this.destroyed = false;
     this.destroyCapability = null;
     this._passwordCapability = null;

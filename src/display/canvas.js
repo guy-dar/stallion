@@ -1193,7 +1193,6 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       var x = current.x,
         y = current.y;
       for (var i = 0, j = 0, ii = ops.length; i < ii; i++) {
-        console.log(this.ctx)
         switch (ops[i] | 0) {
           case OPS.rectangle:
             x = args[j++];

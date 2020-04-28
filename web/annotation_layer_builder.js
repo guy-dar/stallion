@@ -63,7 +63,6 @@ class AnnotationLayerBuilder {
       if (this._cancelled) {
         return;
       }
-
       const parameters = {
         viewport: viewport.clone({ dontFlip: true }),
         div: this.div,

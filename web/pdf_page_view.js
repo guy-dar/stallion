@@ -542,8 +542,9 @@ class PDFPageView {
       }
       this.annotationLayer.render(this.viewport, "display");
     }
-    div.setAttribute("data-loaded", true);
 
+
+    div.setAttribute("data-loaded", true);
     this.eventBus.dispatch("pagerender", {
       source: this,
       pageNumber: this.id,

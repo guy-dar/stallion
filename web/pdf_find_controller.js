@@ -19,6 +19,10 @@ import { scrollIntoView} from "./ui_utils.js";
 import { peekView } from "../stallion/ui/peekbox.js";
 import { moveElement } from "../stallion/ui/common.js";
 import {VisualHeuristics} from "../stallion/heuristics/visual.js" 
+import { StallionConfig } from "../stallion/config/utils.js";
+
+var stallionConfig = new StallionConfig();
+
 const FindState = {
   FOUND: 0,
   NOT_FOUND: 1,
@@ -78,7 +82,10 @@ class PDFFindController {
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
-    
+    if(stallionConfig.getValue("autoInternalLink")){
+        this._extractText();
+    }
+
     if(typeof window != "undefined")
   {  
     window.onkeydown = function(e){
@@ -150,8 +157,9 @@ class PDFFindController {
       return;
     }
     const pdfDocument = this._pdfDocument;
-
-    this._peekMatches = true;
+    if(stallionConfig.getValue("findBar") == "peekBox"){
+      this._peekMatches = true;
+    }
     if (this._state === null || this._shouldDirtyMatch(cmd, state)) {
       this._dirtyMatch = true;
     }

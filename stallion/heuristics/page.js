@@ -1,14 +1,18 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig} from "../config/utils.js"
+import { stallionRegexpMatch } from "../utils/text.js";
 var stallionConfig = new StallionConfig();
 
 class PageHeuristics{
-    constructor(){
+    constructor(doc_heuristics, pageIdx){
+        this.doc_heuristics = doc_heuristics;
+        this.pageIdx = pageIdx;
         this.startRendering();
     }
 
     startRendering(){
         this.debugMode = stallionConfig.getValue("debugMode");
+        this._autoInternalLinks = [];
         this.helper = new HeuristicsHelper();
         this._prevLineFonts = null;
         this._curLineFonts = [];
@@ -48,7 +52,7 @@ class PageHeuristics{
             ctx.fillStyle = "#ffffff"
             strokeColor = "#ffffff"
         }
-        return {ctx: ctx, strokeColor: strokeColor};
+        return {ctx, strokeColor};
 
     }
 
@@ -127,7 +131,7 @@ class PageHeuristics{
         curTextBlock.top = Math.min(top, curTextBlock.top);
 
         /**** Handle different fonts ****/
-
+        
         if((font.name.indexOf('+CM') != -1)){                       // GUY TODO: Fix to regexp
             // Paint equations in debug mode
             if(this.debugMode){
@@ -170,33 +174,99 @@ class PageHeuristics{
     }
 
 
-/*** Deprecated ***/
 
-    // Probably should be deleted. Or at least distilled
-    analyzeTextLayer(textLayer){
-        return;
-        var textDivs = textLayer.textDivs;
-        var blockBreaks = [];
-        var lastFeatures = null;
-        for (let n = 0; n < textDivs.length; n++) {
-            const curFeatures = this.helper.htmlFeatures(textDivs[n]);
-            if(lastFeatures){
-                var dominantFeatures = ( curFeatures.height >= lastFeatures.height) ? curFeatures : lastFeatures;
-                var jump = (Math.abs(curFeatures.top - lastFeatures.bottom));
-                if(jump >= dominantFeatures.height * this._blockJumpPctTol){
-                    blockBreaks.push(n);
-                    if(this.debugMode)
-                        console.log(textDivs[n]);
-                }
-            }
 
-            lastFeatures = curFeatures;
+    analyzeTextLayer(textLayer, pageView){
+        var queries = {'section':       [/((s|S)ec(tion|\.)) (\d+(\.\d+)*)/g, 4],
+                       'definition':    [/((d|D)ef(inition|\.)) (\d+(\.\d+)*)/g, 4],
+                       'algorithm':       [/((a|A)lg)(orithm|(\.)) (\d+(\.\d+)*)/g, 5],        
+                       'figure':       [/((f|F)ig)(ure|(\.)) (\d+(\.\d+)*)/g, 5],        
+                       'table':        [/((t|T)able) (\d+(\.\d+)*)/g, 3],        
+                       'theorem':       [/(((t|T)heorem)|((T|t)hm)(\.)) (\d+(\.\d+)*)/g, 7]        
+                      };
+    
+    
+        if(!stallionConfig.getValue("autoInternalLink"))
+            return;
+
+        var pageIdx = pageView.id - 1;
+        var findController = textLayer.findController;
+        findController._extractText();
+        findController._extractTextPromises[pageIdx].then(()=>{
+            var docHeuristics = this.doc_heuristics;
+            var pageContent = findController._pageContents[pageIdx];
+            
+            for(let qType in queries)
+            {
+                    var query = queries[qType][0];
+                    var qName = queries[qType][1];
+                    var posWithName = this._getPhrasePositions(pageContent, textLayer, query, qName);
+                    for(var jj=0; jj<posWithName.length;jj++){
+                        this._autoInternalLinks.push([posWithName[jj][0], qType + posWithName[jj][1]]);
+                    }
+            }     
+            
+            docHeuristics.setPageDone(this.pageIdx, this);
+            
+    });                
+    }
+
+
+    _getPhrasePositions(pageContent, textLayer, query, qName) {
+        var {matches, matchLengths, matchNames} = stallionRegexpMatch(query, pageContent, qName);
+        var textLayerMatches = textLayer._convertMatches(matches, matchLengths);
+        var positions = [];        
+        
+        for(var ii = 0; ii < textLayerMatches.length; ii++){
+            var divMatch = textLayerMatches[ii];
+            var pos = this._fromTextDivToPosition({beginDiv: textLayer.textDivs[divMatch.begin.divIdx],
+                beginOffset: divMatch.begin.offset,
+                endDiv:  textLayer.textDivs[divMatch.end.divIdx],
+                endOffset: divMatch.end.offset,
+               });
+
+            positions.push([pos, matchNames[ii]]);
         }
+        return positions;
+    }
+
+    getPageDiv(){
+        return document.querySelector(".page[data-page-number='"+(1+this.pageIdx)+"']")
+    }
+
+    _fromTextDivToPosition(matchInfo){
+        var canvas = matchInfo.beginDiv.closest(".page").querySelector("canvas");
+        var ctx = canvas.getContext('2d');
+        var { left: canvasLeft, top: canvasTop} = canvas.getBoundingClientRect();
+        var wRatio = canvas.width/canvas.offsetWidth;
+        var hRatio = canvas.width/canvas.offsetWidth;
+        
+        var {beginDiv, beginOffset, endDiv, endOffset} = matchInfo;
+        var selection = document.createRange();
+        selection.setStart(beginDiv.firstChild, beginOffset)
+        selection.setEnd(endDiv.firstChild, endOffset)
+        var rects = selection.getClientRects();
+        var results = [];
+
+        for(var i = 0; i < rects.length; i++){
+            var {left, top, width, height} = rects[i];
+                        results.push({'left':  left-canvasLeft, 
+                        'top': top-canvasTop, 
+                        'width':   width,
+                        'height': height});
+                        
+        }
+
+        return results;
     }
 
 
 
 }
+
+
+
+
 
 
 export {PageHeuristics}

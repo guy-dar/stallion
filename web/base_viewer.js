@@ -454,6 +454,15 @@ class BaseViewer {
     };
     this.eventBus._on("pagerender", this._onBeforeDraw);
 
+    this.eventBus._on("textlayerrendered",evt =>
+    {
+      const pageView = this._pages[evt.pageNumber - 1];
+      if (!pageView) {
+        return;
+      }
+      pageView.heuristics.analyzeTextLayer(evt.source, pageView);}
+    );
+
     this._onAfterDraw = evt => {
       if (evt.cssTransform || this._onePageRenderedCapability.settled) {
         return;
