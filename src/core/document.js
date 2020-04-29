@@ -54,8 +54,10 @@ import { Linearization } from "./parser.js";
 import { OperatorList } from "./operator_list.js";
 import { PartialEvaluator } from "./evaluator.js";
 import { PDFFunctionFactory } from "./function.js";
-import { DocumentHeuristics } from "../../stallion/heuristics/document_heuristics.js";
+import { StallionConfig, StallionMemory } from "../../stallion/config/utils.js";
 
+var stallionMemory = new StallionMemory();
+var stallionConfig = new StallionConfig();
 const DEFAULT_USER_UNIT = 1.0;
 const LETTER_SIZE_MEDIABOX = [0, 0, 612, 792];
 
@@ -368,6 +370,7 @@ class Page {
   }
 
   getAnnotationsData(intent) {
+    var pageThis = this; // GUY TODO: Fix
     return this._parsedAnnotations.then(function (annotations) {
       const annotationsData = [];
       for (let i = 0, ii = annotations.length; i < ii; i++) {
@@ -375,8 +378,13 @@ class Page {
           annotationsData.push(annotations[i].data);
         }
       }
+      // if(stallionConfig.getValue("userAnnotations")){
+      //   var userAnnotations = stallionMemory.getPageData(pageThis.pageIndex, "userAnnotations");
+      //   annotationsData.push(...userAnnotations);
+      // }
+
       return annotationsData;
-    });
+    })
   }
 
   get annotations() {

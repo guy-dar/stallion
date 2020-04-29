@@ -1,7 +1,15 @@
 import {HeuristicsHelper} from "./helper.js"
-import {StallionConfig} from "../config/utils.js"
-import { stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
+import {StallionConfig, StallionMemory} from "../config/utils.js"
+import {stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
+import {stallionUserComment } from "../utils/annotation_utils.js";
+import {StallionPageUtils} from "../utils/page_utils.js";
+import {StallionSnippingSelection} from "../ui/snipping_selection.js";
+
+
+
 var stallionConfig = new StallionConfig();
+var stallionMemory = new StallionMemory();
+
 
 class PageHeuristics{
     constructor(doc_heuristics, pageIdx){
@@ -166,6 +174,10 @@ class PageHeuristics{
 
     finishedRenderingContext(curCtx,viewport, transform){
         // curCtx.style.backgroundColor = "#000000"
+        if(stallionConfig.isValue("textSelection", "snippingTool"))
+            (new StallionSnippingSelection()).start(this.pageIdx);
+
+
         if(!this.debugMode)
         return;
         
@@ -245,7 +257,7 @@ class PageHeuristics{
             this.doc_heuristics.findMatchInFontRange(query, qName, qNameValue, ["bold"], textLayer, findController)
         }
         link_div.style.backgroundColor = 'rgb(0,0,255,0.4)'
-        this.getPageDiv().appendChild(link_div);
+        StallionPageUtils.getPageDiv(this.pageIdx).appendChild(link_div);
 
     }
 
@@ -268,9 +280,7 @@ class PageHeuristics{
         return positions;
     }
 
-    getPageDiv(){
-        return document.querySelector(".page[data-page-number='"+(1+this.pageIdx)+"']")
-    }
+    
 
     _fromTextDivToPosition(matchInfo){
         var canvas = matchInfo.beginDiv.closest(".page").querySelector("canvas");
