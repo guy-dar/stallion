@@ -3,7 +3,7 @@ var myConfig = {
   "autoInternalLink": false,
   "debugMode": false,
   "peekFind": "peekBox",
-  "textSelection": "none",
+  "textSelection": "smoothStallion",
   "userAnnotations": true,
   "findBar": "splitViewer",
   "darkMode": false

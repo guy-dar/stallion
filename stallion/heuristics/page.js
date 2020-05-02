@@ -3,7 +3,7 @@ import {StallionConfig, StallionMemory} from "../config/utils.js"
 import {stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
 import {stallionUserComment } from "../utils/annotation_utils.js";
 import {StallionPageUtils} from "../utils/page_utils.js";
-import {StallionSnippingSelection} from "../ui/snipping_selection.js";
+import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selection.js";
 
 
 
@@ -176,8 +176,10 @@ class PageHeuristics{
         // curCtx.style.backgroundColor = "#000000"
         if(stallionConfig.isValue("textSelection", "snippingTool"))
             (new StallionSnippingSelection()).start(this.pageIdx);
-
-
+        if(stallionConfig.isValue("textSelection", "smoothStallion"))
+        {
+            (new StallionSmoothSelection()).start(this.pageIdx);
+        }
         if(!this.debugMode)
         return;
         

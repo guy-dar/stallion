@@ -88,5 +88,46 @@ class StallionSnippingSelection{
 
 }
 
+class StallionSmoothSelection{
+    start(pageIdx){
+        this.pageIdx = pageIdx;
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mousedown", 
+        e=>{
+            window.getSelection().removeAllRanges();
+            this.range = document.createRange()
 
-export {StallionSnippingSelection};
+
+        });
+
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mousemove", 
+        e=>{
+            // var x = e.clientX;
+            // var y = e.clientY;
+            // console.log(e.srcElement)
+            // if(e.srcElement.nodeName != "SPAN" && e.srcElement.nodeName != "#text")
+            // {
+                    // e.preventDefault()
+            // }
+            if(!this.range)
+                return;
+
+            e.preventDefault()
+            this.range.selectNodeContents(e.srcElement);
+            window.getSelection().addRange(this.range)
+        });
+
+
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mouseup", 
+        e=>{
+            window.getSelection().removeAllRanges();
+            this.range = null;
+        });
+
+    }
+}
+
+
+export {StallionSnippingSelection, StallionSmoothSelection};
