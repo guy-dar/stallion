@@ -48,10 +48,10 @@ When clicking on internal links, the will *not* jump to the requested position. 
 
 
 ### References
-Select a reference and double click `/` (slash). If it is identified as a reference by Stallion, it will try to resolve it in two steps:
-1. Stallion will send a request to [CrossRef](https://www.crossref.org/). If the reference was identified correctly Stallion will present article metadata.
+Select a reference and double click `/` (slash). If it is identified as a reference by Stallion, it tries to resolve it in two steps:
+1. Stallion sends a request to [CrossRef](https://www.crossref.org/). If the reference is identified correctly, Stallion will present article metadata.
 
-* After metadata was extracted, Stallion sends a request to [Semantic Scholar](https://www.semanticscholar.org/). If the record is found, an abstract will soon appear.
+2. After metadata is extracted, Stallion sends a request to [Semantic Scholar](https://www.semanticscholar.org/). If the record is found, an abstract appears soon after.
 
 ![Reference Resolution](docs/contents/images/get_abstract.gif)
 
