@@ -1,5 +1,5 @@
 # Stallion [![Build Status](https://travis-ci.com/guyd1995/stallion.svg?branch=master)](https://travis-ci.org/guyd1995/stallion) 
-<a href="#" style="cursor:default"><img align="right" src="docs/contents/images/logo.png" width="120px" height="110px"/></a>
+<a href="#"><img align="right" src="docs/contents/images/logo.png" width="120px" height="110px"/></a>
 Stallion is an extended PDF viewer based on <a href="https://mozilla.github.io/pdf.js/">PDF.js</a>. 
 It provides researchers with tools that make paper reading simpler. Some features include intuitive peeking routines for definition review, better handling of references and adding shorcuts to arbitrary locations in the document. 
 
