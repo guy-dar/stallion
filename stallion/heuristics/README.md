@@ -1,4 +1,4 @@
-== Heursitics ==
+## Heursitics
 This is where we keep the *heuristics*, used by Stallion for decision making on different subjects.
 
 The implementation of a heursitic might be gruesome and unpleasant. Of course, when possible, modularity and code sharing is still important. 
@@ -15,7 +15,7 @@ Heuristics are required for several purposes:
 Heuristics is highly dependent on utilities and, one should refrain from including general utilities here. Instead, consider choosing `utils` for that. 
 
 
-=== Future ===
+### Future
 * The code should be refactored. 
 * It is likely that further actions: merge, split, addition and deletion of files would be needed.
 * Better heuristics are required.
