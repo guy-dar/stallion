@@ -89,40 +89,68 @@ class StallionSnippingSelection{
 }
 
 class StallionSmoothSelection{
+    startOld(pageIdx){
+        this.pageIdx = pageIdx;
+        StallionPageUtils.getPageDiv(this.pageIdx).addEventListener("mousemove", e=>{
+            if(e.srcElement.tagName == "DIV"){
+                e.preventDefault()
+                console.log("prevented")
+            }
+        })
+
+
+        // })
+
+        
+
+    }
+
+
+
     start(pageIdx){
         this.pageIdx = pageIdx;
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mousedown", 
         e=>{
+            var x = e.clientX;
+            var y = e.clientY;
+
+            e.preventDefault()
             window.getSelection().removeAllRanges();
             this.range = document.createRange()
-
+            var offset = StallionPageUtils._getTextOffsetByPosition(e, e.srcElement);
+            console.log(offset)
+            
+            this.range.setStart(e.srcElement.firstChild, offset)
 
         });
 
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mousemove", 
         e=>{
-            // var x = e.clientX;
-            // var y = e.clientY;
-            // console.log(e.srcElement)
-            // if(e.srcElement.nodeName != "SPAN" && e.srcElement.nodeName != "#text")
-            // {
-                    // e.preventDefault()
-            // }
             if(!this.range)
-                return;
+            return;
 
+            var x = e.clientX;
+            var y = e.clientY;
             e.preventDefault()
-            this.range.selectNodeContents(e.srcElement);
-            window.getSelection().addRange(this.range)
+            if(StallionPageUtils._isTextElement(e.srcElement))
+            {
+                var offset = StallionPageUtils._getTextOffsetByPosition(e, e.srcElement);
+                console.log(offset)
+                this.range.setEnd(e.srcElement.firstChild, offset);
+                window.getSelection().removeAllRanges()
+                window.getSelection().addRange(this.range)
+
+            }
+
         });
 
 
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mouseup", 
         e=>{
-            window.getSelection().removeAllRanges();
+//            window.getSelection().removeAllRanges();
             this.range = null;
         });
 

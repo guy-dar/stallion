@@ -44,6 +44,31 @@ class StallionPageUtils{
         document.removeEventListener("keydown", escEvt);
     }
 
+    // experimental 
+    static getTextWidth(span) {
+        var spTemp = span.cloneNode()
+        spTemp.innerText = 'a'
+        spTemp.style.visibility = 'hidden'
+        document.querySelector("body").appendChild(spTemp)
+        var width = spTemp.offsetWidth;
+        spTemp.remove()
+        return width;
+    }
+
+
+    // experimental    
+    static _isTextElement(srcElement){
+        return srcElement.nodeName != "DIV"   // GUY TODO: Not perfect 
+    }
+
+    // experimental    
+    static _getTextOffsetByPosition(evt, srcElement){
+        var {x} = this.evtMouse(evt, srcElement); 
+        // var spanStyle = window.getComputedStyle(srcElement)
+        var fontSize = this.getTextWidth(srcElement)//parseInt(spanStyle.fontSize)
+        var textOffset = Math.round(x/fontSize);
+        return textOffset > 0 ? textOffset : 0;
+    }
 
 }
 
