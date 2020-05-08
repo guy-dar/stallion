@@ -1,4 +1,4 @@
-== User Interface ==
+## User Interface
 
 User interface, including handling different Stallion widgets.
 Different widgets are defined here in separate files. 
