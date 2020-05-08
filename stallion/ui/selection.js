@@ -4,6 +4,34 @@ import { stallionUserComment } from "../utils/annotation_utils.js";
 
 var stallionMemory = new StallionMemory()
 
+
+class StallionSelectionUtils{
+        // experimental    
+        static _isTextElement(srcElement){
+            return srcElement.nodeName != "DIV"   // GUY TODO: Not perfect 
+        }
+    
+        // experimental    
+        static _getTextOffsetByPosition(evt, srcElement){
+            var {x} = StallionPageUtils.evtMouse(evt, srcElement); 
+            var fontSize = StallionPageUtils.getTextWidth(srcElement)
+            var textOffset = Math.round(x/fontSize);
+            return textOffset > 0 ? textOffset : 0;
+        }
+    
+
+        static selectNode(node){
+            var range = document.createRange();
+            range.selectNode(node)
+            var selection = window.getSelection();
+            selection.removeAllRanges()
+            selection.addRange(range)         
+        }
+
+}
+
+
+
 class StallionSnippingSelection{
     start(pageIdx){
         var curDiv = StallionPageUtils.getPageDiv(pageIdx);
@@ -89,36 +117,22 @@ class StallionSnippingSelection{
 }
 
 class StallionSmoothSelection{
-    startOld(pageIdx){
-        this.pageIdx = pageIdx;
-        StallionPageUtils.getPageDiv(this.pageIdx).addEventListener("mousemove", e=>{
-            if(e.srcElement.tagName == "DIV"){
-                e.preventDefault()
-                console.log("prevented")
-            }
-        })
-
-
-        // })
-
-        
-
-    }
-
-
 
     start(pageIdx){
         this.pageIdx = pageIdx;
+
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mousedown", 
         e=>{
+            if(e.button != 0)
+                return;
             var x = e.clientX;
             var y = e.clientY;
 
-            e.preventDefault()
+            // e.preventDefault()
             window.getSelection().removeAllRanges();
             this.range = document.createRange()
-            var offset = StallionPageUtils._getTextOffsetByPosition(e, e.srcElement);
+            var offset = StallionSelectionUtils._getTextOffsetByPosition(e, e.srcElement);
             console.log(offset)
             
             this.range.setStart(e.srcElement.firstChild, offset)
@@ -134,10 +148,9 @@ class StallionSmoothSelection{
             var x = e.clientX;
             var y = e.clientY;
             e.preventDefault()
-            if(StallionPageUtils._isTextElement(e.srcElement))
+            if(StallionSelectionUtils._isTextElement(e.srcElement))
             {
-                var offset = StallionPageUtils._getTextOffsetByPosition(e, e.srcElement);
-                console.log(offset)
+                var offset = StallionSelectionUtils._getTextOffsetByPosition(e, e.srcElement);
                 this.range.setEnd(e.srcElement.firstChild, offset);
                 window.getSelection().removeAllRanges()
                 window.getSelection().addRange(this.range)
@@ -150,7 +163,6 @@ class StallionSmoothSelection{
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mouseup", 
         e=>{
-//            window.getSelection().removeAllRanges();
             this.range = null;
         });
 

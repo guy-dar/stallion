@@ -6,7 +6,8 @@ var myConfig = {
   "textSelection": "smoothStallion",
   "userAnnotations": true,
   "findBar": "splitViewer",
-  "darkMode": false
+  "darkMode": false,
+  "allowEditing": true
 };
 
 

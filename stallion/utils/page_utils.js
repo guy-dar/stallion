@@ -56,19 +56,6 @@ class StallionPageUtils{
     }
 
 
-    // experimental    
-    static _isTextElement(srcElement){
-        return srcElement.nodeName != "DIV"   // GUY TODO: Not perfect 
-    }
-
-    // experimental    
-    static _getTextOffsetByPosition(evt, srcElement){
-        var {x} = this.evtMouse(evt, srcElement); 
-        // var spanStyle = window.getComputedStyle(srcElement)
-        var fontSize = this.getTextWidth(srcElement)//parseInt(spanStyle.fontSize)
-        var textOffset = Math.round(x/fontSize);
-        return textOffset > 0 ? textOffset : 0;
-    }
 
 }
 
