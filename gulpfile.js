@@ -297,10 +297,7 @@ function replaceJSRootName(amdName, jsName) {
   );
 }
 
-function createBundle(defines) {
-  console.log();
-  console.log("### Bundling files into pdf.js");
-
+function createMainBundle(defines) {
   var mainAMDName = "pdfjs-dist/build/pdf";
   var mainOutputName = "pdf.js";
 
@@ -310,12 +307,14 @@ function createBundle(defines) {
     libraryTarget: "umd",
     umdNamedDefine: true,
   });
-  var mainOutput = gulp
+  return gulp
     .src("./src/pdf.js")
     .pipe(webpack2Stream(mainFileConfig))
     .pipe(replaceWebpackRequire())
     .pipe(replaceJSRootName(mainAMDName, "pdfjsLib"));
+}
 
+function createWorkerBundle(defines) {
   var workerAMDName = "pdfjs-dist/build/pdf.worker";
   var workerOutputName = "pdf.worker.js";
 
@@ -325,13 +324,11 @@ function createBundle(defines) {
     libraryTarget: "umd",
     umdNamedDefine: true,
   });
-
-  var workerOutput = gulp
+  return gulp
     .src("./src/pdf.worker.js")
     .pipe(webpack2Stream(workerFileConfig))
     .pipe(replaceWebpackRequire())
     .pipe(replaceJSRootName(workerAMDName, "pdfjsWorker"));
-  return merge([mainOutput, workerOutput]);
 }
 
 function createWebBundle(defines) {
@@ -416,21 +413,6 @@ function createTestSource(testsName, bot) {
     console.log("### Running " + testsName + " tests");
 
     var PDF_TEST = process.env.PDF_TEST || "test_manifest.json";
-    var PDF_BROWSERS =
-      process.env.PDF_BROWSERS ||
-      "resources/browser_manifests/browser_manifest.json";
-
-    if (!checkFile("test/" + PDF_BROWSERS)) {
-      console.log(
-        "Browser manifest file test/" + PDF_BROWSERS + " does not exist."
-      );
-      console.log(
-        "Copy and adjust the example in test/resources/browser_manifests."
-      );
-      this.emit("error", new Error("Missing manifest file"));
-      return null;
-    }
-
     var args = ["test.js"];
     switch (testsName) {
       case "browser":
@@ -449,9 +431,11 @@ function createTestSource(testsName, bot) {
         this.emit("error", new Error("Unknown name: " + testsName));
         return null;
     }
-    args.push("--browserManifestFile=" + PDF_BROWSERS);
     if (bot) {
       args.push("--strictVerify");
+    }
+    if (process.argv.includes("--noChrome")) {
+      args.push("--noChrome");
     }
 
     var testProcess = startNode(args, { cwd: TEST_DIR, stdio: "inherit" });
@@ -467,26 +451,14 @@ function makeRef(done, bot) {
   console.log();
   console.log("### Creating reference images");
 
-  var PDF_BROWSERS =
-    process.env.PDF_BROWSERS ||
-    "resources/browser_manifests/browser_manifest.json";
-
-  if (!checkFile("test/" + PDF_BROWSERS)) {
-    console.log(
-      "Browser manifest file test/" + PDF_BROWSERS + " does not exist."
-    );
-    console.log(
-      "Copy and adjust the example in test/resources/browser_manifests."
-    );
-    done(new Error("Missing manifest file"));
-    return;
-  }
-
   var args = ["test.js", "--masterMode"];
   if (bot) {
     args.push("--noPrompts", "--strictVerify");
   }
-  args.push("--browserManifestFile=" + PDF_BROWSERS);
+  if (process.argv.includes("--noChrome")) {
+    args.push("--noChrome");
+  }
+
   var testProcess = startNode(args, { cwd: TEST_DIR, stdio: "inherit" });
   testProcess.on("close", function (code) {
     done();
@@ -704,13 +676,6 @@ gulp.task("cmaps", function (done) {
   done();
 });
 
-gulp.task(
-  "bundle",
-  gulp.series("buildnumber", function () {
-    return createBundle(DEFINES).pipe(gulp.dest(BUILD_DIR));
-  })
-);
-
 function preprocessCSS(source, mode, defines, cleanup) {
   var outName = getTempFile("~preprocess", ".css");
   builder.preprocessCSS(mode, source, outName);
@@ -740,7 +705,8 @@ function buildGeneric(defines, dir) {
   rimraf.sync(dir);
 
   return merge([
-    createBundle(defines).pipe(gulp.dest(dir + "build")),
+    createMainBundle(defines).pipe(gulp.dest(dir + "build")),
+    createWorkerBundle(defines).pipe(gulp.dest(dir + "build")),
     createWebBundle(defines).pipe(gulp.dest(dir + "web")),
     gulp.src(COMMON_WEB_FILES, { base: "web/" }).pipe(gulp.dest(dir + "web")),
     gulp.src("LICENSE").pipe(gulp.dest(dir)),
@@ -874,7 +840,8 @@ gulp.task(
     rimraf.sync(MINIFIED_DIR);
 
     return merge([
-      createBundle(defines).pipe(gulp.dest(MINIFIED_DIR + "build")),
+      createMainBundle(defines).pipe(gulp.dest(MINIFIED_DIR + "build")),
+      createWorkerBundle(defines).pipe(gulp.dest(MINIFIED_DIR + "build")),
       createWebBundle(defines).pipe(gulp.dest(MINIFIED_DIR + "web")),
       createImageDecodersBundle(
         builder.merge(defines, { IMAGE_DECODERS: true })
@@ -1034,7 +1001,12 @@ gulp.task(
     ];
 
     return merge([
-      createBundle(defines).pipe(gulp.dest(MOZCENTRAL_CONTENT_DIR + "build")),
+      createMainBundle(defines).pipe(
+        gulp.dest(MOZCENTRAL_CONTENT_DIR + "build")
+      ),
+      createWorkerBundle(defines).pipe(
+        gulp.dest(MOZCENTRAL_CONTENT_DIR + "build")
+      ),
       createWebBundle(defines).pipe(gulp.dest(MOZCENTRAL_CONTENT_DIR + "web")),
       gulp
         .src(MOZCENTRAL_COMMON_WEB_FILES, { base: "web/" })
@@ -1089,7 +1061,12 @@ gulp.task(
     var version = getVersionJSON().version;
 
     return merge([
-      createBundle(defines).pipe(gulp.dest(CHROME_BUILD_CONTENT_DIR + "build")),
+      createMainBundle(defines).pipe(
+        gulp.dest(CHROME_BUILD_CONTENT_DIR + "build")
+      ),
+      createWorkerBundle(defines).pipe(
+        gulp.dest(CHROME_BUILD_CONTENT_DIR + "build")
+      ),
       createWebBundle(defines).pipe(
         gulp.dest(CHROME_BUILD_CONTENT_DIR + "web")
       ),

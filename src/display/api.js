@@ -2037,7 +2037,10 @@ class WorkerTransport {
     const { messageHandler, loadingTask } = this;
 
     messageHandler.on("GetReader", (data, sink) => {
-      assert(this._networkStream);
+      assert(
+        this._networkStream,
+        "GetReader - no `IPDFStream` instance available."
+      );
       this._fullReader = this._networkStream.getFullReader();
       this._fullReader.onProgress = evt => {
         this._lastProgress = {
@@ -2053,7 +2056,10 @@ class WorkerTransport {
               sink.close();
               return;
             }
-            assert(isArrayBuffer(value));
+            assert(
+              isArrayBuffer(value),
+              "GetReader - expected an ArrayBuffer."
+            );
             // Enqueue data chunk into sink, and transfer it
             // to other side as `Transferable` object.
             sink.enqueue(new Uint8Array(value), 1, [value]);
@@ -2099,7 +2105,10 @@ class WorkerTransport {
     });
 
     messageHandler.on("GetRangeReader", (data, sink) => {
-      assert(this._networkStream);
+      assert(
+        this._networkStream,
+        "GetRangeReader - no `IPDFStream` instance available."
+      );
       const rangeReader = this._networkStream.getRangeReader(
         data.begin,
         data.end
@@ -2128,7 +2137,10 @@ class WorkerTransport {
               sink.close();
               return;
             }
-            assert(isArrayBuffer(value));
+            assert(
+              isArrayBuffer(value),
+              "GetRangeReader - expected an ArrayBuffer."
+            );
             sink.enqueue(new Uint8Array(value), 1, [value]);
           })
           .catch(reason => {
@@ -2258,20 +2270,22 @@ class WorkerTransport {
             fontRegistry,
           });
 
-          this.fontLoader.bind(font).then(
-            () => {
+          this.fontLoader
+            .bind(font)
+            .catch(reason => {
+              return messageHandler.sendWithPromise("FontFallback", { id });
+            })
+            .finally(() => {
+              if (!params.fontExtraProperties && font.data) {
+                // Immediately release the `font.data` property once the font
+                // has been attached to the DOM, since it's no longer needed,
+                // rather than waiting for a `PDFDocumentProxy.cleanup` call.
+                // Since `font.data` could be very large, e.g. in some cases
+                // multiple megabytes, this will help reduce memory usage.
+                font.data = null;
+              }
               this.commonObjs.resolve(id, font);
-            },
-            reason => {
-              messageHandler
-                .sendWithPromise("FontFallback", {
-                  id,
-                })
-                .finally(() => {
-                  this.commonObjs.resolve(id, font);
-                });
-            }
-          );
+            });
           break;
         case "FontPath":
         case "FontType3Res":

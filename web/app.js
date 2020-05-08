@@ -535,12 +535,12 @@ const PDFViewerApplication = {
     return this.pdfDocument ? this.pdfDocument.numPages : 0;
   },
 
-  set page(val) {
-    this.pdfViewer.currentPageNumber = val;
-  },
-
   get page() {
     return this.pdfViewer.currentPageNumber;
+  },
+
+  set page(val) {
+    this.pdfViewer.currentPageNumber = val;
   },
 
   get printing() {
@@ -827,7 +827,7 @@ const PDFViewerApplication = {
 
         return loadingErrorMessage.then(msg => {
           this.error(msg, { message });
-          throw new Error(msg);
+          throw exception;
         });
       }
     );

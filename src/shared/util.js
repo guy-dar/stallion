@@ -288,12 +288,26 @@ const OPS = {
 };
 
 const UNSUPPORTED_FEATURES = {
+  /** @deprecated unused */
   unknown: "unknown",
   forms: "forms",
   javaScript: "javaScript",
   smask: "smask",
   shadingPattern: "shadingPattern",
+  /** @deprecated unused */
   font: "font",
+  errorTilingPattern: "errorTilingPattern",
+  errorExtGState: "errorExtGState",
+  errorXObject: "errorXObject",
+  errorFontLoadType3: "errorFontLoadType3",
+  errorFontState: "errorFontState",
+  errorFontMissing: "errorFontMissing",
+  errorFontTranslate: "errorFontTranslate",
+  errorColorSpace: "errorColorSpace",
+  errorOperatorList: "errorOperatorList",
+  errorFontToUnicode: "errorFontToUnicode",
+  errorFontLoadNative: "errorFontLoadNative",
+  errorFontGetPath: "errorFontGetPath",
 };
 
 const PasswordResponses = {
@@ -502,7 +516,7 @@ function arrayByteLength(arr) {
   if (arr.length !== undefined) {
     return arr.length;
   }
-  assert(arr.byteLength !== undefined);
+  assert(arr.byteLength !== undefined, "arrayByteLength - invalid argument.");
   return arr.byteLength;
 }
 
