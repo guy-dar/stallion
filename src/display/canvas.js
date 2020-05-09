@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+import {StallionPageHandler} from "../../stallion/hooks/render.js"
+
+
 import {
   FONT_IDENTITY_MATRIX,
   IDENTITY_MATRIX,
@@ -29,7 +32,6 @@ import {
 } from "../shared/util.js";
 import { getShadingPatternFromIR, TilingPattern } from "./pattern_helper.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
-import { PageHeuristics } from "../../stallion/heuristics/page.js";
 
 var stallionConfig = new StallionConfig();
 
@@ -449,9 +451,9 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
     canvasFactory,
     webGLContext,
     imageLayer,
-    heuristics
+    stallionPageHandler
   ) {
-    this.heuristics = heuristics;
+    this.stallionPageHandler = stallionPageHandler;
     this.ctx = canvasCtx;
     this.current = new CanvasExtraState();
     this.stateStack = [];
@@ -665,7 +667,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
   }
 
   function resetCtxToDefault(ctx) {
-    var stallionDefault = PageHeuristics.defaultSettings(ctx);
+    var stallionDefault = StallionPageHandler.defaultSettings(ctx);
     ctx.strokeStyle = stallionDefault.strokeStyle || "#000000";
     ctx.fillStyle = stallionDefault.fillStyle || "#000000";
     ctx.fillRule = "nonzero";
@@ -1187,7 +1189,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
     // Path
     constructPath: function CanvasGraphics_constructPath(ops, args) {
-      this.ctx = this.heuristics.handlePathAction(this.ctx).ctx;
+      this.ctx = this.stallionPageHandler.handlePathAction(this.ctx).ctx;
       var ctx = this.ctx;
       var current = this.current;
       var x = current.x,
@@ -1270,7 +1272,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       consumePath = typeof consumePath !== "undefined" ? consumePath : true;
       var ctx = this.ctx;
       var strokeColor = this.current.strokeColor;
-      var stallionPathHandler = this.heuristics.handleStrokeAction(ctx, strokeColor);
+      var stallionPathHandler = this.stallionPageHandler.handleStrokeAction(ctx, strokeColor);
       strokeColor = stallionPathHandler.strokeColor;
       ctx = stallionPathHandler.ctx;
       // For stroke we want to temporarily change the global alpha to the
@@ -1595,7 +1597,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       var current = this.current;
       var font = current.font;
         
-      current = this.heuristics.handleShowTextAction(this.ctx, current).current;
+      current = this.stallionPageHandler.handleShowTextAction(this.ctx, current).current;
       if (font.isType3Font) {
         return this.showType3Text(glyphs);
       }
@@ -1718,7 +1720,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
-        ctx = this.heuristics.handleTextAction(ctx, current, scaledX, scaledY).ctx;
+        ctx = this.stallionPageHandler.handleTextAction(ctx, current, scaledX, scaledY).ctx;
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
             // common case
@@ -2045,7 +2047,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       groupCtx.scale(1 / scaleX, 1 / scaleY);
       groupCtx.translate(-offsetX, -offsetY);
       groupCtx.transform.apply(groupCtx, currentTransform);
-      this.heuristics.reportImageAction(this.ctx, offsetX, offsetY , drawnWidth, drawnHeight, "paint"); 
+      this.stallionPageHandler.reportImageAction(this.ctx, offsetX, offsetY , drawnWidth, drawnHeight, "paint"); 
 
       if (group.smask) {
         // Saving state and cached mask to be used in setGState.
@@ -2170,7 +2172,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
         h
       );
 
-      // this.heuristics.reportImageAction(ctx, x, y, w, h, "jpeg")
+      // this.stallionPageHandler.reportImageAction(ctx, x, y, w, h, "jpeg")
       if (this.imageLayer) {
         var currentTransform = ctx.mozCurrentTransformInverse;
         var position = this.getCanvasPosition(0, 0);

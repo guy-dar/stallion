@@ -78,7 +78,7 @@ class Page {
     fontCache,
     builtInCMapCache,
     pdfFunctionFactory,
-    documentHeuristics
+    stallionDocHandler
   }) {
     this.pdfManager = pdfManager;
     this.pageIndex = pageIndex;
@@ -90,7 +90,7 @@ class Page {
     this.pdfFunctionFactory = pdfFunctionFactory;
     this.evaluatorOptions = pdfManager.evaluatorOptions;
     this.resourcesPromise = null;
-    this.doc_heuristics = documentHeuristics;
+    this.stallionDocHandler = stallionDocHandler;
     const idCounters = {
       obj: 0,
     };
@@ -833,7 +833,7 @@ class PDFDocument {
         fontCache: catalog.fontCache,
         builtInCMapCache: catalog.builtInCMapCache,
         pdfFunctionFactory: this.pdfFunctionFactory,
-        documentHeuristics: this.doc_heuristics
+        stallionDocHandler: this.stallionDocHandler
       });
     }));
   }

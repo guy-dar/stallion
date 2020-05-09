@@ -57,51 +57,6 @@ class PageHeuristics{
         return this.helper.isDictInArray(newFontCtx.font, curTextBlock.fonts);  // GUY TODO: Fix. should be after the line is processed. Before is just approximation
     }
 
-    handleStrokeAction(ctx, strokeColor){
-        // this.reportStrokeAction(ctx, fontData, scaledX, scaledY);
-        if(stallionConfig.getValue("darkMode")){
-            ctx.fillStyle = "#ffffff"
-            strokeColor = "#ffffff"
-        }
-        return {ctx, strokeColor};
-
-    }
-
-    static defaultSettings(ctx){
-        var fillStyle = null, strokeStyle = null;
-        if(stallionConfig.getValue("darkMode")){
-            fillStyle = "#ffffff"
-            strokeStyle = "#ffffff"
-        }
-        return {ctx: ctx, strokeStyle, fillStyle};
-    }
-
-    handlePathAction(ctx){
-        // this.reportPathAction(ctx);
-        if(stallionConfig.getValue("darkMode"))
-        {       
-            ctx.fillStyle = "#ffffff"
-            ctx.strokeStyle = "#ffffff"
-        }
-        return {ctx};
-
-    }
-
-    handleShowTextAction(ctx, current){
-        // this.reportPathAction(ctx);
-        if(stallionConfig.getValue("darkMode"))
-            current.fillColor = "#ffffff"
-        return {ctx,current};
-
-    }
-
-    handleTextAction(ctx, fontData, scaledX, scaledY){
-        this.reportTextAction(ctx, fontData, scaledX, scaledY);
-        if(stallionConfig.getValue("darkMode"))
-            ctx.fillStyle = "#ffffff"
-        return {ctx};
-
-    }
 
 
     reportTextAction(ctx, fontData, scaledX, scaledY){

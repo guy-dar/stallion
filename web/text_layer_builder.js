@@ -42,9 +42,9 @@ class TextLayerBuilder {
     viewport,
     findController = null,
     enhanceTextSelection = false,
-    heuristics
+    stallionPageHandler
   }) {
-    this.heuristics = heuristics;
+    this.stallionPageHandler = stallionPageHandler;
     this.textLayerDiv = textLayerDiv;
     this.eventBus = eventBus;
     this.textContent = null;
@@ -461,7 +461,7 @@ class DefaultTextLayerFactory {
     viewport,
     enhanceTextSelection = false,
     eventBus,
-    heuristics
+    stallionPageHandler
   ) {
     return new TextLayerBuilder({
       textLayerDiv,
@@ -469,7 +469,7 @@ class DefaultTextLayerFactory {
       viewport,
       enhanceTextSelection,
       eventBus,
-      heuristics
+      stallionPageHandler
     });
   }
 }

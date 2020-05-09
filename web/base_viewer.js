@@ -460,7 +460,7 @@ class BaseViewer {
       if (!pageView) {
         return;
       }
-      pageView.heuristics.analyzeTextLayer(evt.source, pageView);}
+      pageView.stallionPageHandler.analyzeTextLayer(evt.source, pageView);}
     );
 
     this._onAfterDraw = evt => {
@@ -1138,7 +1138,7 @@ class BaseViewer {
     viewport,
     enhanceTextSelection = false,
     eventBus,
-    heuristics
+    stallionPageHandler
   ) {
     return new TextLayerBuilder({
       textLayerDiv,
@@ -1149,7 +1149,7 @@ class BaseViewer {
       enhanceTextSelection: this.isInPresentationMode
         ? false
         : enhanceTextSelection,
-        heuristics
+        stallionPageHandler
     });
   }
 

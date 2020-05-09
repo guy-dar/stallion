@@ -18,7 +18,7 @@
  * @module pdfjsLib
  */
 
-import {PageHeuristics} from "../../stallion/heuristics/page.js";
+import {StallionPageHandler} from "../../stallion/hooks/render.js"
 import {
   AbortException,
   assert,
@@ -58,7 +58,7 @@ import { MessageHandler } from "../shared/message_handler.js";
 import { Metadata } from "./metadata.js";
 import { PDFDataTransportStream } from "./transport_stream.js";
 import { WebGLContext } from "./webgl.js";
-import { DocumentHeuristics } from "../../stallion/heuristics/document_heuristics.js";
+import { StallionDocumentHandler } from "../../stallion/hooks/render.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
 
 
@@ -933,10 +933,10 @@ class PDFPageProxy {
     this.destroyed = false;
   }
 
-  get heuristics(){
-    if(this._heuristics == undefined)
-      this._heuristics = new PageHeuristics(this._transport.doc_heuristics, this._pageIndex);
-    return this._heuristics;
+  get stallionPageHandler(){
+    if(this._stallionPageHandler == undefined)
+      this._stallionPageHandler = new StallionPageHandler(this._transport.stallionDocHandler, this._pageIndex);
+    return this._stallionPageHandler;
     }
 
   /**
@@ -1123,7 +1123,7 @@ class PDFPageProxy {
       webGLContext,
       useRequestAnimationFrame: renderingIntent !== "print",
       pdfBug: this._pdfBug,
-      heuristics: this.heuristics
+      stallionPageHandler: this.stallionPageHandler
     });
 
     if (!intentState.renderTasks) {
@@ -1978,7 +1978,7 @@ class WorkerTransport {
       isCompressed: params.cMapPacked,
     });
 
-    this.doc_heuristics = new DocumentHeuristics(); 
+    this.stallionDocHandler = new StallionDocumentHandler(); 
     this.destroyed = false;
     this.destroyCapability = null;
     this._passwordCapability = null;
@@ -2760,9 +2760,9 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       webGLContext,
       useRequestAnimationFrame = false,
       pdfBug = false,
-      heuristics
+      stallionPageHandler
     }) {
-      heuristics.startRendering();   // GUY TODO: Is it the right location ? 
+      stallionPageHandler.startRendering();   // GUY TODO: Is it the right location ? 
       this.callback = callback;
       this.params = params;
       this.objs = objs;
@@ -2773,7 +2773,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       this.canvasFactory = canvasFactory;
       this.webGLContext = webGLContext;
       this._pdfBug = pdfBug;
-      this.heuristics = heuristics;
+      this.stallionPageHandler = stallionPageHandler;
       this.running = false;
       this.graphicsReadyCallback = null;
       this.graphicsReady = false;
@@ -2829,7 +2829,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
         this.canvasFactory,
         this.webGLContext,
         imageLayer,
-        this.heuristics
+        this.stallionPageHandler
         );
         this.gfx.beginDrawing({
         transform,
@@ -2839,7 +2839,7 @@ const InternalRenderTask = (function InternalRenderTaskClosure() {
       });
 
       this.capability.promise.then(() =>{
-              this.heuristics.finishedRenderingContext(this._canvas, viewport, transform);
+              this.stallionPageHandler.finishedRenderingContext(this._canvas, viewport, transform);
             });
 
       this.operatorListIdx = 0;
