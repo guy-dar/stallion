@@ -1,3 +1,5 @@
+
+
 var myConfig = {
   "internalLinkViewer": "splitViewer",
   "autoInternalLink": false,
@@ -7,7 +9,9 @@ var myConfig = {
   "userAnnotations": true,
   "findBar": "splitViewer",
   "darkMode": false,
-  "allowEditing": true
+  "allowEditing": true,
+  "localAutoSave": true,
+  "preventJS": true
 };
 
 
