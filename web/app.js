@@ -62,7 +62,7 @@ import { PasswordPrompt } from "./password_prompt.js";
 import { PDFAttachmentViewer } from "./pdf_attachment_viewer.js";
 import { PDFDocumentProperties } from "./pdf_document_properties.js";
 import { PDFFindBar } from "./pdf_find_bar.js";
-import { PDFSuperFindBar } from "../stallion/ui/pdf_superfind_bar.js";
+import { SlashBar } from "../stallion/ui/slashbar.js";
 import { PDFFindController } from "./pdf_find_controller.js";
 import { PDFHistory } from "./pdf_history.js";
 import { PDFLinkService } from "./pdf_link_service.js";
@@ -419,7 +419,7 @@ const PDFViewerApplication = {
 
     if (!this.supportsIntegratedFind) {
       this.findBar = new PDFFindBar(appConfig.findBar, eventBus, this.l10n);
-      this.superFindBar = new PDFSuperFindBar(appConfig.superFindBar,eventBus, this.l10n);
+      this.slashBar = new SlashBar(appConfig.slashBar,eventBus, this.l10n);
     }
 
     this.pdfDocumentProperties = new PDFDocumentProperties(
@@ -2511,13 +2511,13 @@ function webViewerKeyDown(evt) {
       if(!_slashKeyTimeout){
         
         _slashKeyTimeout = setTimeout(()=>{
-                  PDFViewerApplication.superFindBar.open();
+                  PDFViewerApplication.slashBar.open();
                   _slashKeyTimeout = null;
                 }, delta);
       }else{
         clearTimeout(_slashKeyTimeout);
         _slashKeyTimeout = null;
-        PDFViewerApplication.superFindBar.dblSlash();
+        PDFViewerApplication.slashBar.dblSlash();
       }
       
       handled = true;
@@ -2533,7 +2533,7 @@ function webViewerKeyDown(evt) {
     switch (evt.keyCode) {
       // case 69: // e
       //   if (!PDFViewerApplication.supportsIntegratedFind) {
-      //     PDFViewerApplication.superFindBar.open();
+      //     PDFViewerApplication.slashBar.open();
       //     handled = true;
       //   }
       //   break;

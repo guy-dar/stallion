@@ -1,7 +1,6 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig, StallionMemory} from "../config/utils.js"
 import {stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
-import {stallionUserComment } from "../utils/annotation_utils.js";
 import {StallionPageUtils} from "../utils/page_utils.js";
 import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selection.js";
 

@@ -180,14 +180,14 @@ body{
 }
 
 
-.superfindbar{
+.slashBar{
   width:85%;
   top:90% !important;
 }
-#superfindInput{
+#slashBarInput{
   width: 98.5%;
 }
-#superfindbarInputContainer{
+#slashBarInputContainer{
   width: 100%;
 }
 

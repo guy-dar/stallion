@@ -11,7 +11,7 @@ import { getPeekBox} from "./peekbox.js"
  * also sets up the appropriate events for the controls. Actual searching
  * is done by PDFFindController.
  */
-class PDFSuperFindBar {
+class SlashBar {
   constructor(options, eventBus, l10n = NullL10n) {
     this.opened = false;
 
@@ -351,4 +351,4 @@ class PDFSuperFindBar {
   }
 }
 
-export { PDFSuperFindBar };
+export { SlashBar };

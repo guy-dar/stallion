@@ -142,13 +142,13 @@ function getViewerConfiguration() {
       findPreviousButton: document.getElementById("findPrevious"),
       findNextButton: document.getElementById("findNext"),
     },
-    superFindBar: {
-      bar: document.getElementById("superfindbar"),
-      findField: document.getElementById("superfindInput"),
-      findMsg: document.getElementById("superfindMsg"),
-      findResultsCount: document.getElementById("superFindResultsCount"),
-      findPreviousButton: document.getElementById("superFindPrevious"),
-      findNextButton: document.getElementById("superFindNext"),
+    slashBar: {
+      bar: document.getElementById("slashBar"),
+      findField: document.getElementById("slashBarInput"),
+      findMsg: document.getElementById("slashBarMsg"),
+      findResultsCount: document.getElementById("slashBarResultsCount"),
+      findPreviousButton: document.getElementById("slashBarPrevious"),
+      findNextButton: document.getElementById("slashBarNext"),
     },
     passwordOverlay: {
       overlayName: "passwordOverlay",

@@ -345,20 +345,20 @@ See https://github.com/adobe-type-tools/cmap-resources
             </button>
             <div class="splitToolbarButtonSeparator"></div>
             <div class="splitToolbarButton">
-              <button id="superFindPrevious" class="toolbarButton findPrevious" style="background-color:gray;" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="super_find_previous">
+              <button id="slashBarPrevious" class="toolbarButton findPrevious" style="background-color:gray;" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="super_find_previous">
                 <span data-l10n-id="super_find_previous_label">Previous</span>
               </button>
               <div class="splitToolbarButtonSeparator"></div>
               <button class="toolbarButton" title="Grab" style="width:70px; height:70px; background-color:gray;">
                 <span> * </span>
               </button>
-              <button id="superFindNext" class="toolbarButton findNext" style="background-color:gray;" title="Find the next occurrence of the phrase" tabindex="93" data-l10n-id="super_find_next">
+              <button id="slashBarNext" class="toolbarButton findNext" style="background-color:gray;" title="Find the next occurrence of the phrase" tabindex="93" data-l10n-id="super_find_next">
                 <span data-l10n-id="super_find_next_label">Next</span>
               </button>
             </div>
             <div id="findbarOptionsOneContainer">
 
-              <span id="superFindResultsCount" class="toolbarLabel hidden"></span>
+              <span id="slashBarResultsCount" class="toolbarLabel hidden"></span>
             </div>
   
 
@@ -374,12 +374,12 @@ See https://github.com/adobe-type-tools/cmap-resources
         </div>  <!--hoverBox -->       
 
 
-      <div class="findbar hidden doorHanger superfindbar" id="superfindbar">
-        <div id="superfindbarInputContainer">
-          <input id="superfindInput"  autocomplete="off" class="toolbarField" title="Find" placeholder="Type command.."> 
+      <div class="findbar hidden doorHanger slashBar" id="slashBar">
+        <div id="slashBarInputContainer">
+          <input id="slashBarInput"  autocomplete="off" class="toolbarField" title="Find" placeholder="Type command.."> 
           <!-- data-l10n-id="superfind_input" -->
         </div>
-      </div>  <!-- superfindbar -->
+      </div>  <!-- slashbar -->
 
       <div id="overlayContainer" class="hidden">
         <div id="passwordOverlay" class="container hidden">

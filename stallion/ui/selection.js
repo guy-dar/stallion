@@ -1,6 +1,6 @@
 import {StallionPageUtils} from "../utils/page_utils.js"
 import { StallionMemory } from "../config/utils.js";
-import { stallionUserComment } from "../utils/annotation_utils.js";
+import { StallionUserComment } from "./user_annotation.js";
 
 var stallionMemory = new StallionMemory()
 
@@ -87,7 +87,7 @@ class StallionSnippingSelection{
             }
 
             stallionMemory.addPageDataEntry(this.pageIdx, "userAnnotations",
-            new stallionUserComment({contents: "", pageIdx: this.pageIdx,
+            new StallionUserComment({contents: "", pageIdx: this.pageIdx,
                                     rect: {x:x - 40,y:this.startY-10,w:200,h:100}})
             )
     }

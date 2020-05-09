@@ -1,8 +1,8 @@
 // import {Annotation} from "../../src/core/annotation.js"
-import {getPageDiv, StallionPageUtils} from "./page_utils.js"
+import {StallionPageUtils} from "../utils/page_utils.js"
 
 
-class stallionUserComment{
+class StallionUserComment{
 
     constructor(params){
         var {contents, pageIdx, rect} = params;
@@ -55,4 +55,4 @@ class stallionUserComment{
 }
 
 
-export {stallionUserComment};
+export {StallionUserComment};
