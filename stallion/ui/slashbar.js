@@ -1,16 +1,109 @@
 
-import { FindState } from "../../web/pdf_find_controller.js";
+import { FindState, PDFFindController } from "../../web/pdf_find_controller.js";
 import { NullL10n } from "../../web/ui_utils.js";
 import {SelectionHeuristics} from "../heuristics/selection.js"
 import { getPeekBox} from "./peekbox.js"
 
+class SlashBarController extends PDFFindController{
+  _handleScroll(evt){
+    if(evt.source._peekMatches){
+      document.querySelector("#viewerContainer")
+              .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
+      
+    }
+  }
 
-/**
- * Creates a "search bar" given a set of DOM elements that act as controls
- * for searching or for setting search preferences in the UI. This object
- * also sets up the appropriate events for the controls. Actual searching
- * is done by PDFFindController.
- */
+  _preprocessSuperMatch(){
+    var query = this._query;
+    var queryArgs = query.split(" ");
+    var cmd = queryArgs[0];
+    var queryRest = queryArgs.slice(1).join(" ");
+    switch(cmd){
+      case "back":
+        window.history.go(-1);
+        return ["",""]
+      break;
+      case "toolbar":
+        document.getElementById("toolbarContainer").classList.toggle("hidden");
+        return ["",""]
+      break;
+      case "outline":
+        document.getElementById("sidebarToggle").click();
+        document.getElementById("viewOutline").click();
+        return ["",""]
+      break;
+      case "refer":
+        this._peekMatches = true;
+        var q = queryArgs[1];
+        return  [q, "refer"];
+      break;
+      case "fpeek":
+        this._peekMatches = true;
+        return  [queryRest, "find"];
+      break;
+      case "fgoto":
+        this._peekMatches = false;
+        return  [queryRest, "find"];
+      break;
+      case "page":
+        document.getElementById("pageNumber").value = queryArgs[1];
+        document.getElementById("pageNumber").dispatchEvent(new Event("change"));
+        return ["", ""];
+      break; 
+      case "zoom":
+        var zoomBtn = (queryArgs[1] == 'in') ? document.getElementById("zoomIn") : document.getElementById("zoomOut");
+        var q = (queryArgs.length == 3) ? queryArgs[2] : 1;
+
+        for(var i = 0; i < q; i++)
+          zoomBtn.click();
+        return ["",""];
+      break;
+      case "download":
+        this._eventBus.dispatch("download",{source: this})
+        return ["",""];
+      break;
+      case "shortcut":
+      case "name":
+      case "dub":
+        if(this.shortcutsDict == undefined)
+            this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
+
+        if(this.shortcutsDict[queryRest] == undefined){
+          this.shortcutsDict[queryRest] = [document.querySelector("#viewerContainer").scrollLeft,
+                                            document.querySelector("#viewerContainer").scrollTop];
+        }else{
+          console.log("Cannot set shortcut. already exists.")
+        }
+        return ["",""];
+      break;
+      case "jump":
+        document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);
+        return ["",""];
+      break;
+      default:
+        alert("Cannot understand command. Are you stupid?");
+        return ["",""];
+    }  
+    
+  }
+
+
+  _calculateSuperMatch(pageIndex, query, queryType) {
+
+    if(queryType == "find"){
+      this._calculateMatch(pageIndex, query);
+      return;
+    }
+    if(queryType == "refer"){
+        
+    }
+    if(queryType == "media"){
+        
+    }
+  }
+}
+
+
 class SlashBar {
   constructor(options, eventBus, l10n = NullL10n) {
     this.opened = false;
@@ -69,7 +162,7 @@ class SlashBar {
     this.eventBus.dispatch("find", {
       source: this,
       phraseSearch: true,
-      type,//: type.substring("find".length),
+      type,
       query: this.findField.value
     });
   }

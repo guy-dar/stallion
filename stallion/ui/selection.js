@@ -88,7 +88,8 @@ class StallionSnippingSelection{
 
             stallionMemory.addPageDataEntry(this.pageIdx, "userAnnotations",
             new StallionUserComment({contents: "", pageIdx: this.pageIdx,
-                                    rect: {x:x - 40,y:this.startY-10,w:200,h:100}})
+                                    rect: {x:x - 40,y:this.startY-10,w:200,h:100},
+                                    pdfDocument: this.pdfDocument})
             )
     }
     this.selectionDiv.remove();

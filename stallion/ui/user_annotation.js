@@ -1,12 +1,14 @@
 // import {Annotation} from "../../src/core/annotation.js"
 import {StallionPageUtils} from "../utils/page_utils.js"
+import {StallionWriterUtils} from "../utils/writer_utils.js"
 
 
 class StallionUserComment{
 
     constructor(params){
-        var {contents, pageIdx, rect} = params;
+        var {contents, pageIdx, rect, pdfDocument} = params;
         this.rect = rect;
+        this.pdfDocument = pdfDocument;
         this.pageIdx = pageIdx;
         var comment_div = document.createElement("textarea");
         // comment_div.contentEditable = true;
@@ -39,6 +41,14 @@ class StallionUserComment{
         return this.comment_div.innerText;
     }
 
+
+    finalizeComment(){
+        var contents = this.contents;
+        var rect = this.comment_div.getBoundingClientRect();
+        this.comment_div.remove()
+        StallionWriterUtils.addTextAnnotation(contents, rect)
+
+    }
 
     show(){
         this.comment_div.classList.remove("hidden");

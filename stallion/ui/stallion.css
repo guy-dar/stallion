@@ -1,0 +1,58 @@
+.slashBar{
+    width:85%;
+    top:90% !important;
+  }
+  #slashBarInput{
+    width: 98.5%;
+  }
+  #slashBarInputContainer{
+    width: 100%;
+  }
+
+  #splitPeekerFrame{
+    left:-5%;
+    border-radius: 10px;
+    outline: none;
+    z-index:10000;
+    border:0px;
+    /* position:absolute; */
+    overflow: hidden;
+    opacity:0.7;
+    background-color: white;
+    height:100%;
+    width: 55%;
+    overflow: hidden;
+    /* width:var(--splitpeeker-width); */
+    position:relative;
+  
+  }
+  
+
+  #peekBoxPage.textLayer-visible .textLayer {
+    opacity: 1.0;
+  }
+  
+  #peekBoxPage.textLayer-visible .canvasWrapper {
+    background-color: rgba(128, 255, 128, 1);
+  }
+  #peekBoxPage.textLayer-visible .canvasWrapper canvas {
+    mix-blend-mode: screen;
+  }
+  
+  
+  #peekBoxPage.textLayer-visible .textLayer > span {
+    background-color: rgba(255, 255, 0, 0.1);
+    color: rgba(0, 0, 0, 1);
+    border: solid 1px rgba(255, 0, 0, 0.5);
+    box-sizing: border-box;
+  }
+  
+  #peekBoxPage.textLayer-hover .textLayer > span:hover {
+    background-color: rgba(255, 255, 255, 1);
+    color: rgba(0, 0, 0, 1);
+  }
+  #peekBoxPage.textLayer-shadow .textLayer > span {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgba(0, 0, 0, 1);
+  }
+  

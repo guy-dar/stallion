@@ -74,6 +74,7 @@ import { PDFViewer } from "./pdf_viewer.js";
 import { SecondaryToolbar } from "./secondary_toolbar.js";
 import { Toolbar } from "./toolbar.js";
 import { ViewHistory } from "./view_history.js";
+import {setStallionWindowEvents} from "../stallion/hooks/window.js"
 
 var _slashKeyTimeout = null;
 
@@ -1723,6 +1724,7 @@ const PDFViewerApplication = {
     window.addEventListener("hashchange", _boundEvents.windowHashChange);
     window.addEventListener("beforeprint", _boundEvents.windowBeforePrint);
     window.addEventListener("afterprint", _boundEvents.windowAfterPrint);
+    setStallionWindowEvents();
   },
 
   unbindEvents() {

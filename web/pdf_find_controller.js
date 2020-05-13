@@ -193,13 +193,7 @@ class PDFFindController {
           this._nextMatch();
           this._findTimeout = null;
         }, FIND_TIMEOUT);
-      }else if (cmd === "findsuper") {
-        this._peekPosTop = document.querySelector("#viewerContainer").scrollTop; 
-        this._peekPosLeft = document.querySelector("#viewerContainer").scrollLeft; 
-        this._nextMatch(true);
-        this._updateAllPages();
-      
-      } else if (this._dirtyMatch) {
+      }else if (this._dirtyMatch) {
         // Immediately trigger searching for non-'find' operations, when the
         // current state needs to be reset and matches re-calculated.
         this._nextMatch();
@@ -483,96 +477,6 @@ class PDFFindController {
     );
   }
 
-  _preprocessSuperMatch(){
-    var query = this._query;
-    var queryArgs = query.split(" ");
-    var cmd = queryArgs[0];
-    var queryRest = queryArgs.slice(1).join(" ");
-    switch(cmd){
-      case "back":
-        window.history.go(-1);
-        return ["",""]
-      break;
-      case "toolbar":
-        document.getElementById("toolbarContainer").classList.toggle("hidden");
-        return ["",""]
-      break;
-      case "outline":
-        document.getElementById("sidebarToggle").click();
-        document.getElementById("viewOutline").click();
-        return ["",""]
-      break;
-      case "refer":
-        this._peekMatches = true;
-        var q = queryArgs[1];
-        return  [q, "refer"];
-      break;
-      case "fpeek":
-        this._peekMatches = true;
-        return  [queryRest, "find"];
-      break;
-      case "fgoto":
-        this._peekMatches = false;
-        return  [queryRest, "find"];
-      break;
-      case "page":
-        document.getElementById("pageNumber").value = queryArgs[1];
-        document.getElementById("pageNumber").dispatchEvent(new Event("change"));
-        return ["", ""];
-      break; 
-      case "zoom":
-        var zoomBtn = (queryArgs[1] == 'in') ? document.getElementById("zoomIn") : document.getElementById("zoomOut");
-        var q = (queryArgs.length == 3) ? queryArgs[2] : 1;
-  
-        for(var i = 0; i < q; i++)
-          zoomBtn.click();
-        return ["",""];
-      break;
-      case "download":
-        this._eventBus.dispatch("download",{source: this})
-        return ["",""];
-      break;
-      case "shortcut":
-      case "name":
-      case "dub":
-        if(this.shortcutsDict == undefined)
-            this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
-
-        if(this.shortcutsDict[queryRest] == undefined){
-          this.shortcutsDict[queryRest] = [document.querySelector("#viewerContainer").scrollLeft,
-                                            document.querySelector("#viewerContainer").scrollTop];
-        }else{
-          console.log("Cannot set shortcut. already exists.")
-        }
-        return ["",""];
-      break;
-      case "jump":
-        document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);
-        return ["",""];
-      break;
-      default:
-        alert("Cannot understand command. Are you stupid?");
-        return ["",""];
-    }  
-    
-  }
-
-  
-  _calculateSuperMatch(pageIndex, query, queryType) {
-
-    if(queryType == "find"){
-      this._calculateMatch(pageIndex, query);
-      return;
-    }
-    if(queryType == "refer"){
-        
-    }
-    if(queryType == "media"){
-        
-    }
-  }
-
-
 
   _calculateMatch(pageIndex, q = null) {
     let pageContent = this._pageContents[pageIndex];
@@ -838,14 +742,6 @@ class PDFFindController {
       // Ensure that the match will be scrolled into view.
       this._scrollMatches = true;
       this._updatePage(this._selected.pageIdx);
-    }
-  }
-
-  _handleScroll(evt){
-    if(evt.source._peekMatches){
-      document.querySelector("#viewerContainer")
-              .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
-      
     }
   }
 

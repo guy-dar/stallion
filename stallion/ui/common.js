@@ -141,8 +141,15 @@ function renderStallionWidget(frame, loc){
 
 }
 
+
+
+
+
+
+
 export 
-{makeDraggable, 
+{ 
+  makeDraggable,
   htmlClone, 
   moveElement,  
   CSS_UNITS, 
