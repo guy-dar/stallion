@@ -9,6 +9,7 @@ var myConfig = {
   "userAnnotations": true,
   "findBar": "splitViewer",
   "darkMode": false,
+  "stallionContextMenu": true,
   "allowEditing": true,
   "localAutoSave": true,
   "preventJS": true

@@ -39,7 +39,9 @@ class StallionContextMenu {
             this.div.appendChild(itemDiv)
         }
     }
-    async startLoading(){
+
+    
+    async startLoading(){   // GUY TODO: Check this is done this way
         if(this._isLoaded)
             return;
         this._constructMenuItems();

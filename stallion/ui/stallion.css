@@ -65,7 +65,8 @@
    min-height: 20px;
    position: absolute;
    background-color:cadetblue;
-   border: 1px solid black;
+   /* border: 1px solid black; */
+   box-shadow: 2px -2px rgba(0,0,0,0.3); 
    border-radius: 15%;
  }
 
@@ -81,4 +82,13 @@
   background-color:blue;
   color:white;
 
+}
+
+
+#sidebarContainer{
+  box-shadow: -3px 3px rgba(0,0,0,0.6); 
+  border-radius: 10%;
+}
+#toolbarSidebar{
+  border-radius: 10%;
 }
