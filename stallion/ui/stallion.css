@@ -57,7 +57,9 @@
   }
   
 
-
+#peekBoxContainer{
+  position: absolute;
+}
 
 
  #stallionContextMenu{
