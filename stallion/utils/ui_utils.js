@@ -8,7 +8,7 @@ function isKeyEqual(evt, key){
   
   function stallionKeyEvt(key, func){
     return evt=>{  
-      if(isKeyEqual(evt, keyCode)){
+      if(isKeyEqual(evt, key)){
         func(evt);
       }
     }

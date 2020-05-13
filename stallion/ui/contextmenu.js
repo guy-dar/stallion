@@ -1,0 +1,78 @@
+import {makeEscapable} from "./common.js";
+
+var stallionContextMenuId = "stallionContextMenu"
+
+class StallionContextMenuItem {
+
+    constructor(name, func){
+        this.name = name; 
+        this.func = func;
+    }
+
+}
+
+
+
+class StallionContextMenu {
+    constructor(){
+        this._isLoaded = false;
+        this._items = [];
+        this.div = document.getElementById(stallionContextMenuId);
+        if(!this.div){
+            this.div = document.createElement("div");
+            this.div.id = stallionContextMenuId;
+
+            makeEscapable(this.div, ()=>{this.hide()})
+            document.querySelector("body").appendChild(this.div);
+        }
+        this.hide();
+        // this.loadEntirely = new Promise(()=>{this.startLoading()}); // GUY TODO: DO it in the right way
+
+    }
+
+    _constructMenuItems(){
+        for(var item of this._items){
+            var itemDiv = document.createElement("div");
+            itemDiv.classList.add("stallionContextMenuItem");
+            itemDiv.innerText = item.name;
+            itemDiv.onclick = ()=>{item.func(); this.hide()};
+            this.div.appendChild(itemDiv)
+        }
+    }
+    async startLoading(){
+        if(this._isLoaded)
+            return;
+        this._constructMenuItems();
+        this._isLoaded = true;
+    }
+
+    reveal(mouseX, mouseY){
+        this.div.style.left = `${mouseX}px`;
+        this.div.style.top = `${mouseY}px`;
+
+        this.div.classList.remove("hidden")
+        console.log(this.div)
+    }
+
+    hide(){
+        this.div.classList.add("hidden")
+    }
+
+}
+
+
+
+
+
+var contextMenu;
+
+function openContextMenu(evt){
+    
+    if(!contextMenu)
+        contextMenu = new StallionContextMenu();
+    
+    contextMenu.startLoading().then(()=>{contextMenu.reveal(evt.pageX, evt.pageY)})
+}
+
+
+export {openContextMenu}

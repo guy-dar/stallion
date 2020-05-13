@@ -1,13 +1,13 @@
 
-import {stallionDblKeyEvt} from "../utils/ui_utils.js"
+//import {stallionDblKeyEvt} from "../utils/ui_utils.js"
+import {openContextMenu} from "../ui/contextmenu.js"
 
 function setStallionWindowEvents(){
-    window.addEventListener("keydown", stallionDblKeyEvt(".", ()=>{},
-        // Double Click
-        evt =>{
-           
-        }))
-
+    document.addEventListener("contextmenu", evt =>{
+        evt.preventDefault();
+        openContextMenu(evt);
+    }, 
+    false)
 }
 
 

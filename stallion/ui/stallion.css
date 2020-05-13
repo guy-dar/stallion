@@ -56,3 +56,29 @@
     color: rgba(0, 0, 0, 1);
   }
   
+
+
+
+
+ #stallionContextMenu{
+   min-width:200px;
+   min-height: 20px;
+   position: absolute;
+   background-color:cadetblue;
+   border: 1px solid black;
+   border-radius: 15%;
+ }
+
+
+
+ .stallionContextMenuItem{
+  cursor: pointer !important;
+
+}
+
+.stallionContextMenuItem:hover{
+  cursor: pointer !important;
+  background-color:blue;
+  color:white;
+
+}
