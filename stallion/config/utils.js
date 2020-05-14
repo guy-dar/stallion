@@ -2,24 +2,20 @@ import  { getConfig } from "./myconfig.js"
 
 class StallionConfig{
 
-    constructor(){
-        if(StallionConfig.isInit){
-            return; 
-        }
-        StallionConfig.init();
-
-    }
-
     static init(){
+        if(StallionConfig.isInit)
+            return;
         StallionConfig.json = getConfig();       
         StallionConfig.isInit = true;
     }
 
-    getValue(key){
+    static getValue(key){
+        StallionConfig.init();
         return StallionConfig.json[key];
     }
 
-    isValue(key, value){
+    static isValue(key, value){
+        StallionConfig.init();
         return this.getValue(key) == value;
     }
 
@@ -29,14 +25,10 @@ class StallionConfig{
 
 
 class StallionMemory{
-    constructor(){
-        if(StallionMemory.isInit){
-            return; 
-        }
-        StallionMemory.init();
-    }
 
     static init(useStorage = false){
+        if(StallionMemory.isInit)
+            return;
         StallionMemory.sessionData = {"pageData": {}};
         if(useStorage && chrome){
             StallionMemory.local = chrome.storage.local;
@@ -47,6 +39,7 @@ class StallionMemory{
 
     
     static data(dataItem){
+        StallionMemory.init();
         if(StallionMemory.sessionData[dataItem])
             return StallionMemory.sessionData[dataItem];
         else if(StallionMemory.local && StallionMemory.local.get(dataItem) != undefined)
@@ -63,7 +56,8 @@ class StallionMemory{
 
     }
 
-    getPageDataArr(pageIdx, dataName){
+    static getPageDataArr(pageIdx, dataName){
+        StallionMemory.init();
         if(!StallionMemory.data("pageData")[pageIdx])
             StallionMemory.data("pageData")[pageIdx] = {}
         if(!StallionMemory.data("pageData")[pageIdx][dataName])
@@ -72,12 +66,14 @@ class StallionMemory{
         return StallionMemory.data("pageData")[pageIdx][dataName];
     }
     
-    addPageDataEntry(pageIdx, dataName, value){
+    static addPageDataEntry(pageIdx, dataName, value){
+        StallionMemory.init();
         var data = this.getPageDataArr(pageIdx, dataName);
         data.push(value);
     }
 
     static saveToStorage(value, justLocal = true){
+        StallionMemory.init();
         return notImplemented;
         if(justLocal)
             var storage = StallionMemory.local;

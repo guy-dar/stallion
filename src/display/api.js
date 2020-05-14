@@ -62,7 +62,6 @@ import { StallionDocumentHandler } from "../../stallion/hooks/render.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
 
 
-var stallionConfig = new StallionConfig();
 const DEFAULT_RANGE_CHUNK_SIZE = 65536; // 2^16 = 65536
 const RENDERING_CANCELLED_TIMEOUT = 100; // ms
 
@@ -703,7 +702,7 @@ class PDFDocumentProxy {
    *   JavaScript strings in the name tree, or `null` if no JavaScript exists.
    */
   getJavaScript() {
-    if(stallionConfig.getValue("preventJS"))
+    if(StallionConfig.getValue("preventJS"))
       return null;
     return this._transport.getJavaScript();
   }
@@ -2561,7 +2560,7 @@ class WorkerTransport {
   }
 
   getJavaScript() {
-    if(stallionConfig.getValue("preventJS"))
+    if(StallionConfig.getValue("preventJS"))
       return null;
 
     return this.messageHandler.sendWithPromise("GetJavaScript", null);

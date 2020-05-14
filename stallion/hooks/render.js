@@ -2,7 +2,6 @@ import {PageHeuristics} from "../heuristics/page.js"
 import {DocumentHeuristics} from "../heuristics/document_heuristics.js"
 import { StallionConfig } from "../config/utils.js";
 
-var stallionConfig = new StallionConfig();
 
 class StallionPageHandler{
 
@@ -12,7 +11,7 @@ class StallionPageHandler{
 
     static defaultSettings(ctx){
         var fillStyle = null, strokeStyle = null;
-        if(stallionConfig.getValue("darkMode")){
+        if(StallionConfig.getValue("darkMode")){
             fillStyle = "#ffffff"
             strokeStyle = "#ffffff"
         }
@@ -22,7 +21,7 @@ class StallionPageHandler{
     // Handlers
     
     handlePathAction(ctx){
-        if(stallionConfig.getValue("darkMode"))
+        if(StallionConfig.getValue("darkMode"))
         {       
             ctx.fillStyle = "#ffffff"
             ctx.strokeStyle = "#ffffff"
@@ -32,21 +31,21 @@ class StallionPageHandler{
     }
 
     handleShowTextAction(ctx, current){
-        if(stallionConfig.getValue("darkMode"))
+        if(StallionConfig.getValue("darkMode"))
             current.fillColor = "#ffffff"
         return {ctx,current};
     }
 
     handleTextAction(ctx, fontData, scaledX, scaledY){
         this.reportTextAction(ctx, fontData, scaledX, scaledY);
-        if(stallionConfig.getValue("darkMode"))
+        if(StallionConfig.getValue("darkMode"))
             ctx.fillStyle = "#ffffff"
         return {ctx};
 
     }
 
     handleStrokeAction(ctx, strokeColor){
-        if(stallionConfig.getValue("darkMode")){
+        if(StallionConfig.getValue("darkMode")){
             ctx.fillStyle = "#ffffff"
             strokeColor = "#ffffff"
         }

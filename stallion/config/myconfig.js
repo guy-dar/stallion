@@ -1,7 +1,7 @@
 
 
 var myConfig = {
-  "internalLinkViewer": "splitViewer",
+  "internalLinkViewer": "none",
   "autoInternalLink": false,
   "debugMode": false,
   "peekFind": "peekBox",

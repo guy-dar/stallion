@@ -6,8 +6,6 @@ import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selectio
 
 
 
-var stallionConfig = new StallionConfig();
-var stallionMemory = new StallionMemory();
 
 
 class PageHeuristics{
@@ -19,7 +17,7 @@ class PageHeuristics{
     }
 
     startRendering(){
-        this.debugMode = stallionConfig.getValue("debugMode");
+        this.debugMode = StallionConfig.getValue("debugMode");
         this._autoInternalLinks = [];
         this.helper = new HeuristicsHelper();
         this._prevLineFonts = null;
@@ -128,9 +126,9 @@ class PageHeuristics{
 
     finishedRenderingContext(curCtx,viewport, transform){
         // curCtx.style.backgroundColor = "#000000"
-        if(stallionConfig.isValue("textSelection", "snippingTool"))
+        if(StallionConfig.isValue("textSelection", "snippingTool"))
             (new StallionSnippingSelection()).start(this.pageIdx);
-        if(stallionConfig.isValue("textSelection", "smoothStallion"))
+        if(StallionConfig.isValue("textSelection", "smoothStallion"))
         {
             (new StallionSmoothSelection()).start(this.pageIdx);
         }
@@ -160,7 +158,7 @@ class PageHeuristics{
     analyzeTextLayer(textLayer, pageView){
         
         
-        if(!stallionConfig.getValue("autoInternalLink"))
+        if(!StallionConfig.getValue("autoInternalLink"))
         return;
 
         var queries = {'section':       [/((s|S)ec(tion|\.)) (\d+(\.\d+)*)/g, 4],

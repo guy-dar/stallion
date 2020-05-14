@@ -56,8 +56,6 @@ import { PartialEvaluator } from "./evaluator.js";
 import { PDFFunctionFactory } from "./function.js";
 import { StallionConfig, StallionMemory } from "../../stallion/config/utils.js";
 
-var stallionMemory = new StallionMemory();
-var stallionConfig = new StallionConfig();
 const DEFAULT_USER_UNIT = 1.0;
 const LETTER_SIZE_MEDIABOX = [0, 0, 612, 792];
 

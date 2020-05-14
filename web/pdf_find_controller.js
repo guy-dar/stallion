@@ -21,7 +21,6 @@ import { moveElement } from "../stallion/ui/common.js";
 import {VisualHeuristics} from "../stallion/heuristics/visual.js" 
 import { StallionConfig } from "../stallion/config/utils.js";
 
-var stallionConfig = new StallionConfig();
 
 const FindState = {
   FOUND: 0,
@@ -82,7 +81,7 @@ class PDFFindController {
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
     eventBus._on("scroll", this._handleScroll);
-    if(stallionConfig.getValue("autoInternalLink")){
+    if(StallionConfig.getValue("autoInternalLink")){
         this._extractText();
     }
 
@@ -157,7 +156,7 @@ class PDFFindController {
       return;
     }
     const pdfDocument = this._pdfDocument;
-    if(stallionConfig.getValue("findBar") == "peekBox"){
+    if(StallionConfig.getValue("findBar") == "peekBox"){
       this._peekMatches = true;
     }
     if (this._state === null || this._shouldDirtyMatch(cmd, state)) {

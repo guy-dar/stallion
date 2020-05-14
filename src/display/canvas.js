@@ -33,7 +33,6 @@ import {
 import { getShadingPatternFromIR, TilingPattern } from "./pattern_helper.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
 
-var stallionConfig = new StallionConfig();
 
 // <canvas> contexts store most of the state we need natively.
 // However, PDF needs a bit more state, which we store here.
@@ -817,7 +816,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
       // backdrop. The problem with a transparent backdrop though is we then
       // don't get sub pixel anti aliasing on text, creating temporary
       // transparent canvas when we have blend modes.
-      if(stallionConfig.getValue("darkMode")){
+      if(StallionConfig.getValue("darkMode")){
           background = "#000000";
       }
       var width = this.ctx.canvas.width;
