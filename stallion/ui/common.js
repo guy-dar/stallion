@@ -1,4 +1,4 @@
-import {stallionKeyEvt} from "../utils/ui_utils.js"
+import {stallionKeyEvt, StallionUIStateManager} from "../utils/ui_utils.js"
 
 const CSS_UNITS = 96.0 / 72.0;
 
@@ -151,12 +151,26 @@ function renderStallionWidget(frame, loc){
 
 
 
+class StallionLookAndFeel{
 
+  static hideOnUnfocus(widget){
+    var focusStateName = widget.focusStateName;
+
+    StallionUIStateManager.onFocusStateChange((oldState, newState)=>{
+
+      if(newState != focusStateName)
+        widget.hide();
+    });
+
+  }
+
+}
 
 
 
 export 
 { 
+  StallionLookAndFeel, 
   makeDraggable,
   makeEscapable,
   htmlClone, 

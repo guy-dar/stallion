@@ -1,3 +1,5 @@
+import {StallionUIStateManager} from "../ui/ui_state_manager.js"
+
 // User Interaction
 
 function isKeyEqual(evt, key){
@@ -38,7 +40,9 @@ function isKeyEqual(evt, key){
 
   export 
 { 
+  StallionUIStateManager,
   stallionKeyEvt,
-  stallionDblKeyEvt}
+  stallionDblKeyEvt
+}
   
   

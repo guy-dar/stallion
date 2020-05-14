@@ -1,11 +1,13 @@
 import {PageHeuristics} from "../heuristics/page.js"
 import {DocumentHeuristics} from "../heuristics/document_heuristics.js"
 import { StallionConfig } from "../config/utils.js";
-
+import { StallionPageUtils } from "../utils/page_utils.js";
+import {StallionUIStateManager} from "../utils/ui_utils.js";
 
 class StallionPageHandler{
 
     constructor(doc, pageIdx){
+        this.pageIdx = pageIdx;
         this.heuristics = new PageHeuristics(doc, pageIdx);
     }
 
@@ -59,6 +61,11 @@ class StallionPageHandler{
     }
 
     finishedRenderingContext(curCtx,viewport, transform){
+        // GUY TODO: Maybe move it from here
+        StallionPageUtils.getPageDiv(this.pageIdx).addEventListener("click", ()=>{
+            StallionUIStateManager.setDefaultFocusState();
+        });
+        
         return this.heuristics.finishedRenderingContext(curCtx,viewport, transform)
     }
     

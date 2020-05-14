@@ -1,4 +1,5 @@
-import {makeEscapable} from "./common.js";
+import {makeEscapable, StallionLookAndFeel} from "./common.js";
+import {StallionUIStateManager} from "./ui_state_manager.js";
 
 var stallionContextMenuId = "stallionContextMenu"
 
@@ -17,17 +18,26 @@ class StallionContextMenu {
     constructor(){
         this._isLoaded = false;
         this._items = [];
+
+        StallionLookAndFeel.hideOnUnfocus(this);
         this.div = document.getElementById(stallionContextMenuId);
         if(!this.div){
             this.div = document.createElement("div");
             this.div.id = stallionContextMenuId;
-
             makeEscapable(this.div, ()=>{this.hide()})
             document.querySelector("body").appendChild(this.div);
         }
         this.hide();
         // this.loadEntirely = new Promise(()=>{this.startLoading()}); // GUY TODO: DO it in the right way
 
+    }
+
+    get focusStateName(){
+        return "contextmenu";
+    }
+
+    getDiv(){
+        return this.div;
     }
 
     _constructMenuItems(){
@@ -49,6 +59,7 @@ class StallionContextMenu {
     }
 
     reveal(mouseX, mouseY){
+        StallionUIStateManager.focusWidget(this);
         this.div.style.left = `${mouseX}px`;
         this.div.style.top = `${mouseY}px`;
 
@@ -57,9 +68,8 @@ class StallionContextMenu {
     }
 
     hide(){
-        this.div.classList.add("hidden")
+        this.div.classList.add("hidden");
     }
-
 }
 
 
