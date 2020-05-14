@@ -19,6 +19,9 @@ class StallionConfig{
         return this.getValue(key) == value;
     }
 
+    static get userConfigurable(){
+        return {"darkMode":'bool'};
+    }
 
 }
 

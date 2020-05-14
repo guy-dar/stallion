@@ -1,5 +1,6 @@
 import {makeEscapable, StallionLookAndFeel} from "./common.js";
 import {StallionUIStateManager} from "./ui_state_manager.js";
+import { SlashBar } from "./slashbar.js";
 
 var stallionContextMenuId = "stallionContextMenu"
 
@@ -17,7 +18,7 @@ class StallionContextMenuItem {
 class StallionContextMenu {
     constructor(){
         this._isLoaded = false;
-        this._items = [];
+        this._items = this.getAllItems();
 
         StallionLookAndFeel.hideOnUnfocus(this);
         this.div = document.getElementById(stallionContextMenuId);
@@ -41,13 +42,16 @@ class StallionContextMenu {
     }
 
     _constructMenuItems(){
+        var menuOptions = document.createElement("ul");
+        menuOptions.classList.add("stallionContextMenuUL")
         for(var item of this._items){
-            var itemDiv = document.createElement("div");
+            var itemDiv = document.createElement("li");
             itemDiv.classList.add("stallionContextMenuItem");
             itemDiv.innerText = item.name;
             itemDiv.onclick = ()=>{item.func(); this.hide()};
-            this.div.appendChild(itemDiv)
+            menuOptions.appendChild(itemDiv)
         }
+        this.div.appendChild(menuOptions);
     }
 
     
@@ -70,6 +74,31 @@ class StallionContextMenu {
     hide(){
         this.div.classList.add("hidden");
     }
+
+    getAllItems(){
+        return [
+            new StallionContextMenuItem("Comment", ()=>{
+                // GUY TODO: Fix = both functionality and code quality
+            }),
+
+            new StallionContextMenuItem("Lookup Reference Data..", ()=>{
+                // GUY TODO: Fix = both functionality and code quality
+            }),
+
+            new StallionContextMenuItem("Preferences", ()=>{
+                // GUY TODO: Fix = both functionality and code quality
+            }),
+
+            new StallionContextMenuItem("Download", ()=>{
+                // GUY TODO: Fix = both functionality and code quality
+            }),
+
+
+        ]
+
+    }
+
+
 }
 
 
