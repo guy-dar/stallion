@@ -23,6 +23,11 @@ class StallionConfig{
         return {"darkMode":'bool'};
     }
 
+    static setValue(key, value){
+        StallionConfig.init();
+        StallionConfig.json[key] = value;
+    }
+
 }
 
 

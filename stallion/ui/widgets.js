@@ -65,3 +65,36 @@ class PeekBoxWidget{
   
   }
   
+
+
+class StallionToastWidget{
+
+  static log(msg){
+    console.log(msg)
+    var toast = document.createElement("div");
+    toast.id ="stallionToast";
+    toast.innerText = msg;
+    document.querySelector("body").appendChild(toast);
+    setTimeout(function(){
+      StallionToastWidget._fadeOutAndRemove(toast);
+    }, 50 * msg.length);
+  }
+
+  static _fadeOutAndRemove(toast, intervalTime = 20, opacityDrop = 0.05){
+    var opacity = 1;
+    var _internalOpacityFader = setInterval(function(){
+      opacity -= opacityDrop;
+      if(opacity <= 0){
+        toast.remove();
+        clearInterval(_internalOpacityFader)
+        return;
+      }
+      toast.style.opacity = opacity;
+    }, intervalTime);
+
+  }
+
+}  
+
+
+export {PeekBoxWidget, SplitViewerWidget, StallionToastWidget}  

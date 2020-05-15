@@ -112,6 +112,9 @@ function runSlashBarCommand(query){
   var cmd = queryArgs[0];
 
   switch(cmd){
+    case "config":
+      StallionActions.setUserConfig(queryArgs[1], queryArgs[2]);
+    break;
     case "back":
       window.history.go(-1);
     break;
@@ -233,7 +236,7 @@ class SlashBar {
       var query = "fpeek " + selection;
       // Run query
       this.findField.value = query;
-      this.dispatchEvent("super");
+      // this.dispatchEvent("super");
     }
 
   }

@@ -1,3 +1,6 @@
+import {StallionConfig} from "../config/utils.js"
+import {StallionToastWidget} from "./widgets.js"
+
 
 class StallionActions {
     static toggleToolbar(){
@@ -19,7 +22,7 @@ class StallionActions {
         var zoomBtn = zoomVal > 0 ? document.getElementById("zoomIn") : document.getElementById("zoomOut");
         zoomVal = Math.abs(zoomVal)
 
-        for(var i = 0; i < q; i++)
+        for(var i = 0; i < zoomVal; i++)
           zoomBtn.click();
     }
 
@@ -29,9 +32,24 @@ class StallionActions {
 
 
 
-    /*** More elaborate ***/
 
-    getReferenceInfo(selection){
+    static setUserConfig(key, value){
+      if(!(key in StallionConfig.userConfigurable)){
+        StallionToastWidget.log("Invalid configuration parameter");
+        return;
+      }
+      var valueSpecs = StallionConfig.userConfigurable[key];
+      switch(valueSpecs){
+        case "bool":
+          value = (value == 'true');
+        break;
+      }
+      StallionConfig.setValue(key, value);
+
+    }
+
+
+    static getReferenceInfo(selection){
         // selection = this.select_heuristics.normalizeSelected(selection);
     
         var url = "https://api.crossref.org/works?query.bibliographic=";

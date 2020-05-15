@@ -63,7 +63,7 @@
   
   
   #stallionContextMenu{
-    min-width:200px;
+    /* min-width:100px; */
     min-height: 20px;
     position: absolute;
     background-color:#333333;
@@ -76,31 +76,49 @@
   
   
   .stallionContextMenuUL{
-    padding: 3px 0;
+    margin-right: 4px;
+    padding: 4px 6px 4px 4px;
     border-radius: 15%;
   }
   
   .stallionContextMenuItem{
     cursor: pointer !important;
     list-style: none;
-    padding: 3px 12px 3px 6px;
-    font-size:12px;
-    
+    padding: 5px 0px 5px 5px;
+    font-size:13px;
+    border-radius: 15%;    
   }
   
   .stallionContextMenuItem:hover{
     cursor: pointer !important;
     background-color:#111111;
     background-color:black;
-    border-radius: 15%;
+    /* font-weight: bold; */
     
   }
   
   
-  #sidebarContainer{
+#sidebarContainer{
   box-shadow: -3px 3px rgba(0,0,0,0.6); 
   border-radius: 10%;
 }
 #toolbarSidebar{
   border-radius: 10%;
+}
+
+
+#stallionToast{
+  opacity: 1;
+  font-size: 12px;
+  color:white;
+  font-weight: bold;
+  background-color: teal;
+  padding: 8px 8px 8px 8px;
+  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+  border-radius: 10%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  bottom: 10%;
+  margin:7px;
 }
