@@ -1,6 +1,6 @@
 import {StallionConfig} from "../config/utils.js"
 import {StallionToastWidget} from "./widgets.js"
-
+import {getPeekBox} from "./peekbox.js"
 
 class StallionActions {
     static toggleToolbar(){
@@ -50,8 +50,8 @@ class StallionActions {
 
 
     static getReferenceInfo(selection){
+        console.log(selection)
         // selection = this.select_heuristics.normalizeSelected(selection);
-    
         var url = "https://api.crossref.org/works?query.bibliographic=";
         // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
         selection = selection.replace(/\s+/g, ' ')

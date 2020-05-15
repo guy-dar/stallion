@@ -1,7 +1,6 @@
 import {makeEscapable, StallionLookAndFeel} from "./common.js";
 import {StallionUIStateManager} from "./ui_state_manager.js";
-import { SlashBar } from "./slashbar.js";
-
+import {StallionActions} from "./actions.js"
 var stallionContextMenuId = "stallionContextMenu"
 
 class StallionContextMenuItem {
@@ -41,14 +40,24 @@ class StallionContextMenu {
         return this.div;
     }
 
+    _internalOnClickFunc(i){
+        return e=>{
+            e.preventDefault()
+            this._items[i].func();
+            this.hide();
+        };
+    }
+
     _constructMenuItems(){
         var menuOptions = document.createElement("ul");
         menuOptions.classList.add("stallionContextMenuUL")
-        for(var item of this._items){
+
+        for(var i = 0; i < this._items.length; i++){
+            var item = this._items[i];
             var itemDiv = document.createElement("li");
             itemDiv.classList.add("stallionContextMenuItem");
             itemDiv.innerText = item.name;
-            itemDiv.onclick = ()=>{item.func(); this.hide()};
+            itemDiv.onmousedown = this._internalOnClickFunc(i);
             menuOptions.appendChild(itemDiv)
         }
         this.div.appendChild(menuOptions);
@@ -81,8 +90,11 @@ class StallionContextMenu {
                 // GUY TODO: Fix = both functionality and code quality
             }),
 
-            new StallionContextMenuItem("Lookup Reference Data..", ()=>{
+            new StallionContextMenuItem("Peek Definition", ()=>{
                 // GUY TODO: Fix = both functionality and code quality
+            }),
+            new StallionContextMenuItem("Lookup Reference Data..", ()=>{
+                StallionActions.getReferenceInfo(StallionUIStateManager.getSelection().multilineSelection);
             }),
 
             new StallionContextMenuItem("Preferences", ()=>{

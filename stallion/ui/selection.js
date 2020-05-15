@@ -1,7 +1,7 @@
 import {StallionPageUtils} from "../utils/page_utils.js"
 import { StallionMemory } from "../config/utils.js";
 import { StallionUserComment } from "./user_annotation.js";
-
+import {StallionUIStateManager} from "./ui_state_manager.js";
 var stallionMemory = new StallionMemory()
 
 
@@ -125,11 +125,11 @@ class StallionSmoothSelection{
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
         .addEventListener("mousedown", 
         e=>{
-            if(e.button != 0)
+            if(e.button != 0 || StallionUIStateManager.getFocusState() == "contextmenu")
                 return;
             var x = e.clientX;
             var y = e.clientY;
-
+            console.log(StallionUIStateManager.getFocusState())
             // e.preventDefault()
             window.getSelection().removeAllRanges();
             this.range = document.createRange()
