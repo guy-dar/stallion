@@ -18,35 +18,5 @@ function getSplitViewer(pdfDocument, pageIdx){
         });
     }
 
-class SplitViewerWidget{
-  
-  constructor(){
-    this.splitPeekerFrame = document.getElementById("splitPeekerFrame");
-    this.outerContainer = document.getElementById("outerContainer");
-    this.frame = splitPeekerFrame.contentDocument.documentElement;
-  }
-  
-
-  hide(){
-    this.splitPeekerFrame.classList.add("hidden")
-    this.outerContainer.classList.remove("splitPeekerOpen");
-  }
-
-  reveal(){
-    this.splitPeekerFrame.classList.remove("hidden")
-    this.outerContainer.classList.add("splitPeekerOpen");
-  }
-
-
-  params(){
-    return {
-      fitCanvasToFrame: true,
-      widgetHider: ()=>{outerContainer.classList.remove("splitPeekerOpen")},
-      container: splitPeekerFrame,
-     };
-
-  }
-
-}
 
 export {getSplitViewer};

@@ -84,39 +84,6 @@ function peekView(element, pageIdx, pdfDocument) {
   }
   
 
-class PeekBoxWidget{
-
-  constructor(){
-    this.peekBoxContainer = document.getElementById("peekBoxContainer");
-    this.oldPage = document.querySelector("#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
-    this.peekBox = document.querySelector("#peekBoxContainer .peekBox").contentDocument.documentElement;
-    this.iframeBody = peekBox.contentDocument.documentElement.querySelector("body");
-
-    this.iframeBody.onmousedown =() =>{
-        peekBoxContainer.style.backgroundColor = "black"
-    };
-  
-    this.iframeBody.onmouseup =() =>{
-        peekBoxContainer.style.backgroundColor = "gray"
-    };
-    makeEscapable(peekBoxContainer); 
-    makeDraggable(peekBoxContainer); 
-  
-  }
-      
-      params(){
-        return {container: peekBoxContainer, widgetHider: ()=>{},
-        fitCanvasToFrame: false};
-      } 
-
-      hide(){
-        peekBoxContainer.classList.add("hidden");
-      }
-
-      reveal(){
-        peekBoxContainer.classList.remove("hidden");
-      }
-}
 
 
 export {getPeekBox, peekView}
