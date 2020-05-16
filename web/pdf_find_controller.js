@@ -239,6 +239,14 @@ class PDFFindController {
 
   }
 
+  _handleScroll(evt){
+    if(evt.source._peekMatches){
+      document.querySelector("#viewerContainer")
+              .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
+      
+    }
+  }
+  
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
       document.getElementById('peekBoxContainer').classList.add("hidden");
@@ -329,7 +337,6 @@ class PDFFindController {
           return true;
         }
         return false;
-      case "findsuper":
       case "findhighlightallchange":
         return false;
     }
@@ -587,15 +594,12 @@ class PDFFindController {
     });
   }
 
-  _nextMatch(isSuperMatch = false) {
+  _nextMatch() {
     const previous = this._state.findPrevious;
     const currentPageIndex = this._linkService.page - 1;
     const numPages = this._linkService.pagesCount;
 
     this._highlightMatches = true;
-    if(isSuperMatch){
-        var [newQuery, superQueryType] = this._preprocessSuperMatch();
-    }
     if (this._dirtyMatch) {
       // Need to recalculate the matches, reset everything.
       this._dirtyMatch = false;
@@ -617,9 +621,6 @@ class PDFFindController {
         this._pendingFindMatches[i] = true;
         this._extractTextPromises[i].then(pageIdx => {
           delete this._pendingFindMatches[pageIdx];
-          if(isSuperMatch)
-            this._calculateSuperMatch(pageIdx, newQuery, superQueryType);
-          else
             this._calculateMatch(pageIdx);
         });
       }

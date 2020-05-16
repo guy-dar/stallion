@@ -5,13 +5,6 @@ import {SelectionHeuristics} from "../heuristics/selection.js"
 import { StallionActions } from "./actions.js";
 import {StallionToastWidget} from "./widgets.js";
 
-// _handleScroll(evt){
-//   if(evt.source._peekMatches){
-//     document.querySelector("#viewerContainer")
-//             .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
-    
-//   }
-// }
 
 
 
@@ -59,6 +52,9 @@ function runSlashBarCommand(query){
     break;
     case "jump":
       document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);
+    break;
+    case "meow":
+      StallionToastWidget.log("Meow indeed..")
     break;
     default:
       StallionToastWidget.log("Cannot understand command. Are you stupid?");

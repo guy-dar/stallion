@@ -10,7 +10,7 @@
   }
 
   #splitPeekerFrame{
-    left:-5%;
+    left: -5%;
     border-radius: 10px;
     outline: none;
     z-index:10000;
