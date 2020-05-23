@@ -13,6 +13,24 @@ class StallionPageUtils{
     }
 
 
+    static drawRect(x, y, w, h, reuse = true){
+        var div = document.createElement("div")
+        if(reuse){
+            if(StallionPageUtils.div)
+                StallionPageUtils.div.remove();
+            StallionPageUtils.div = div;
+        }
+        
+        div.style.position = 'absolute'
+        div.style.left = `${x}px`
+        div.style.top = `${y}px`
+        div.style.width = `${w}px`
+        div.style.height = `${h}px`
+        div.style.backgroundColor = 'gray'
+        document.querySelector("body").appendChild(div)
+    }
+
+
     static checkIntersection(el1, el2){
         var rect1 = el1.getBoundingClientRect()
         var rect2 = el2.getBoundingClientRect()

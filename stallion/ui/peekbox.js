@@ -44,7 +44,7 @@ function peekView(element, pageIdx, pdfDocument) {
   
 
   var _pinnedPeekBoxes = 0;
-  function getPeekBox(width = 400, height = 200){
+  function getPeekBox(width = 800, height = 400){
     var peekBoxContainer = document.getElementById("peekBoxContainer");
     
     var peekBox = document.querySelector("#peekBoxContainer .peekBox");

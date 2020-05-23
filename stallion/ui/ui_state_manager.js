@@ -1,4 +1,4 @@
-
+// import {PDFViewerApplication} from "../../web/app.js";
 
 class StallionUIStateManager{
     static init(){
@@ -7,6 +7,10 @@ class StallionUIStateManager{
             return;
         StallionUIStateManager._focusStateEvts = [];
         StallionUIStateManager.isInit = true;
+    }
+
+    static setViewerApplication(viewerApplication){
+        StallionUIStateManager.viewerApplication = viewerApplication;
     }
 
     static getSelection(){
@@ -43,8 +47,13 @@ class StallionUIStateManager{
         StallionUIStateManager.setFocusState(widget.focusStateName);        
     }
 
+    static getEventBus(){
+        return StallionUIStateManager.getViewerApplication().pdfViewer.eventBus;
+    }
 
-
+    static getViewerApplication(){
+        return StallionUIStateManager.viewerApplication;
+    }
 
 }
 

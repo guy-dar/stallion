@@ -1,3 +1,110 @@
+.page{
+  border-radius: 50px;
+}
+
+.peekBox{
+  border-radius: 10%;
+  position:relative;
+  top:0px;
+  padding:0px;
+  cursor:grab !important;
+  float: left;
+  clear: left;
+  width:100%;
+  height:400px; 
+  /* width:500px;
+  height:450px; */
+
+}
+
+.peekBoxOptions{
+  opacity:0.5;
+  height:40px;
+  position: absolute;
+  bottom: 3%;
+  background-image: url(images/texture.png),
+  linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.25));
+
+}
+
+/* W3Schools */
+
+.arrowright {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.arrowleft {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.arrowup {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
+.arrowdown {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+/* W3Schools */
+
+
+#oneTimeBackButton{
+  box-shadow: 0 0 3px;
+  border: 0px solid black;
+  background-color: #112299;
+  position: absolute;
+  top:5%;
+  z-index: 1000;
+  right:5%;
+}
+
+
+
+.peekBoxContainer *{
+  margin:0px;
+}
+.peekBoxContainer{
+  zoom:0.8;
+  position: absolute;
+  top:30%;
+  left:10%;
+  opacity:0.9;
+  padding-top:6px;
+  overflow:hidden;
+  border-radius:18px;
+  shadow:4px solid black;
+  /* border:3px solid black; */
+  /* box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.5); */
+  background-image: linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85));
+  width:350px;
+}
+/* #peekBox .page{
+  zoom:0.8;
+} */
+
 .slashBar{
     width:85%;
     top:90% !important;
@@ -66,8 +173,9 @@
     /* min-width:100px; */
     min-height: 20px;
     position: absolute;
-    border-image: 2px solid linear-gradient(-90deg, #555555, #222222);
     background-color:#333333;
+    background: linear-gradient(rgba(10, 10, 10, 0.95), rgba(64, 64, 64, 0.95)); ;
+    /* border-image:linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85)); */
     color: white;
     /* border: 1px solid black; */
     border-radius: 15%;
@@ -78,7 +186,7 @@
   
   .stallionContextMenuUL{
     margin-right: 4px;
-    padding: 4px 6px 4px 4px;
+    padding: 4px 6px 6px 4px;
     border-radius: 15%;
   }
   
@@ -97,8 +205,11 @@
     /* font-weight: bold; */
     
   }
-  
-  
+
+#viewerContainer{
+  top: 0px;
+}
+
 #sidebarContainer{
   box-shadow: -3px 3px rgba(0,0,0,0.6); 
   border-radius: 10%;
@@ -116,10 +227,12 @@
   background-color: teal;
   padding: 8px 8px 8px 8px;
   box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-  border-radius: 10%;
+  border-radius: 20%;
   position: absolute;
   left: 50%;
   transform: translate(-50%, 0);
   bottom: 10%;
   margin:7px;
 }
+
+

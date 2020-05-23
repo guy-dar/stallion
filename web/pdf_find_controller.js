@@ -80,7 +80,14 @@ class PDFFindController {
     this._reset();
     eventBus._on("findbarclose", this._onFindBarClose.bind(this));
     eventBus._on("findbaropened", this._onFindBarOpened.bind(this));
-    eventBus._on("scroll", this._handleScroll);
+    eventBus._on("scroll", evt=>{
+      if(this._peekMatches){
+        document.querySelector("#viewerContainer")
+                .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
+        
+      }
+    }
+  );
     if(StallionConfig.getValue("autoInternalLink")){
         this._extractText();
     }
@@ -156,6 +163,7 @@ class PDFFindController {
       return;
     }
     const pdfDocument = this._pdfDocument;
+    this._peekMatches = !!(state.peekMatches);
     if(StallionConfig.getValue("findBar") == "peekBox"){
       this._peekMatches = true;
     }
@@ -239,13 +247,6 @@ class PDFFindController {
 
   }
 
-  _handleScroll(evt){
-    if(evt.source._peekMatches){
-      document.querySelector("#viewerContainer")
-              .scrollTo(evt.source._peekPosLeft, evt.source._peekPosTop);
-      
-    }
-  }
   
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
@@ -484,9 +485,9 @@ class PDFFindController {
   }
 
 
-  _calculateMatch(pageIndex, q = null) {
+  _calculateMatch(pageIndex) {
     let pageContent = this._pageContents[pageIndex];
-    let query = (q == null) ? this._query : q; // GUY TODO: Text not normalized if it comes from superfind!!!
+    let query = this._query; // GUY TODO: Text not normalized if it comes from superfind!!!
     
     const { caseSensitive, entireWord, phraseSearch } = this._state;
 

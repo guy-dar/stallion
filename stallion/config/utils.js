@@ -20,7 +20,12 @@ class StallionConfig{
     }
 
     static get userConfigurable(){
-        return {"darkMode":'bool'};
+        return {"darkMode":'bool', 
+                "internalLinkViewer": "string",
+                "debugMode": "bool",
+                "textSelection": "string",
+
+    };
     }
 
     static setValue(key, value){

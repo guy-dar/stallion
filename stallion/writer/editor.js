@@ -13,26 +13,40 @@ class StallionPDFEditor{
 
         var pdfDocument = pdfManager.pdfDocument;
 
-        return pdfDocument.getData().then(data =>{
-            var myThis = new StallionPDFEditor();
-            myThis.pdfManager = pdfManager;
-            var originalData = data;
-            myThis.initDataWriter(originalData);
-            return myThis;
-        });
+        return pdfDocument.getData().then(pdfData =>  {
+            var catDict = pdfDocument.catalog.catDict;
+            var trailer = pdfDocument.xref.trailer;
+            var startXRef = pdfDocument.startXRef;
+            var catalogRef = trailer.getRaw('Root');
+        
+            var newCatDict = new Dict();
+            for (var k in catDict.map) {
+              if (true) {
+                newCatDict.set(k, catDict.getRaw(k));
+              }
+            }
+            var openActionDict = new Dict();
+            openActionDict.set('Type', new Name('Annotation'));
+            openActionDict.set('Subtype', new Name('Text'));
+            openActionDict.set('JS', 'this.print();');
+            newCatDict.set('OpenAction', openActionDict);
+        
+            var extraData = new PDFDataWriter(null, pdfData.byteLength)
+              .setTrailer(trailer)
+              .setStartXRef(startXRef)
+              .startObj(catalogRef)
+              .appendDict(newCatDict)
+              .endObj()
+              .appendTrailer()
+              .toUint8Array();
+            var blob = new Blob([pdfData, extraData], {
+              type: 'application/pdf'
+            });
+            return {
+              pdfBlobUrl: URL.createObjectURL(blob),
+            };
+          });
     }
-
-
-
-    initDataWriter(originalData){
-        this.originalDataByteLength;
-        return;
-        this.pdfWriter = new PDFDataWriter(originalData);
-        this.extraData = new PDFDataWriter(null, this.originalDataByteLength)       
-    }
-
-
-
 
 
 

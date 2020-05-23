@@ -13,10 +13,10 @@ class StallionSelectionUtils{
     
         // experimental    
         static _getTextOffsetByPosition(evt, srcElement){
+            
             var {x} = StallionPageUtils.evtMouse(evt, srcElement); 
-            var fontSize = StallionPageUtils.getTextWidth(srcElement)
-            var textOffset = Math.round(x/fontSize);
-            return textOffset > 0 ? textOffset : 0;
+            var textOffset = _getTextOffsetAtX(srcElement, x)
+            return textOffset;
         }
     
 
@@ -119,7 +119,7 @@ class StallionSnippingSelection{
 
 class StallionSmoothSelection{
 
-    start(pageIdx){
+    oldStart(pageIdx){
         this.pageIdx = pageIdx;
 
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
@@ -127,17 +127,11 @@ class StallionSmoothSelection{
         e=>{
             if(e.button != 0 || StallionUIStateManager.getFocusState() == "contextmenu")
                 return;
-            var x = e.clientX;
-            var y = e.clientY;
-            console.log(StallionUIStateManager.getFocusState())
             // e.preventDefault()
             window.getSelection().removeAllRanges();
             this.range = document.createRange()
             var offset = StallionSelectionUtils._getTextOffsetByPosition(e, e.srcElement);
-            console.log(offset)
-            
             this.range.setStart(e.srcElement.firstChild, offset)
-
         });
 
         StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
@@ -146,8 +140,6 @@ class StallionSmoothSelection{
             if(!this.range)
             return;
 
-            var x = e.clientX;
-            var y = e.clientY;
             e.preventDefault()
             if(StallionSelectionUtils._isTextElement(e.srcElement))
             {
@@ -168,7 +160,79 @@ class StallionSmoothSelection{
         });
 
     }
+
+
+
+    start(pageIdx){
+        this.pageIdx = pageIdx;
+
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mousedown", 
+        e=>{
+            if(e.button != 0 || StallionUIStateManager.getFocusState() == "contextmenu"){
+                this.range = null;
+                return;
+            }
+            if(!StallionSelectionUtils._isTextElement(e.srcElement))
+                e.preventDefault()
+            else{
+                var sel = window.getSelection();
+                if(sel.rangeCount > 0)
+                    this.range = sel.getRangeAt(0)
+            }
+
+        });
+
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mousemove", 
+        e=>{
+            if(!StallionSelectionUtils._isTextElement(e.srcElement)){
+                window.getSelection().removeAllRanges()
+                if(this.range){
+                    e.preventDefault()
+                    console.log(this.range)
+                        setTimeout(()=>{window.getSelection().addRange(this.range)},200);
+                    return false;
+                }
+            }else{
+                var sel = window.getSelection();
+                if(sel.rangeCount > 0){
+                    this.range = sel.getRangeAt(0)
+                }
+            }
+
+        });
+
+
+        StallionPageUtils.getPageDiv(this.pageIdx).querySelector(".textLayer")
+        .addEventListener("mouseup", 
+        e=>{
+            this.range = null;
+        });
+
+    }
 }
 
+
+
+
+// //experimental
+// function _getTextOffsetAtX(srcElement, x){
+//     var textOffset;
+//     var curSpan=srcElement.cloneNode();
+//     curSpan.style.visibility = 'hidden'
+//     document.querySelector("body").appendChild(curSpan)
+//     curSpan.innerText = '';
+//     var text = srcElement.innerText;
+//     for(textOffset = 0; textOffset < text.length; textOffset++){
+//         curSpan.innerText = text.substring(0, textOffset);
+//         var curX = curSpan.offsetWidth;
+//         console.log(curX)
+//         if(x <= curX)
+//             break;
+//     }
+//     curSpan.remove();
+//     return textOffset;
+// }
 
 export {StallionSnippingSelection, StallionSmoothSelection};

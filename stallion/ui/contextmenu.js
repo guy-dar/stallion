@@ -1,6 +1,7 @@
 import {makeEscapable, StallionLookAndFeel} from "./common.js";
 import {StallionUIStateManager} from "./ui_state_manager.js";
 import {StallionActions} from "./actions.js"
+import { StallionToastWidget } from "./widgets.js";
 var stallionContextMenuId = "stallionContextMenu"
 
 class StallionContextMenuItem {
@@ -87,22 +88,25 @@ class StallionContextMenu {
     getAllItems(){
         return [
             new StallionContextMenuItem("Comment", ()=>{
-                // GUY TODO: Fix = both functionality and code quality
+                // GUY TODO: Fix
+                StallionToastWidget.log("Not implemented yet.")
+
             }),
 
             new StallionContextMenuItem("Peek Definition", ()=>{
-                // GUY TODO: Fix = both functionality and code quality
+                StallionActions.peekMatches(StallionUIStateManager.getSelection().selection);
             }),
             new StallionContextMenuItem("Lookup Reference Data..", ()=>{
                 StallionActions.getReferenceInfo(StallionUIStateManager.getSelection().multilineSelection);
             }),
 
             new StallionContextMenuItem("Preferences", ()=>{
-                // GUY TODO: Fix = both functionality and code quality
+                // GUY TODO: Fix
+                StallionToastWidget.log("Not implemented yet.")
             }),
 
             new StallionContextMenuItem("Download", ()=>{
-                // GUY TODO: Fix = both functionality and code quality
+                StallionActions.download();
             }),
 
 

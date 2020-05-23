@@ -56,28 +56,7 @@ select {
   display: none !important;
 }
 
-.peekBoxContainer *{
-  margin:0px;
-}
-.peekBoxContainer{
-  zoom:0.8;
-  position: absolute;
-  top:30%;
-  left:10%;
-  opacity:0.9;
-  padding-top:6px;
-  overflow:hidden;
-  border-radius:18px;
-  shadow:4px solid black;
-  /* border:3px solid black; */
-  /* box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.5); */
-  background-image: url(images/texture.png),
-                    linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.85));
-  width:350px;
-}
-/* #peekBox .page{
-  zoom:0.8;
-} */
+
 canvas, .page, .canvasWrapper, .textLayer{
   border-radius: 1%;
 }
@@ -88,59 +67,7 @@ canvas, .page, .canvasWrapper, .textLayer{
   height:50px;
 }
 
-/* W3Schools */
 
-.arrowright {
-  border: solid black;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
-
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-
-.arrowleft {
-  border: solid black;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
-  transform: rotate(135deg);
-  -webkit-transform: rotate(135deg);
-}
-
-.arrowup {
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
-
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
-}
-
-.arrowdown {
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
-
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-}
-
-/* W3Schools */
-
-
-#oneTimeBackButton{
-  box-shadow: 0 0 3px;
-  border: 0px solid black;
-  background-color: #112299;
-  position: absolute;
-  top:5%;
-  z-index: 1000;
-  right:5%;
-}
 
 
 body{
@@ -154,30 +81,6 @@ body{
 
 
 
-.peekBox{
-  border-radius: 10%;
-  position:relative;
-  top:0px;
-  padding:0px;
-  cursor:grab !important;
-  float: left;
-  clear: left;
-  width:100%;
-  height:400px; 
-  /* width:500px;
-  height:450px; */
-
-}
-
-.peekBoxOptions{
-  opacity:0.5;
-  height:40px;
-  position: absolute;
-  bottom: 3%;
-  background-image: url(images/texture.png),
-  linear-gradient(rgba(77, 77, 77, 0.90), rgba(64, 64, 64, 0.25));
-
-}
 
 
 
