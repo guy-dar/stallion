@@ -9,8 +9,8 @@ import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selectio
 
 
 class PageHeuristics{
-    constructor(doc_heuristics, pageIdx){
-        this.doc_heuristics = doc_heuristics;
+    constructor(doc_handler, pageIdx){
+        this.doc_heuristics = doc_handler.docHeuristics;
         this._fontRanges = {};
         this.pageIdx = pageIdx;
         this.startRendering();
@@ -126,7 +126,8 @@ class PageHeuristics{
 
 
     finishedRenderingContext(curCtx,viewport, transform){
-        console.log(this._fonts)
+        console.log(this.doc_heuristics)
+        this.doc_heuristics._propagateDocumentStyle(this._fonts)
         // curCtx.style.backgroundColor = "#000000"
         if(StallionConfig.isValue("textSelection", "snippingTool"))
             (new StallionSnippingSelection()).start(this.pageIdx);

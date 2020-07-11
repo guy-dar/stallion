@@ -1,4 +1,5 @@
-//import { SimpleLinkService } from "../../web/pdf_link_service.js";
+
+import { HeuristicsHelper } from "./helper";
 
 
 class DocumentHeuristics{
@@ -7,6 +8,14 @@ class DocumentHeuristics{
         this._firstAppearance = {};
         this._lastPageRange = -1;
     }
+
+    // GUY TODO: FIX bad heuristics and essentially using single page
+    _propagateDocumentStyle(fonts){
+        var helper = (new HeuristicsHelper())
+        var defaultFont = (helper.sortDict(fonts))[0][0];
+        
+    }
+
 
     findMatchInFontRange(query, qName, qNameValue, rangeTypes, textLayer, findController){
         findController._eventBus.on("pagerendered", e=>{
@@ -21,19 +30,18 @@ class DocumentHeuristics{
                     }
 
         })
-
-        // for (let i = 0; i < findController._linkService.pagesCount; i++) {
-        //     var tmpCanvas = document.createElement("canvas");
-
-                
-        // }
     }
-
 
 }
 
 
 
+class FontHeuristics{
+    static _isBold(fontString){
+        return fontString.indexOf("Medi") != -1;        
+    }    
+
+}
 
 
 
