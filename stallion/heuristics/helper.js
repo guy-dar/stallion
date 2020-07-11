@@ -6,6 +6,9 @@ class HeuristicsHelper{
                 'fontSize': fontData.fontSize * fontData.textMatrixScale,       // GUY TODO: change this to scaled font size if necessary! probably is!
             };
     }
+    _fontFullName(font){
+        return font.name + "@" + font.fontSize;
+    }
 
     select(elArr){
         elArr.addClass('highlight');    
@@ -24,7 +27,7 @@ class HeuristicsHelper{
         ///
     }
 
-    sort_dict(dict){
+    sortDict(dict){
         /////
         // Create items array
         var items = Object.keys(dict).map(function(key) {
@@ -41,7 +44,7 @@ class HeuristicsHelper{
     }
 
     maj(arr){
-        var sorted_items = this.sort_dict(this.arrCounts(arr));
+        var sorted_items = this.sortDict(this.arrCounts(arr));
         return sorted_items[0][0];
     }
 

@@ -231,6 +231,18 @@ p.ellipsisParagraph {
   height: 100%;
   top:0px;
 }
+
+#stallionSidebarHandle{
+  position: absolute;
+  height: 100%;
+  background-color:#444444;
+  border:1px solid black;
+  border-radius: 10px;
+  width:10px;
+  z-index: 1; /*GUY FIX: Very dumb but currently works.*/
+  left:0px;
+}
+
 #toolbarSidebar{
   border-radius: 10px;
   height: 100%;

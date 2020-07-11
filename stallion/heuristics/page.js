@@ -23,7 +23,7 @@ class PageHeuristics{
         this._prevLineFonts = null;
         this._curLineFonts = [];
         this._textBlocks = [];
-        this._fonts = [];
+        this._fonts = {};
         this._lineBeginning = [];
         this._curFontCtx = null;
         this._images = [];
@@ -61,6 +61,7 @@ class PageHeuristics{
         var {x,y,w,h} = PageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
+        this.helper.incrementDict(this._fonts, this.helper._fontFullName(font));
 
         if(!this.debugMode){
             var curTextBlock = this.helper._last(this._textBlocks);
@@ -125,6 +126,7 @@ class PageHeuristics{
 
 
     finishedRenderingContext(curCtx,viewport, transform){
+        console.log(this._fonts)
         // curCtx.style.backgroundColor = "#000000"
         if(StallionConfig.isValue("textSelection", "snippingTool"))
             (new StallionSnippingSelection()).start(this.pageIdx);

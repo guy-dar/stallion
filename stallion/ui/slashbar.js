@@ -104,7 +104,7 @@ class SlashBar {
     this.findField.value = '';
     this.findField.select();
     this.findField.focus();
-
+    console.log(this.bar)
     this._adjustWidth();
   }
 
