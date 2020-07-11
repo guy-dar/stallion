@@ -12,13 +12,18 @@ function setStallionWindowEvents(){
         document.addEventListener("contextmenu", evt =>{
             evt.preventDefault();
             openContextMenu(evt);
+            PDFViewerApplication.pdfDocument.getData().then(data =>{
+                console.log(data)
+            })
         }, 
         false)
     }
     
     makeEscapable(document.querySelector("#sidebarContainer"), ()=>{ 
         PDFViewerApplication.pdfSidebar.close()
+        
     })
+
 }
 
 
