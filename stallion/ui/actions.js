@@ -117,8 +117,10 @@ function _getReferenceInfo(selection){
       abstract_xhr.onreadystatechange = ()=>{
           if(abstract_xhr.readyState == 4){
                 var abs_json = abstract_xhr.response;
-                
-                abs_span.appendChild(document.createTextNode(abs_json['abstract']));
+                var abs_paragraph = document.createElement("p")
+                abs_paragraph.classList.add("ellipsisParagraph")
+                abs_span.appendChild(abs_paragraph)
+                abs_paragraph.appendChild(document.createTextNode(abs_json['abstract']));
                 iframeDoc.appendChild(abs_span);
 
               }

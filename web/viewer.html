@@ -334,25 +334,15 @@ See https://github.com/adobe-type-tools/cmap-resources
           <textarea id="errorMoreInfo" hidden='true' readonly="readonly"></textarea>
         </div>
       </div> <!-- mainContainer -->
-      <table id="peekBoxContainer" class="peekBoxContainer hidden">
-        <tr>
-          <td>
+      <div id="peekBoxContainer" class="peekBoxContainer hidden">
+        <div>
             <iframe class="peekBox"></iframe>   
-          </td>
-        </tr>
-        <tr>
-          <td class="peekBoxOptions">
-            <button class="hidden pinPeekBox toolbarButton" title="Pin">
-              <span> + </span>
-            </button>
+        </div>
+          <div class="peekBoxOptions">
             <div class="splitToolbarButtonSeparator"></div>
             <div class="splitToolbarButton">
               <button id="slashBarPrevious" class="toolbarButton findPrevious" style="background-color:gray;" title="Find the previous occurrence of the phrase" tabindex="92" data-l10n-id="super_find_previous">
                 <span data-l10n-id="super_find_previous_label">Previous</span>
-              </button>
-              <div class="splitToolbarButtonSeparator"></div>
-              <button class="toolbarButton" title="Grab" style="width:70px; height:70px; background-color:gray;">
-                <span> * </span>
               </button>
               <button id="slashBarNext" class="toolbarButton findNext" style="background-color:gray;" title="Find the next occurrence of the phrase" tabindex="93" data-l10n-id="super_find_next">
                 <span data-l10n-id="super_find_next_label">Next</span>
@@ -362,10 +352,8 @@ See https://github.com/adobe-type-tools/cmap-resources
 
               <span id="slashBarResultsCount" class="toolbarLabel hidden"></span>
             </div>
-  
-
-          </td>
-        </tr>
+            </div>
+      </divd>
 
       </table> 
         <!-- peekBox -->

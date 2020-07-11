@@ -49,19 +49,11 @@ function peekView(element, pageIdx, pdfDocument) {
     
     var peekBox = document.querySelector("#peekBoxContainer .peekBox");
     var iframeBody = peekBox.contentDocument.documentElement.querySelector("body"); 
-    var peekBoxPin = document.querySelector("#peekBoxContainer .pinPeekBox");
     
     peekBoxContainer.style.position = "absolute";
     peekBoxContainer.style.width = width + "px";
     peekBoxContainer.style.height = height + "px";
     
-    peekBoxPin.onclick = ()=>{
-      var newPeekBoxContainer = peekBoxContainer.cloneNode(true);
-      peekBoxContainer.parentElement.appendChild(newPeekBoxContainer);
-      peekBoxContainer.id = "peekBoxContainer_" + _pinnedPeekBoxes;
-      getPeekBox()
-      _pinnedPeekBoxes += 1;
-    }
         
     var iframeDoc = iframeBody.children[0]; //GUY TODO: Fix  improve to sth standard
 
