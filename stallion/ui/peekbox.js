@@ -43,16 +43,15 @@ function peekView(element, pageIdx, pdfDocument) {
   }
   
 
-  var _pinnedPeekBoxes = 0;
-  function getPeekBox(width = 800, height = 400){
+  function getPeekBox(){  //width = 800, height = 100
     var peekBoxContainer = document.getElementById("peekBoxContainer");
     
     var peekBox = document.querySelector("#peekBoxContainer .peekBox");
     var iframeBody = peekBox.contentDocument.documentElement.querySelector("body"); 
-    
+    iframeBody.style.overflow = 'hidden'
+    iframeBody.style.zoom = 0.8
+
     peekBoxContainer.style.position = "absolute";
-    peekBoxContainer.style.width = width + "px";
-    peekBoxContainer.style.height = height + "px";
     
         
     var iframeDoc = iframeBody.children[0]; //GUY TODO: Fix  improve to sth standard
@@ -70,7 +69,10 @@ function peekView(element, pageIdx, pdfDocument) {
         peekBoxContainer.classList.add("hidden");
       }
     }
-    makeDraggable(peekBoxContainer); 
+
+   var peekBoxHeader = peekBoxContainer.querySelector(".peekBoxHeader")
+   var peekBoxFooter = peekBoxContainer.querySelector(".peekBoxFooter")
+   makeDraggable(peekBoxContainer, [peekBoxHeader, peekBoxFooter]); 
     
     return {iframeDoc, iframeBody, peekBoxContainer};
   }
