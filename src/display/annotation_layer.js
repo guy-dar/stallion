@@ -30,7 +30,7 @@ import {
   warn,
 } from "../shared/util.js";
 import { StallionConfig } from "../../stallion/config/utils.js";
-
+import {StallionDocumentHandler} from "../../stallion/hooks/proxy.js"
 /**
  * @typedef {Object} AnnotationElementParameters
  * @property {Object} data
@@ -345,6 +345,7 @@ class LinkAnnotationElement extends AnnotationElement {
       return false;
     };
     if (destination) {
+      StallionDocumentHandler.report("features.links.bindlink", {'link': link});
       link.className = "internalLink";
     }
   }

@@ -71,7 +71,7 @@ function _getReferenceInfo(selection){
   var url = "https://api.crossref.org/works?query.bibliographic=";
   // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
   selection = selection.replace(/\s+/g, ' ')
-  var {container, iframeBody} = new StallionWindowWidget();
+  var {container, iframeBody} = new StallionWindowWidget(true);
   iframeBody.innerHTML = "<br/><br/><br/><div style='font-family:Cambria;'></div>"
   var iframeDoc = iframeBody.querySelector("div");
   

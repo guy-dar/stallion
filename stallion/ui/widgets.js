@@ -67,7 +67,7 @@ class StallionToastWidget{
 
 class StallionWindowWidget {
 
-  constructor(){
+  constructor(dynamicResize = true){
     // Container
     this.container = this._createContainer();
     // Header
@@ -83,9 +83,14 @@ class StallionWindowWidget {
     this.footer.classList.add("peekBoxFooter")
     this.container.appendChild(this.footer)
 
-    // Add features to window
     this._containerParent().appendChild(this.container)
     this.iframeBody = this.iframe.contentDocument.documentElement.querySelector("body");
+    
+
+    // Add features to window
+    if(dynamicResize)
+      this._dynamicResize()
+
     makeEscapable(this.container, ()=>{this.hide()}); 
     makeDraggable(this.container, [this.header, this.footer]); 
   
@@ -113,6 +118,16 @@ class StallionWindowWidget {
     this.header.querySelector(".closeStallionWindow").onclick = () => {this.hide();}
 
   }
+
+  _dynamicResize(){
+    (new ResizeObserver(entries => {
+      for(const entry of entries){
+        this.container.style.height = `${entry.contentRect.height}px` // GUY TODO: magic number
+      }
+    })).observe(this.iframeBody);
+
+  }
+
 
 
   params(){

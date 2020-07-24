@@ -5,7 +5,7 @@ var myConfig = {
   "autoInternalLink": false,
   "debugMode": false,
   "peekFind": "peekBox",
-  "textSelection": "smoothStallion",
+  "textSelection": "none",
   "userAnnotations": true,
   "findBar": "splitViewer",
   "darkMode": false,
