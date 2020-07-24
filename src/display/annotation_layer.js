@@ -29,6 +29,7 @@ import {
   Util,
   warn,
 } from "../shared/util.js";
+import { StallionConfig } from "../../stallion/config/utils.js";
 
 /**
  * @typedef {Object} AnnotationElementParameters

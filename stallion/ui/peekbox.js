@@ -1,20 +1,25 @@
 import {htmlClone, makeDraggable, renderStallionWidget} from "./common.js"
-import {makeEscapable} from "../utils/ui_utils.js"
+import { StallionWindowWidget } from "./widgets.js";
 
 function peekView(element, pageIdx, pdfDocument) {
 
-  var peekBoxContainer = document.getElementById("peekBoxContainer");
+  // var peekBoxContainer = document.getElementById("peekBoxContainer");
+  // var peekBox = document.querySelector("#peekBoxContainer .peekBox").contentDocument.documentElement;
+
+  
   var oldPage = document.querySelector("#viewerContainer .page[data-page-number='"+(pageIdx + 1)+"']");
-  var peekBox = document.querySelector("#peekBoxContainer .peekBox").contentDocument.documentElement;
     const spot =  {x: element.offsetLeft - 60, y: element.offsetTop - 100, 
       width: oldPage.offsetWidth, height: 500};
       //this.visual_heuristics.estimateTextBlock(pageIndex, element);  
-      var loc = {pdfDocument, pageIdx, container: peekBoxContainer, widgetHider: ()=>{},
-                fitCanvasToFrame: false};
 
-      renderStallionWidget(peekBox, loc)
-          .then(()=>{
-          var {iframeBody, iframeDoc} = getPeekBox(spot.width, spot.height);
+      
+      var {peekBox, iframeBody, peekBoxContainer} = getPeekBox(); // spot.width, spot.height
+      var widgetProperties = {pdfDocument, pageIdx, container: peekBoxContainer, widgetHider: ()=>{},
+                fitCanvasToFrame: false};
+      
+      renderStallionWidget(iframeBody, widgetProperties)
+      .then(()=>{
+          var iframeDoc = iframeBody.children[0]; //GUY TODO: Fix  improve to sth standard
           iframeDoc.style.position = "absolute";
 
           iframeDoc.style.left = (-spot.x) + "px";
@@ -44,37 +49,12 @@ function peekView(element, pageIdx, pdfDocument) {
   
 
   function getPeekBox(){  //width = 800, height = 100
-    var peekBoxContainer = document.getElementById("peekBoxContainer");
+    var {container: peekBoxContainer, iframeBody, iframe: peekBox} = new StallionWindowWidget();
     
-    var peekBox = document.querySelector("#peekBoxContainer .peekBox");
-    var iframeBody = peekBox.contentDocument.documentElement.querySelector("body"); 
     iframeBody.style.overflow = 'hidden'
-    iframeBody.style.zoom = 0.8
-
-    peekBoxContainer.style.position = "absolute";
+    iframeBody.style.zoom = 0.8    
     
-        
-    var iframeDoc = iframeBody.children[0]; //GUY TODO: Fix  improve to sth standard
-
-    iframeBody.onmousedown =() =>{
-      peekBoxContainer.style.backgroundColor = "black"
-    };
-
-    iframeBody.onmouseup =() =>{
-      peekBoxContainer.style.backgroundColor = "gray"
-    };
-    iframeBody.onkeydown = (evt)=>{
-      if(evt.keyCode == 27)
-      {
-        peekBoxContainer.classList.add("hidden");
-      }
-    }
-
-   var peekBoxHeader = peekBoxContainer.querySelector(".peekBoxHeader")
-   var peekBoxFooter = peekBoxContainer.querySelector(".peekBoxFooter")
-   makeDraggable(peekBoxContainer, [peekBoxHeader, peekBoxFooter]); 
-    
-    return {iframeDoc, iframeBody, peekBoxContainer};
+    return {iframeBody, peekBoxContainer, peekBox};
   }
   
 

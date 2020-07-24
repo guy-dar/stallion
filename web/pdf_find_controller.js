@@ -92,31 +92,6 @@ class PDFFindController {
         this._extractText();
     }
 
-    if(typeof window != "undefined")
-  {  
-    window.onkeydown = function(e){
-      if(e.keyCode == 27){
-        document.getElementById("peekBoxContainer").classList.add('hidden');
-      }
-      
-      if(e.keyCode == 73){
-        moveElement(document.getElementById("peekBoxContainer"), 0, -10);
-      }
-
-      if(e.keyCode == 74){
-        moveElement(document.getElementById("peekBoxContainer"), -10, 0);
-      }
-
-      if(e.keyCode == 75){
-        moveElement(document.getElementById("peekBoxContainer"),  0, 10);
-      }
-
-      if(e.keyCode == 76){
-        moveElement(document.getElementById("peekBoxContainer"), 10, 0);
-      }
-
-    };
-  }
   }
   
   get highlightMatches() {
@@ -250,7 +225,7 @@ class PDFFindController {
   
   peekMatchView({ element = null, pageIndex = -1, matchIndex = -1 }) {
     if(!this._peekMatches){
-      document.getElementById('peekBoxContainer').classList.add("hidden");
+      // document.getElementById('peekBoxContainer').classList.add("hidden");
     }
 
     if (!this._peekMatches  || !element) {
@@ -747,10 +722,7 @@ class PDFFindController {
   }
 
   _onFindBarOpened(evt) {
-    const pdfDocument = this._pdfDocument;
-    if(document.querySelector("#peekBox"))
-        document.querySelector("#peekBox").innerHTML='';
-    document.getElementById("peekBoxContainer").classList.add("hidden");
+    // GUY TODO: Close windows 
   }
 
   _onFindBarClose(evt) {

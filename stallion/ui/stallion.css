@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .page{
   border-radius: 50px;
 }
@@ -107,7 +111,7 @@ p.ellipsisParagraph {
 .peekBoxContainer *{
   margin:0px;
 }
-.peekBoxContainer{
+.peekBoxContainer, .stallionWindow{
   resize: both;
   left:10%;
   top:10%;
@@ -186,7 +190,7 @@ p.ellipsisParagraph {
   }
   
   
-  #peekBoxContainer{
+  #peekBoxContainer, .stallionWindow {
     position: absolute;
   }
   

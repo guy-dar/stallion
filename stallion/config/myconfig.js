@@ -12,7 +12,8 @@ var myConfig = {
   "stallionContextMenu": true,
   "allowEditing": true,
   "localAutoSave": true,
-  "preventJS": true
+  "preventJS": true,
+  "notParanoid": true
 };
 
 

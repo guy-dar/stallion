@@ -104,13 +104,11 @@ function moveElement(el, x, y){
     el.style.left = (el.offsetLeft + x) + "px";
 }
   
-function renderStallionWidget(frame, loc){
+function renderStallionWidget(iframeBody, loc){
   var fitCanvasToFrame = loc.fitCanvasToFrame;
   var {pdfDocument, pageIdx, container, widgetHider} = loc;
   var newCanvas = document.createElement("canvas")
   var iframeDoc = document.createElement("div")
-  var iframeBody = frame.getElementsByTagName("body")[0];
-
     
     container.classList.remove("hidden");
     return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {

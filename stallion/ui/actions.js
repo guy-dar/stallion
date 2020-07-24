@@ -1,5 +1,5 @@
 import {StallionConfig} from "../config/utils.js"
-import {StallionToastWidget} from "./widgets.js"
+import {StallionToastWidget, StallionWindowWidget} from "./widgets.js"
 import {getPeekBox} from "./peekbox.js"
 import { StallionUIStateManager } from "../utils/ui_utils.js";
 
@@ -71,10 +71,10 @@ function _getReferenceInfo(selection){
   var url = "https://api.crossref.org/works?query.bibliographic=";
   // "https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate?expr='" + encodeURI(selection) + "'"; 
   selection = selection.replace(/\s+/g, ' ')
-  var {iframeBody} = getPeekBox();
+  var {container, iframeBody} = new StallionWindowWidget();
   iframeBody.innerHTML = "<br/><br/><br/><div style='font-family:Cambria;'></div>"
   var iframeDoc = iframeBody.querySelector("div");
-  peekBoxContainer.classList.remove("hidden")
+  
 
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url + encodeURI(selection));
