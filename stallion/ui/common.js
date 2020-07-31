@@ -2,10 +2,14 @@ import {stallionKeyEvt, StallionUIStateManager} from "../utils/ui_utils.js"
 
 const CSS_UNITS = 96.0 / 72.0;
 
-function makeEscapable(div, hideFunc){
-  document.addEventListener("keydown", stallionKeyEvt("Escape", evt => {
-    console.log("Esc");
-    hideFunc(evt)}));
+function makeEscapable(div, hideFunc, elements = null){
+  if(!elements)
+    elements = [document]
+  for(var el of elements){
+      el.addEventListener("keydown", stallionKeyEvt("Escape", evt => {
+        hideFunc(evt)})
+      );
+    }
 }
 
 

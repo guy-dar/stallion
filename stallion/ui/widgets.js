@@ -67,7 +67,8 @@ class StallionToastWidget{
 
 class StallionWindowWidget {
 
-  constructor(dynamicResize = true){
+  static openWindows = new Set();
+  constructor(dynamicResize = false){
     // Container
     this.container = this._createContainer();
     // Header
@@ -85,13 +86,13 @@ class StallionWindowWidget {
 
     this._containerParent().appendChild(this.container)
     this.iframeBody = this.iframe.contentDocument.documentElement.querySelector("body");
-    
+    StallionWindowWidget.openWindows.add(this);
 
     // Add features to window
     if(dynamicResize)
       this._dynamicResize()
 
-    makeEscapable(this.container, ()=>{this.hide()}); 
+    makeEscapable(this.container, ()=>{this.hide()}, [document, this.iframeBody]); 
     makeDraggable(this.container, [this.header, this.footer]); 
   
   }
@@ -125,7 +126,6 @@ class StallionWindowWidget {
         this.container.style.height = `${entry.contentRect.height}px` // GUY TODO: magic number
       }
     })).observe(this.iframeBody);
-
   }
 
 
@@ -135,11 +135,9 @@ class StallionWindowWidget {
         fitCanvasToFrame: false};
   } 
 
-  hide(shouldRemove = true){
-        if(shouldRemove)
-          this.container.remove();
-        else
-          this.container.classList.add("hidden");
+  hide(){
+    StallionWindowWidget.openWindows.delete(this);
+    this.container.remove();
   }
 
 }
