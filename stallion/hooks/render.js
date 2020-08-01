@@ -38,8 +38,8 @@ class StallionPageHandler{
         return {ctx,current};
     }
 
-    handleTextAction(ctx, fontData, scaledX, scaledY){
-        this.reportTextAction(ctx, fontData, scaledX, scaledY);
+    handleTextAction(ctx, fontData, scaledX, scaledY, text){
+        this.reportTextAction(ctx, fontData, scaledX, scaledY, text);
         if(StallionConfig.getValue("darkMode"))
             ctx.fillStyle = "#ffffff"
         return {ctx};
@@ -77,8 +77,8 @@ class StallionPageHandler{
         return this.heuristics.reportImageAction(ctx,x, y, w, h, type);
     }
 
-    reportTextAction(ctx, fontData, scaledX, scaledY){
-        return this.heuristics.reportTextAction(ctx, fontData, scaledX, scaledY);
+    reportTextAction(ctx, fontData, scaledX, scaledY, text){
+        return this.heuristics.reportTextAction(ctx, fontData, scaledX, scaledY, text);
     }
 
 }

@@ -1719,7 +1719,7 @@ var CanvasGraphics = (function CanvasGraphicsClosure() {
 
         // Only attempt to draw the glyph if it is actually in the embedded font
         // file or if there isn't a font file so the fallback font is shown.
-        ctx = this.stallionPageHandler.handleTextAction(ctx, current, scaledX, scaledY).ctx;
+        ctx = this.stallionPageHandler.handleTextAction(ctx, current, scaledX, scaledY, glyph.unicode).ctx;
         if (glyph.isInFont || font.missingFile) {
           if (simpleFillText && !accent) {
             // common case

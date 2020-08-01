@@ -140,14 +140,6 @@ class HeuristicsHelper{
         return arr.slice(-1)[0];
     }
         
-    addToRangeTracker(range, familyArr, value){
-        if(!range[familyArr])
-            range[familyArr] = [];
-        for (let i = 0; i < familyArr.length; i++) {
-            const element = familyArr[i];
-            range[element].push(value);           
-        }
-    }
 
 }
 
