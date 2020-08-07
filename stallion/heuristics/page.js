@@ -93,7 +93,8 @@ class PageHeuristics{
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         w = width;
         this.helper.incrementDict(this._fonts, this.helper._fontFullName(font));
-        this.fontTracker.append(this.helper._fontFullName(font), {text, pos: {x, y, w, h}});
+        this.fontTracker.append(this.helper._fontFullName(font), {text, pos: {x, y, w, h}, 
+                                        fontSize:font.fontSize});
     }
 
     reportImageAction(ctx,x, y, w, h, type){
@@ -177,8 +178,8 @@ class PageHeuristics{
 
     _fontMergeFunc = function(fullText, val){
         var _surmiseIfWhitespace = function(pos1, pos2){
-            var cutoffX = 5;    // GUY TODO: Fix
-            if(Math.abs(pos2.x  -pos1.w - pos1.x) >= cutoffX)
+            var cutoffX = 0.8;    // GUY TODO: Fix
+            if(Math.abs(pos2.x  -pos1.w - pos1.x) >= cutoffX * val.fontSize)
                 return true;
             return false;   // GUY TODO: What about line break
         }
@@ -188,7 +189,6 @@ class PageHeuristics{
         }
         fullText.text += val.text;
         fullText.pos = val.pos;
-        
         return fullText;
     }
 
