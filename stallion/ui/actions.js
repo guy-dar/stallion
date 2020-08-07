@@ -1,12 +1,17 @@
 import {StallionConfig} from "../config/utils.js"
 import {StallionToastWidget, StallionWindowWidget} from "./widgets.js"
-import {getPeekBox} from "./peekbox.js"
 import { StallionUIStateManager } from "../utils/ui_utils.js";
+import {PreferencesWindow} from "../ui/preferences.js"
 
 class StallionActions {
     static toggleToolbar(){
         document.getElementById("toolbarContainer").classList.toggle("hidden");
     }
+
+    static openPreferencesWindow(){
+      PreferencesWindow.open();
+    }
+
 
     static showOutline(){
         document.getElementById("sidebarToggle").click();

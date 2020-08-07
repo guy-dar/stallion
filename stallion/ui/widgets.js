@@ -82,7 +82,7 @@ class StallionWindowWidget {
     // Footer
     this.footer = document.createElement("div");
     this.footer.classList.add("peekBoxFooter")
-    this.container.appendChild(this.footer)
+//    this.container.appendChild(this.footer)
 
     this._containerParent().appendChild(this.container)
     this.iframeBody = this.iframe.contentDocument.documentElement.querySelector("body");
@@ -114,7 +114,7 @@ class StallionWindowWidget {
     this.container.appendChild(this.header)
 
     // GUY TODO: this is shitty
-    var html = '<div style = "zoom:0.9; display:inline-flex; z-index: 4; background-color:#aaaaaa;" class="splitToolbarButton"><button class = "closeStallionWindow" style="font-weight:bold;align-items: center;text-shadow: 0px -1px 0px rgba(200,200,200,.9);box-shadow: 0px -1px 0px rgba(80,80,80,.9);padding: 3px;font-family: Helvetica;border:0px solid black;text-align: center;position: absolute;background-color:#777777;height: 70%;width: 19px;top: 15%;border-radius: 5px;vertical-align:middle;color:#aaaaaa;padding: 2px;"><span>x</span></button>'
+    var html = '<div style = "zoom:0.9; display:table; z-index: 4; background-color:#aaaaaa;" class="splitToolbarButton"><button class = "closeStallionWindow" style="font-weight:bold;align-items: center;text-shadow: 0px -1px 0px rgba(200,200,200,.9);box-shadow: 0px -1px 0px rgba(80,80,80,.9);padding: 3px;font-family: Helvetica;border:0px solid black;text-align: center;position: absolute;background-color:#777777;height: 70%;width: 19px;top: 15%;border-radius: 5px;vertical-align:middle;color:#aaaaaa;padding: 2px;"><span>&times</span></button>'
     this.header.innerHTML = html;
     this.header.querySelector(".closeStallionWindow").onclick = () => {this.hide();}
 

@@ -101,8 +101,7 @@ class StallionContextMenu {
             }),
 
             new StallionContextMenuItem("Preferences", ()=>{
-                // GUY TODO: Fix
-                StallionToastWidget.log("Not implemented yet.")
+                StallionActions.openPreferencesWindow();
             }),
 
             new StallionContextMenuItem("Download", ()=>{

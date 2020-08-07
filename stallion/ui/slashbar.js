@@ -21,7 +21,7 @@ class SlashBar {
     this.findMsg = options.findMsg || null;
 
     // Guy TODO: Make sure it gets all the query and doesn't lose last character
-    this.bar.addEventListener("keydown", e => {
+    this.bar.addEventListener("keyup", e => {
       switch (e.keyCode) {
         case 13: // Enter
         if (e.target === this.findField) {
