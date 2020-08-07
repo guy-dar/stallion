@@ -170,6 +170,41 @@ class StallionLookAndFeel{
 
 
 
+class DivMaker{
+  constructor(divType, myParent, show = false){
+    var selector = divType[0];
+    var name = divType.substring(1);
+    this.htmlElement = document.createElement('div');
+      switch(selector){
+        case "#":
+          this.htmlElement.id = name;
+        break;
+        case ".":
+          this.htmlElement.classList.add(name);
+        break;
+      }
+    this.parent = myParent;
+    if(show){
+      this.show();
+    }
+  }
+
+  getHtmlElement(){
+    return this.htmlElement;
+  }
+  
+  show(){
+    this.parent.appendChild(this.htmlElement);
+  }
+
+  static create(...args){
+    var div = new DivMaker(...args);
+    div.show();
+    return div.getHtmlElement();
+  }
+
+}
+
 export 
 { 
   StallionLookAndFeel, 
@@ -179,4 +214,6 @@ export
   moveElement,  
   CSS_UNITS, 
   renderStallionWidget,
-   popupOneTimeBackButton};
+  popupOneTimeBackButton,
+  DivMaker  
+};

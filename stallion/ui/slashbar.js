@@ -1,102 +1,62 @@
-
-import { PDFFindController } from "../../web/pdf_find_controller.js";
-import { NullL10n } from "../../web/ui_utils.js";
-import {SelectionHeuristics} from "../heuristics/selection.js"
 import { StallionActions } from "./actions.js";
 import {StallionToastWidget} from "./widgets.js";
+import {DivMaker} from "./common.js";
 
 
 
 
-function runSlashBarCommand(query){
-  var queryArgs = query.split(" ");
-  var cmd = queryArgs[0];
-
-  switch(cmd){
-    case "config":
-      StallionActions.setUserConfig(queryArgs[1], queryArgs[2]);
-    break;
-    case "back":
-      window.history.go(-1);
-    break;
-    case "toolbar":
-      StallionActions.toggleToolbar()
-    break;
-    case "outline":
-      StallionActions.showOutline()
-    break;
-    case "page":
-      StallionActions.gotoPage(queryArgs[1])  // Not necessary to parse as int
-    break; 
-    case "zoom":
-      var q = (queryArgs.length == 3) ? parseInt(queryArgs[2]) : 1;
-      q *= (queryArgs[1] == 'out') ? -1 : 1;
-      StallionActions.applyZoom(q);
-    break;
-    case "download":
-      this._eventBus.dispatch("download",{source: this})
-    break;
-    case "shortcut":
-    case "name":
-    case "dub":
-    var queryRest = queryArgs[1];
-    if(!this.shortcutsDict)
-          this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
-
-      if(!this.shortcutsDict[queryRest]){
-        this.shortcutsDict[queryRest] = [document.querySelector("#viewerContainer").scrollLeft,
-                                          document.querySelector("#viewerContainer").scrollTop];
-      }else{
-        StallionToastWidget.log("Cannot set shortcut. already exists.")
-      }
-    break;
-    case "jump":
-      document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);
-    break;
-    case "meow":
-      StallionToastWidget.log("Meow indeed..")
-    break;
-    default:
-      StallionToastWidget.log("Cannot understand command. Are you stupid?");
-  }  
-  
-}
 
 
 
 class SlashBar {
-  constructor(options, eventBus, l10n = NullL10n) {
+  constructor(options, eventBus) {
     this.opened = false;
-
-    this.select_heuristics = new SelectionHeuristics()
     this.eventBus = eventBus;
-    this.l10n = l10n;
     
     this.bar = options.bar || null;
+    this.commands = {};
+    this.prepareAllCommands();
+    this.hintDivs = DivMaker.create('.stallionHintDivs', this.bar);
     this.findField = options.findField || null;
     this.findMsg = options.findMsg || null;
 
+    // Guy TODO: Make sure it gets all the query and doesn't lose last character
     this.bar.addEventListener("keydown", e => {
       switch (e.keyCode) {
         case 13: // Enter
         if (e.target === this.findField) {
-            runSlashBarCommand(this.findField.value);
+            this.runSlashBarCommand(this.findField.value);
             this.close();
           }
           break;
         case 27: // Escape
           this.close();
           break;
+        default:
+          if (e.target === this.findField) {
+            console.log(this.findField.value)
+            this.slashBarHint(this.findField.value);
+          }
+        
       }
     });
-    this.eventBus._on("resize", this._adjustWidth.bind(this));
+  }
+
+  runSlashBarCommand(query){
+    var queryArgs = query.split(" ");
+    var cmd = queryArgs[0];
+    if(cmd in this.commands){
+      this.commands[cmd].func(queryArgs);
+    }else{
+      StallionToastWidget.log("Cannot understand command. Are you stupid?");
+    }
   }
 
 
   dblSlash(){  }
 
   open() {
-    this.eventBus.dispatch("findbaropened", { source: this });
+    this._resetHintDivs();
     if (!this.opened) {
       this.opened = true;
       this.bar.classList.remove("hidden");
@@ -104,9 +64,15 @@ class SlashBar {
     this.findField.value = '';
     this.findField.select();
     this.findField.focus();
-    console.log(this.bar)
-    this._adjustWidth();
+
   }
+
+
+  addCommand(cmdName, func,  title, keywords){
+    this.commands[cmdName] = {title, cmdName, keywords: keywords.join(),
+    func};
+  }
+
 
   close() {
     if (!this.opened) {
@@ -117,23 +83,117 @@ class SlashBar {
   }
 
 
-  /**
-   * @private
-   */
-  _adjustWidth() {
-    if (!this.opened) {
+  
+
+  slashBarHint(query){
+    var relevantHints = [];
+    this._resetHintDivs();
+    if(query.length == 0){
       return;
     }
-    this.bar.classList.remove("wrapContainers");
+    Object.keys(this.commands).forEach(key => {
+        var hint = this.commands[key];
+        if(hint.keywords.indexOf(query) != -1){
+          relevantHints[relevantHints.length] = {hint, score: 1};
+        }      
+    });
 
-    const findbarHeight = this.bar.clientHeight;
-    const inputContainerHeight = this.bar.firstElementChild.clientHeight;
-
-    if (findbarHeight > inputContainerHeight) {
-      this.bar.classList.add("wrapContainers");
+    var maxSlashBarHints = 5;
+    for(var i = 0; i < maxSlashBarHints && i < relevantHints.length; i++){
+        var h = relevantHints[i].hint;
+        this._appendHintDiv(h);
     }
 
+
   }
+
+  _appendHintDiv(hint){
+    var div = new DivMaker('.stallionHintOption', this.hintDivs);
+    div.getHtmlElement().innerText = hint.title;
+    div.show(); 
+  }
+
+  _resetHintDivs(){
+    this.hintDivs.innerHTML = '';
+  }
+
+
+
+  prepareAllCommands(cmd){
+    this.addCommand("config",
+      queryArgs => {StallionActions.setUserConfig(queryArgs[1], queryArgs[2])},
+      "config",
+      ["config"]);
+
+    this.addCommand("back",
+      queryArgs => {window.history.go(-1)},
+      "back",
+      ["back"]);
+
+      this.addCommand("toolbar",
+      queryArgs => {StallionActions.toggleToolbar()},
+      "toolbar",
+      ["toolbar"]);
+      
+      this.addCommand("outline",
+      queryArgs => {StallionActions.showOutline()},
+      "outline",
+      ["outline"]);
+
+      this.addCommand("page",
+      queryArgs => {StallionActions.gotoPage(queryArgs[1])},
+      "page",
+      ["page"]);
+      
+      this.addCommand("zoom",
+      queryArgs => {
+        var q = (queryArgs.length == 3) ? parseInt(queryArgs[2]) : 1;
+        q *= (queryArgs[1] == 'out') ? -1 : 1;
+        StallionActions.applyZoom(q)
+      },
+      "zoom",
+      ["zoom"]);
+
+      this.addCommand("download",
+      queryArgs => {      
+        this._eventBus.dispatch("download",{source: this})
+      },
+      "download",
+      ["download"]);
+      
+      this.addCommand("shortcut",
+      queryArgs => {      
+        var queryRest = queryArgs[1];
+        if(!this.shortcutsDict)
+              this.shortcutsDict = {} //Guy TODO: Maybe move it later to constructor
+    
+          if(!this.shortcutsDict[queryRest]){
+            this.shortcutsDict[queryRest] = [document.querySelector("#viewerContainer").scrollLeft,
+                                              document.querySelector("#viewerContainer").scrollTop];
+          }else{
+            StallionToastWidget.log("Cannot set shortcut. already exists.")
+          }
+    
+      },
+      "shortcut",
+      ["shortcut"]);
+
+      this.addCommand("jump",
+      queryArgs => {      
+        document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);        
+      },
+      "jump",
+      ["jump"]);
+
+      this.addCommand("meow",
+      queryArgs => {      
+        StallionToastWidget.log("Meow indeed..")
+      },
+      "meow",
+      ["meow"]);
+  
+}
+
 }
 
 export { SlashBar };
