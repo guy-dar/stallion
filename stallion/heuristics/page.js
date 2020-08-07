@@ -7,34 +7,54 @@ import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selectio
 
 
 class RangeTracker{
-    constructor(mergeFunc = null, initFunc = null){
+    constructor(mergeFunc = null, initFunc = null, keepKeyFunc = null){
         this.ranges = []
         this.keys = []
         this.helper = new HeuristicsHelper();
-        
-        
-        if(mergeFunc){
-            this._mergeFunc = mergeFunc;
-        }else{
-            this._mergeFunc = function(arr, val){
-                arr+= [val];
-                return arr;
-            }
+        this.curKey = null;
+
+
+        this._mergeFunc = mergeFunc || function(arr, val){
+            arr+= [val];
+            return arr;
+        };
+
+        this._initFunc = initFunc || function(val){
+            return val;
         }
 
-        if(initFunc){
-            this._initFunc = initFunc;
-        }else{
-            this._initFunc = function(val){
-                return val;
-            }
+        this._keepKeyFunc = keepKeyFunc || function(key){
+            return true;
         }
 
     }
 
+
+    getAll(keys){
+        var allRanges = [];
+        for(var i = 0; i < this.keys.length; i++){
+            var key = this.keys[i];
+            for(var j = 0; j < keys.length; j++){
+                if(key == keys[j]){
+                    allRanges[allRanges.length] = this.ranges[i];
+                    break;
+                }
+            }
+        }
+        return allRanges;
+    }
+
+
+
     // GUY TODO: Change to be more memory efficient
     append(key, value){
-        if(this.keys.length == 0 || this.helper._last(this.keys) != key){
+        var keyChanged = this.curKey != key;
+        this.curKey = key;
+        if(!this._keepKeyFunc(key)){ // GUY TODO: If function non-deterministic problems may arise
+            return;
+        }
+
+        if(keyChanged){
             this.ranges.push(this._initFunc(value));
             this.keys.push(key);
         }else{
@@ -62,14 +82,16 @@ class PageHeuristics{
         this._autoInternalLinks = [];
         this.helper = new HeuristicsHelper();
         this._fonts = {};
-        this.fontTracker = new RangeTracker(this._fontMergeFunc);
+        this.fontTracker = new RangeTracker(this._fontMergeFunc,null,
+                                            this._fontKeepKeyFunc);
     }
 
 
-    reportTextAction(ctx, fontData, scaledX, scaledY, text){
+    reportTextAction(ctx, fontData, scaledX, scaledY, text, width){
         var font = this.helper.fontNormalizer(fontData);
         var {x,y,w,h} = PageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
+        w = width;
         this.helper.incrementDict(this._fonts, this.helper._fontFullName(font));
         this.fontTracker.append(this.helper._fontFullName(font), {text, pos: {x, y, w, h}});
     }
@@ -147,10 +169,16 @@ class PageHeuristics{
 
     // More functions
 
+    _fontKeepKeyFunc = function(key){
+        // GUY TODO: Fix
+        return key.indexOf("+NimbusRomNo9L-Regu@") == -1
+    }
+
+
     _fontMergeFunc = function(fullText, val){
         var _surmiseIfWhitespace = function(pos1, pos2){
-            var cutoffX = 0;    // GUY TODO: Fix
-            if((pos2.x  -pos1.w - pos1.x) >= cutoffX * pos2.w)
+            var cutoffX = 5;    // GUY TODO: Fix
+            if(Math.abs(pos2.x  -pos1.w - pos1.x) >= cutoffX)
                 return true;
             return false;   // GUY TODO: What about line break
         }
@@ -160,9 +188,6 @@ class PageHeuristics{
         }
         fullText.text += val.text;
         fullText.pos = val.pos;
-        if(!fullText.morePos)
-            fullText.morePos = [];
-        fullText.morePos.push(val);
         
         return fullText;
     }
