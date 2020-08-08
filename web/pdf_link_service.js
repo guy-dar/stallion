@@ -16,6 +16,7 @@
 import { parseQueryString } from "./ui_utils.js";
 import {popupOneTimeBackButton} from "../stallion/ui/common.js"
 import {getSplitViewer} from "../stallion/ui/splitViewer.js"
+import {getPopupViewer} from "../stallion/ui/popupViewer.js"
 import {StallionConfig} from "../stallion/config/utils.js"
 
 
@@ -165,9 +166,15 @@ class PDFLinkService {
         this.pdfHistory.pushCurrentPosition();
         this.pdfHistory.push({ namedDest, explicitDest, pageNumber });
       }
+      console.log(explicitDest)
       
       if( StallionConfig.isValue("internalLinkViewer", "splitViewer") ) {
         getSplitViewer(this.pdfDocument, pageNumber - 1);
+        return;
+      }
+
+      if( StallionConfig.isValue("internalLinkViewer", "popupViewer") ) {
+        getPopupViewer(this.pdfDocument, pageNumber - 1, explicitDest );
         return;
       }
       popupOneTimeBackButton(pageNumber < this.page);

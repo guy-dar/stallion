@@ -4,7 +4,9 @@ import {DivMaker} from "./common.js";
 
 
 
-
+function _positiveMod(a,b){
+  return (a+b) % b;
+}
 
 
 
@@ -22,16 +24,25 @@ class SlashBar {
 
     // Guy TODO: Make sure it gets all the query and doesn't lose last character
     this.bar.addEventListener("keyup", e => {
-      switch (e.keyCode) {
-        case 13: // Enter
+      switch (e.key) {
+        case "Enter": // Enter
         if (e.target === this.findField) {
             this.runSlashBarCommand(this.findField.value);
             this.close();
           }
           break;
-        case 27: // Escape
+        case "Escape": // Escape
           this.close();
-          break;
+        break;
+        case "ArrowUp": 
+          e.preventDefault();
+          this.hintNavigate(true);
+        break;
+        case "ArrowDown": 
+          e.preventDefault();
+          this.hintNavigate(false);
+        break;
+        
         default:
           if (e.target === this.findField) {
             console.log(this.findField.value)
@@ -110,39 +121,75 @@ class SlashBar {
   _appendHintDiv(hint){
     var div = new DivMaker('.stallionHintOption', this.hintDivs);
     div.getHtmlElement().innerText = hint.title;
+    div.getHtmlElement().id = "stallionHintOption" + this.curHintNum;
+    div.getHtmlElement().name = hint.cmdName;
+    this.curHintNum++;
     div.show(); 
   }
 
   _resetHintDivs(){
+    this.curHintNum = 0;
+    this.userHintIndex = null;
     this.hintDivs.innerHTML = '';
   }
 
+  hintNavigate(isUp){
+    this.hintDivs
+    .querySelectorAll(".stallionHintOptionSelected")
+    .forEach(el => {el.classList.remove("stallionHintOptionSelected")});
+    
+    if(this.curHintNum == 0)
+      return;
+
+    if(this.userHintIndex == null){
+      this.userHintIndex = 0;
+    }
+    if(this.userHintIndex == 0){
+      this.rememberInput = this.findField.value;
+    }
+
+    this.userHintIndex += isUp ? -1: 1;
+    this.userHintIndex = _positiveMod(this.userHintIndex, this.curHintNum + 1);
+    
+    if(this.userHintIndex == 0){
+      this.findField.value = this.rememberInput;
+    }else{
+      var selectedOption = this.hintDivs
+      .querySelector(`div[id="stallionHintOption${this.userHintIndex-1}"]`);
+ 
+      selectedOption.classList.add("stallionHintOptionSelected")
+      this.findField.value = selectedOption.name + " ";
+    }
+    
+
+
+  }
 
 
   prepareAllCommands(cmd){
     this.addCommand("config",
       queryArgs => {StallionActions.setUserConfig(queryArgs[1], queryArgs[2])},
-      "config",
+      "config: Set config parameters",
       ["config"]);
 
     this.addCommand("back",
       queryArgs => {window.history.go(-1)},
-      "back",
+      "back: Go back",
       ["back"]);
 
       this.addCommand("toolbar",
       queryArgs => {StallionActions.toggleToolbar()},
-      "toolbar",
+      "toolbar: Toggle PDF.js toolbar",
       ["toolbar"]);
       
       this.addCommand("outline",
       queryArgs => {StallionActions.showOutline()},
-      "outline",
+      "outline: Show document outline",
       ["outline"]);
 
       this.addCommand("page",
       queryArgs => {StallionActions.gotoPage(queryArgs[1])},
-      "page",
+      "page: Go to page",
       ["page"]);
       
       this.addCommand("zoom",
@@ -151,14 +198,14 @@ class SlashBar {
         q *= (queryArgs[1] == 'out') ? -1 : 1;
         StallionActions.applyZoom(q)
       },
-      "zoom",
+      "zoom (in/out): Zoom page (in/out) according to specified number",
       ["zoom"]);
 
       this.addCommand("download",
       queryArgs => {      
         this._eventBus.dispatch("download",{source: this})
       },
-      "download",
+      "download: Download PDF file",
       ["download"]);
       
       this.addCommand("shortcut",
@@ -175,14 +222,14 @@ class SlashBar {
           }
     
       },
-      "shortcut",
+      "shortcut: Set user shortcut",
       ["shortcut"]);
 
       this.addCommand("jump",
       queryArgs => {      
         document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);        
       },
-      "jump",
+      "jump: Jump to user shortcut",
       ["jump"]);
 
       this.addCommand("meow",
@@ -190,8 +237,20 @@ class SlashBar {
         StallionToastWidget.log("Meow indeed..")
       },
       "meow",
-      ["meow"]);
-  
+      [""]);
+
+      
+      this.addCommand("zenmode",
+      queryArgs => {      
+        
+        document.documentElement.requestFullscreen();
+
+      },
+      "zenmode: Enter zen mode",
+      ["zenmode"]);
+
+
+      
 }
 
 }

@@ -1,3 +1,4 @@
+import {CSS_UNITS, SCROLLBAR_PADDING, VERTICAL_PADDING} from "../../web/ui_utils.js";
 
 class StallionPageUtils{
 
@@ -73,6 +74,116 @@ class StallionPageUtils{
         return width;
     }
 
+
+
+    // GUY TODO: this is should be verified!!! Make sure this does not change state in the original document!
+    static translateDestArray({
+        destArray = null,
+        pageNumber = null,
+        allowNegativeOffset = false,
+        ignoreDestinationZoom = false,
+        viewer = null
+      }) {
+
+        var this_ = viewer;
+        const pageView =
+          Number.isInteger(pageNumber) && this_._pages[pageNumber - 1];
+        if (!pageView) {
+          console.error(
+              `"${pageNumber}" is not a valid pageNumber parameter.`
+          );
+          return;
+        }
+    
+        let x = 0,
+          y = 0;
+        let width = 0,
+          height = 0,
+          widthScale,
+          heightScale;
+        const changeOrientation = pageView.rotation % 180 !== 0;
+        const pageWidth =
+          (changeOrientation ? pageView.height : pageView.width) /
+          pageView.scale /
+          CSS_UNITS;
+        const pageHeight =
+          (changeOrientation ? pageView.width : pageView.height) /
+          pageView.scale /
+          CSS_UNITS;
+        let scale = 0;
+        switch (destArray[1].name) {
+          case "XYZ":
+            x = destArray[2];
+            y = destArray[3];
+            scale = destArray[4];
+            // If x and/or y coordinates are not supplied, default to
+            // _top_ left of the page (not the obvious bottom left,
+            // since aligning the bottom of the intended page with the
+            // top of the window is rarely helpful).
+            x = x !== null ? x : 0;
+            y = y !== null ? y : pageHeight;
+            break;
+          case "Fit":
+          case "FitB":
+            scale = "page-fit";
+            break;
+          case "FitH":
+          case "FitBH":
+            y = destArray[2];
+            scale = "page-width";
+            
+            break;
+          case "FitV":
+          case "FitBV":
+            x = destArray[2];
+            width = pageWidth;
+            height = pageHeight;
+            scale = "page-height";
+            break;
+          case "FitR":
+            x = destArray[2];
+            y = destArray[3];
+            width = destArray[4] - x;
+            height = destArray[5] - y;
+            const hPadding = removePageBorders ? 0 : SCROLLBAR_PADDING;
+            const vPadding = this_.removePageBorders ? 0 : VERTICAL_PADDING;
+    
+            widthScale =
+              (this_.container.clientWidth - hPadding) / width / CSS_UNITS;
+            heightScale =
+              (this_.container.clientHeight - vPadding) / height / CSS_UNITS;
+            scale = Math.min(Math.abs(widthScale), Math.abs(heightScale));
+            break;
+          default:
+            console.error(
+                `"${destArray[1].name}" is not a valid destination type.`
+            );
+            return;
+        }
+    
+    
+        if (scale === "page-fit" && !destArray[4]) {
+          
+          return {x: 0, y: 0};// GUY TODO: What to replace here?
+        }
+    
+        const boundingRect = [
+          pageView.viewport.convertToViewportPoint(x, y),
+          pageView.viewport.convertToViewportPoint(x + width, y + height),
+        ];
+        let left = Math.min(boundingRect[0][0], boundingRect[1][0]);
+        let top = Math.min(boundingRect[0][1], boundingRect[1][1]);
+    
+        if (!allowNegativeOffset) {
+          // Some bad PDF generators will create destinations with e.g. top values
+          // that exceeds the page height. Ensure that offsets are not negative,
+          // to prevent a previous page from becoming visible (fixes bug 874482).
+          left = Math.max(left, 0);
+          top = Math.max(top, 0);
+        }
+        return {x: left, y: top};
+      }
+    
 
 
 }

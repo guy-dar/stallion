@@ -111,12 +111,14 @@ function moveElement(el, x, y){
 function renderStallionWidget(iframeBody, loc){
   var fitCanvasToFrame = loc.fitCanvasToFrame;
   var {pdfDocument, pageIdx, container, widgetHider} = loc;
+  var dest = loc.dest || null;
   var newCanvas = document.createElement("canvas")
   var iframeDoc = document.createElement("div")
-    
+  var scale = PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS ;  
     container.classList.remove("hidden");
+
     return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-    var viewport = pdfPage.getViewport({scale: PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS });   //GUY TODO: Understand what's the right scale
+    var viewport = pdfPage.getViewport({scale});   //GUY TODO: Understand what's the right scale
     newCanvas.width =  viewport.width;
     newCanvas.height = viewport.height;
     
@@ -127,8 +129,13 @@ function renderStallionWidget(iframeBody, loc){
     });
     return renderTask.promise;
   }).then(()=>{
-    iframeDoc.style.top='0px'
-    iframeDoc.style.left='0px'
+    if(!dest){
+      iframeDoc.style.top='0px'
+      iframeDoc.style.left='0px'
+    }else{
+      iframeDoc.style.top=`${20 - dest.y}px`
+      iframeDoc.style.left=`${-dest.x}px`
+    }
     if(fitCanvasToFrame)
         newCanvas.style.width = '100%'
         

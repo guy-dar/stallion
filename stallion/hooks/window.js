@@ -47,6 +47,11 @@ function setStallionWindowEvents(){
 
 
 function extraLoadFunctions(){
+    if(StallionConfig.getValue("debugModeTrackCursor")){
+        document.addEventListener("mousemove", event =>{
+            console.log(`(${event.offsetX}, ${event.offsetY})`)
+        })
+    }
     
 }
 

@@ -154,6 +154,9 @@ display: table;
     border-radius: 20px;
     background-color: rgba(80, 80, 80, 0.9);
   }
+  .stallionHintOptionSelected{
+    background-color: rgba(180, 180, 180, 0.9);
+  }
 
   #splitPeekerFrame{
     left: -5%;
@@ -299,3 +302,14 @@ display: table;
 }
 
 
+/*W3Schools*/
+/* Popup arrow */
+.stallionPopupContainer .stallionPopupMain::after {
+  content: "";
+  position: absolute;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/*W3Schools*/
