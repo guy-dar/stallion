@@ -1,4 +1,4 @@
-import {DivMaker, renderStallionWidget} from "./common.js";
+import {DivMaker, renderStallionWidget, makeEscapable} from "./common.js";
 import {StallionPageUtils} from "../utils/page_utils.js"
 import { PDFViewerApplication } from "../../web/app.js";
 
@@ -12,8 +12,9 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest){
         popupContainer.style.position = 'absolute';
         popupContainer.style.top = `400px`;
         popupContainer.style.left = `10px`;
-        popupContainer.style.width = `350px`;
-        popupContainer.style.height = `100px`;
+        popupContainer.style.width = '600px';
+        popupContainer.style.height = `180px`;
+        iframeHtml.style.zoom = '0.6';
 
 
         var frame = iframeHtml.contentDocument.documentElement;
@@ -23,6 +24,7 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest){
           ignoreDestinationZoom: false,
           viewer: PDFViewerApplication.pdfViewer
         });
+        
         
         renderStallionWidget(frame, {
           fitCanvasToFrame: false,
@@ -35,4 +37,20 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest){
     }
 
 
-export {getPopupViewer};
+  function getLinkPopupViewer(link){
+    var popupContainer = DivMaker.create(".stallionPopupContainer", 
+    document.getElementById("outerContainer"));
+    var popupMain = DivMaker.create(".stallionPopupMain", popupContainer);
+    var iframeHtml = document.createElement('iframe');
+    iframeHtml.style.width = "100%"
+    popupMain.appendChild(iframeHtml);
+    popupContainer.style.position = 'absolute';
+    popupContainer.style.top = `400px`;
+    popupContainer.style.left = `10px`;
+    popupContainer.style.width = `350px`;
+    popupContainer.style.height = `100px`;
+    iframeHtml.src = link;
+    makeEscapable(popupContainer, ()=>{popupContainer.remove()});
+  }
+
+export {getPopupViewer, getLinkPopupViewer};

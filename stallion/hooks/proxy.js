@@ -3,7 +3,6 @@ class StallionDocumentHandler{
         if(StallionDocumentHandler.isInit)
             return;
         StallionDocumentHandler.features = {};
-        StallionDocumentHandler.addFeature("features.links.bindlink", l=>{console.log(l.link.href)});
     
         StallionDocumentHandler.isInit = true;
     }
@@ -11,6 +10,7 @@ class StallionDocumentHandler{
 
 
     static addFeature(featureName, func){
+        StallionDocumentHandler.init();
         StallionDocumentHandler.features[featureName] = func;
     }
 

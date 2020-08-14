@@ -6,7 +6,10 @@ import {makeEscapable} from "../ui/common.js";
 import { PDFViewerApplication } from "../../web/app.js";
 import { StallionUIStateManager } from "../utils/ui_utils.js";
 import { StallionActions } from "../ui/actions.js";
-import { StallionWindowWidget } from "../ui/widgets.js";
+import {getPopupViewer} from "../ui/popupViewer.js"
+import {StallionDocumentHandler} from "./proxy.js"
+import { StallionPageUtils } from "../utils/page_utils.js";
+
 
 function setStallionWindowEvents(){    
     StallionUIStateManager.setViewerApplication(PDFViewerApplication);
@@ -47,6 +50,37 @@ function setStallionWindowEvents(){
 
 
 function extraLoadFunctions(){
+
+    StallionDocumentHandler.addFeature("features.links.bindlink", l=>{
+        l.link.onmouseover = function(){
+            StallionPageUtils.translateNamedDest(l.destName, PDFViewerApplication)
+            .then(x => {
+
+
+               if(l.timeout){
+                   clearTimeout(l.timeout);
+               }
+                
+               l.timeout = setTimeout(()=>{
+                   getPopupViewer(PDFViewerApplication.pdfDocument, x.pageNumber - 1, x.explicitDest)
+                }, 1000);
+                
+                l.link.onmouseleave = function(){
+                    if(l.timeout){
+                        clearTimeout(l.timeout)
+                        l.timeout = null;
+                    }
+                }
+        
+            });
+
+        }
+
+    });
+
+
+
+
     if(StallionConfig.getValue("debugModeTrackCursor")){
         document.addEventListener("mousemove", event =>{
             console.log(`(${event.offsetX}, ${event.offsetY})`)

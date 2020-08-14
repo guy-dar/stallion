@@ -14,7 +14,7 @@ var myConfig = {
   "localAutoSave": true,
   "preventJS": true,
   "notParanoid": true,
-  "debugModeTrackCursor": true
+  "debugModeTrackCursor": false
 };
 
 

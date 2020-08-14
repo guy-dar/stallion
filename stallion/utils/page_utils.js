@@ -76,13 +76,29 @@ class StallionPageUtils{
 
 
 
+    static async translateNamedDest(namedDest, viewerApp){
+      var pdfDocument = viewerApp.pdfDocument;
+      var destArray = (await pdfDocument.getDestination(namedDest));
+      var destRef = destArray[0];
+      
+      var  pageNumber = viewerApp.pdfLinkService._cachedPageNumber(destRef);
+      if(pageNumber == null){
+        pageNumber = await viewerApp.pdfDocument.getPageIndex(destRef)
+        .then(pageIndex => {
+          return pageIndex + 1;
+        });
+      }
+      return ({pageNumber, explicitDest: destArray}); //this.translateDestArray
+    }
+
+
     // GUY TODO: this is should be verified!!! Make sure this does not change state in the original document!
     static translateDestArray({
         destArray = null,
         pageNumber = null,
         allowNegativeOffset = false,
         ignoreDestinationZoom = false,
-        viewer = null
+        viewer = null,
       }) {
 
         var this_ = viewer;
@@ -94,7 +110,8 @@ class StallionPageUtils{
           );
           return;
         }
-    
+        var pageScale = pageView.scale;
+
         let x = 0,
           y = 0;
         let width = 0,
@@ -104,11 +121,11 @@ class StallionPageUtils{
         const changeOrientation = pageView.rotation % 180 !== 0;
         const pageWidth =
           (changeOrientation ? pageView.height : pageView.width) /
-          pageView.scale /
+          pageScale /
           CSS_UNITS;
         const pageHeight =
           (changeOrientation ? pageView.width : pageView.height) /
-          pageView.scale /
+          pageScale /
           CSS_UNITS;
         let scale = 0;
         switch (destArray[1].name) {

@@ -344,8 +344,11 @@ class LinkAnnotationElement extends AnnotationElement {
       }
       return false;
     };
+
+
     if (destination) {
-      // StallionDocumentHandler.report("features.links.bindlink", {'link': link});
+      StallionDocumentHandler.report("features.links.bindlink", {'destName': destination,
+                    'link': link});
       link.className = "internalLink";
     }
   }

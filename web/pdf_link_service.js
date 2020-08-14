@@ -166,7 +166,6 @@ class PDFLinkService {
         this.pdfHistory.pushCurrentPosition();
         this.pdfHistory.push({ namedDest, explicitDest, pageNumber });
       }
-      console.log(explicitDest)
       
       if( StallionConfig.isValue("internalLinkViewer", "splitViewer") ) {
         getSplitViewer(this.pdfDocument, pageNumber - 1);
@@ -177,6 +176,9 @@ class PDFLinkService {
         getPopupViewer(this.pdfDocument, pageNumber - 1, explicitDest );
         return;
       }
+      
+
+
       popupOneTimeBackButton(pageNumber < this.page);
       this.pdfViewer.scrollPageIntoView({
         pageNumber,
