@@ -24,6 +24,7 @@ function getDataForPrintingImplementation(pdfManager) {
     openActionDict.set('JS', 'this.print();');
     newCatDict.set('OpenAction', openActionDict);
 
+    return;
     var extraData = new PDFDataWriter(null, pdfData.byteLength)
       .setTrailer(trailer)
       .setStartXRef(startXRef)

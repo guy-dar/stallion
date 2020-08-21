@@ -1,26 +1,29 @@
-class StallionDocumentHandler{
+class StallionReportHandler{
     static init(){
-        if(StallionDocumentHandler.isInit)
+        if(this.isInit)
             return;
-        StallionDocumentHandler.features = {};
+        this.features = {};
     
-        StallionDocumentHandler.isInit = true;
+        this.isInit = true;
     }
     
 
 
     static addFeature(featureName, func){
-        StallionDocumentHandler.init();
-        StallionDocumentHandler.features[featureName] = func;
+        this.init();
+        console.log(this.features)
+
+        this.features[featureName] = func;
     }
 
     static report(featureName, value){
-        StallionDocumentHandler.init();
-        StallionDocumentHandler.features[featureName](value);
+        this.init();
+        console.log(this.features)
+        this.features[featureName](value);
     }
 
 
 }
 
 
-export {StallionDocumentHandler}
+export {StallionReportHandler}

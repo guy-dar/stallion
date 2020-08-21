@@ -7,8 +7,10 @@ import { PDFViewerApplication } from "../../web/app.js";
 import { StallionUIStateManager } from "../utils/ui_utils.js";
 import { StallionActions } from "../ui/actions.js";
 import {getPopupViewer} from "../ui/popupViewer.js"
-import {StallionDocumentHandler} from "./proxy.js"
+import {StallionReportHandler} from "./proxy.js"
 import { StallionPageUtils } from "../utils/page_utils.js";
+import {StallionPDFEditor} from "../writer/editor.js";
+
 
 
 function setStallionWindowEvents(){    
@@ -35,23 +37,10 @@ function setStallionWindowEvents(){
     });
 
 
-    extraLoadFunctions();
-}
 
 
 
-
-
-
-
-
-
-
-
-
-function extraLoadFunctions(){
-
-    StallionDocumentHandler.addFeature("features.links.bindlink", l=>{
+    StallionReportHandler.addFeature("features.links.bindlink", l=>{
         l.link.onmouseover = function(e){
             var mouseX =  400// l.link.getBoundingClientRect().left;
             var mouseY =  100 // l.link.getBoundingClientRect().bottom  + 100;
@@ -92,6 +81,33 @@ function extraLoadFunctions(){
             console.log(`(${event.offsetX}, ${event.offsetY})`)
         })
     }
+
+
+
+
+
+
+    extraLoadFunctions();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function extraLoadFunctions(){
+    StallionReportHandler.addFeature("experiments.comments",  p =>{
+        var page = p.page
+        console.log(page)
+    })
+
+
     
 }
 
