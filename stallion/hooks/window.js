@@ -52,17 +52,19 @@ function setStallionWindowEvents(){
 function extraLoadFunctions(){
 
     StallionDocumentHandler.addFeature("features.links.bindlink", l=>{
-        l.link.onmouseover = function(){
+        l.link.onmouseover = function(e){
+            var mouseX =  400// l.link.getBoundingClientRect().left;
+            var mouseY =  100 // l.link.getBoundingClientRect().bottom  + 100;
             StallionPageUtils.translateNamedDest(l.destName, PDFViewerApplication)
             .then(x => {
-
 
                if(l.timeout){
                    clearTimeout(l.timeout);
                }
                 
                l.timeout = setTimeout(()=>{
-                   getPopupViewer(PDFViewerApplication.pdfDocument, x.pageNumber - 1, x.explicitDest)
+                   l.popup = getPopupViewer(PDFViewerApplication.pdfDocument, x.pageNumber - 1, x.explicitDest,
+                    {mouseX, mouseY})
                 }, 1000);
                 
                 l.link.onmouseleave = function(){
@@ -70,6 +72,10 @@ function extraLoadFunctions(){
                         clearTimeout(l.timeout)
                         l.timeout = null;
                     }
+                    if(l.popup){
+                        l.popup.remove();
+                    }
+
                 }
         
             });

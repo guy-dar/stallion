@@ -2,7 +2,7 @@ import {DivMaker, renderStallionWidget, makeEscapable} from "./common.js";
 import {StallionPageUtils} from "../utils/page_utils.js"
 import { PDFViewerApplication } from "../../web/app.js";
 
-function getPopupViewer(pdfDocument, pageIdx, explicitDest){
+function getPopupViewer(pdfDocument, pageIdx, explicitDest, {mouseX,mouseY}){
         var popupContainer = DivMaker.create(".stallionPopupContainer", 
         document.getElementById("outerContainer"));
         var popupMain = DivMaker.create(".stallionPopupMain", popupContainer);
@@ -10,30 +10,37 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest){
         iframeHtml.style.width = "100%"
         popupMain.appendChild(iframeHtml);
         popupContainer.style.position = 'absolute';
-        popupContainer.style.top = `400px`;
-        popupContainer.style.left = `10px`;
-        popupContainer.style.width = '600px';
-        popupContainer.style.height = `180px`;
-        iframeHtml.style.zoom = '0.6';
+        popupContainer.style.left = `${mouseX-100}px`;
+        popupContainer.style.width = '700px';
+        popupContainer.style.height = `200px`;
+        popupContainer.style.bottom = `${mouseY}px`;
 
 
         var frame = iframeHtml.contentDocument.documentElement;
+        frame.style.overflow = 'hidden'
+        var explicitDest_ = JSON.parse(JSON.stringify(explicitDest));
+        // explicitDest_[1].name = "Fit";
+
         var fixedDest = StallionPageUtils.translateDestArray({
           pageNumber: pageIdx + 1,
-          destArray: explicitDest,
+          destArray: explicitDest_,
           ignoreDestinationZoom: false,
-          viewer: PDFViewerApplication.pdfViewer
+          viewer: PDFViewerApplication.pdfViewer,
+          frame,
+          frameScale: 2
         });
         
         
         renderStallionWidget(frame, {
-          fitCanvasToFrame: false,
+          frameScale: 2,
           widgetHider: ()=>{popupContainer.remove();},
           container: popupContainer,
           pdfDocument: pdfDocument,
           pageIdx: pageIdx,
           dest:  fixedDest// GUY TODO: Improve
         });
+
+        return popupContainer;
     }
 
 

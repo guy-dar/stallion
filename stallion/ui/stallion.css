@@ -311,7 +311,19 @@ width:100%;
   position: absolute;
   border-width: 5px;
   border-style: solid;
+  
   border-color: #555 transparent transparent transparent;
 }
 
 /*W3Schools*/
+.stallionPopupContainer{
+  border-radius: 5px;
+  height: 80px !important;
+  border: 1px solid black;
+  overflow: hidden;
+}
+
+.stallionPopupContainer iframe {
+  overflow: hidden;
+  border: none;
+}

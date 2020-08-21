@@ -1,7 +1,7 @@
 
 
 var myConfig = {
-  "internalLinkViewer": "popupViewer",
+  "internalLinkViewer": "none",
   "autoInternalLink": false,
   "debugMode": false,
   "peekFind": "peekBox",
@@ -14,7 +14,9 @@ var myConfig = {
   "localAutoSave": true,
   "preventJS": true,
   "notParanoid": true,
-  "debugModeTrackCursor": false
+  "debugModeTrackCursor": false,
+  "rotateByPressingR": false
+
 };
 
 

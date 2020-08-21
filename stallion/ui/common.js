@@ -110,15 +110,16 @@ function moveElement(el, x, y){
   
 function renderStallionWidget(iframeBody, loc){
   var fitCanvasToFrame = loc.fitCanvasToFrame;
+  var frameScale = loc.frameScale;
   var {pdfDocument, pageIdx, container, widgetHider} = loc;
   var dest = loc.dest || null;
   var newCanvas = document.createElement("canvas")
   var iframeDoc = document.createElement("div")
-  var scale = PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS ;  
+  var scale = frameScale || PDFViewerApplication.pdfViewer.currentScale * CSS_UNITS;  
     container.classList.remove("hidden");
 
     return pdfDocument.getPage(pageIdx + 1).then(function(pdfPage) {
-    var viewport = pdfPage.getViewport({scale});   //GUY TODO: Understand what's the right scale
+    var viewport = pdfPage.getViewport({scale});
     newCanvas.width =  viewport.width;
     newCanvas.height = viewport.height;
     

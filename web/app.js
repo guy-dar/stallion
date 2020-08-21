@@ -75,6 +75,7 @@ import { SecondaryToolbar } from "./secondary_toolbar.js";
 import { Toolbar } from "./toolbar.js";
 import { ViewHistory } from "./view_history.js";
 import {setStallionWindowEvents} from "../stallion/hooks/window.js"
+import { StallionConfig } from "../stallion/config/utils.js";
 
 var _slashKeyTimeout = null;
 
@@ -2764,7 +2765,9 @@ function webViewerKeyDown(evt) {
         break;
 
       case 82: // 'r'
-        PDFViewerApplication.rotatePages(90);
+        if(StallionConfig.getValue("rotateByPressingR")){          
+          PDFViewerApplication.rotatePages(90);
+        }
         break;
 
       case 115: // F4

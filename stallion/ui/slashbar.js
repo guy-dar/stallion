@@ -203,7 +203,7 @@ class SlashBar {
 
       this.addCommand("download",
       queryArgs => {      
-        this._eventBus.dispatch("download",{source: this})
+        StallionActions.download()
       },
       "download: Download PDF file",
       ["download"]);

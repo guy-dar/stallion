@@ -99,8 +99,10 @@ class StallionPageUtils{
         allowNegativeOffset = false,
         ignoreDestinationZoom = false,
         viewer = null,
+        frame = null,
+        frameScale = null
       }) {
-
+        var removePageBorders = true;
         var this_ = viewer;
         const pageView =
           Number.isInteger(pageNumber) && this_._pages[pageNumber - 1];
@@ -110,8 +112,10 @@ class StallionPageUtils{
           );
           return;
         }
-        var pageScale = pageView.scale;
-
+        var pageScale =  pageView.scale;
+        var viewport = (frameScale != null) ?  pageView.pdfPage.getViewport({scale: frameScale}) : 
+                                            pageView.viewport;
+                                            
         let x = 0,
           y = 0;
         let width = 0,
@@ -185,8 +189,8 @@ class StallionPageUtils{
         }
     
         const boundingRect = [
-          pageView.viewport.convertToViewportPoint(x, y),
-          pageView.viewport.convertToViewportPoint(x + width, y + height),
+          viewport.convertToViewportPoint(x, y),
+          viewport.convertToViewportPoint(x + width, y + height),
         ];
         let left = Math.min(boundingRect[0][0], boundingRect[1][0]);
         let top = Math.min(boundingRect[0][1], boundingRect[1][1]);
