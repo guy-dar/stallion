@@ -8,7 +8,7 @@ function peekView(element, pageIdx, pdfDocument) {
 
       
       var {iframeBody, peekBoxContainer} = getPeekBox(); 
-      var widgetProperties = {pdfDocument, pageIdx, container: peekBoxContainer, widgetHider: ()=>{},
+      var widgetProperties = {pdfDocument, pageIdx, container: peekBoxContainer, widgetHider: ()=>{peekBoxContainer.remove()},
                 fitCanvasToFrame: false, dest: spot};
       
       renderStallionWidget(iframeBody, widgetProperties)

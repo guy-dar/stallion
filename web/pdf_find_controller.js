@@ -17,7 +17,6 @@ import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView} from "./ui_utils.js";
 import { peekView } from "../stallion/ui/peekbox.js";
-import { moveElement } from "../stallion/ui/common.js";
 import {VisualHeuristics} from "../stallion/heuristics/visual.js" 
 import { StallionConfig } from "../stallion/config/utils.js";
 

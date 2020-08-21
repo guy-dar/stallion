@@ -8,6 +8,15 @@ class StallionActions {
         document.getElementById("toolbarContainer").classList.toggle("hidden");
     }
 
+    static gotoReferences(){
+      return this.gotoTitle("References");
+    }
+
+    static gotoTitle(title){
+      StallionToastWidget.log("Not implemented yet.. ");
+    }
+
+
     static openPreferencesWindow(){
       PreferencesWindow.open();
     }
@@ -101,7 +110,8 @@ function _getReferenceInfo(selection){
       var a_href_span = document.createElement("div");
       var a_href = document.createElement("a");
       // a_href_span.innerText = "URL ";
-      a_href.href = item.URL;        
+      a_href.href = item.URL;       
+      a_href.target = "_blank"; 
       a_href.innerText = item.URL;        
       a_href_span.appendChild( a_href );
       iframeDoc.appendChild(a_href_span);

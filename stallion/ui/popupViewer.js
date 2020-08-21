@@ -11,7 +11,7 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest, {mouseX,mouseY}){
         popupMain.appendChild(iframeHtml);
         popupContainer.style.position = 'absolute';
         popupContainer.style.left = `${mouseX-100}px`;
-        popupContainer.style.width = '700px';
+        popupContainer.style.width = '800px';
         popupContainer.style.height = `200px`;
         popupContainer.style.bottom = `${mouseY}px`;
 
@@ -27,12 +27,13 @@ function getPopupViewer(pdfDocument, pageIdx, explicitDest, {mouseX,mouseY}){
           ignoreDestinationZoom: false,
           viewer: PDFViewerApplication.pdfViewer,
           frame,
-          frameScale: 2
+          frameScale: 1.3
         });
-        
+       
+      fixedDest.x = 0;
         
         renderStallionWidget(frame, {
-          frameScale: 2,
+          frameScale: 1.3,
           widgetHider: ()=>{popupContainer.remove();},
           container: popupContainer,
           pdfDocument: pdfDocument,

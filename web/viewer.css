@@ -361,6 +361,7 @@ html[dir='rtl'] #toolbarContainer, .findbar, .secondaryToolbar {
   animation: progressIndeterminate 950ms linear infinite;
 }
 
+
 .findbar, .secondaryToolbar {
   top: 32px;
   position: absolute;

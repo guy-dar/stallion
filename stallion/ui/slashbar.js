@@ -206,7 +206,7 @@ class SlashBar {
         StallionActions.download()
       },
       "download: Download PDF file",
-      ["download"]);
+      ["download", "file"]);
       
       this.addCommand("shortcut",
       queryArgs => {      
@@ -223,14 +223,14 @@ class SlashBar {
     
       },
       "shortcut: Set user shortcut",
-      ["shortcut"]);
+      ["shortcut", "name"]);
 
       this.addCommand("jump",
       queryArgs => {      
         document.querySelector("#viewerContainer").scrollTo(this.shortcutsDict[queryRest]);        
       },
       "jump: Jump to user shortcut",
-      ["jump"]);
+      ["jump", "go"]);
 
       this.addCommand("meow",
       queryArgs => {      
@@ -247,10 +247,32 @@ class SlashBar {
 
       },
       "zenmode: Enter zen mode",
-      ["zenmode"]);
+      ["zenmode", "full", "screen"]);
 
+
+      this.addCommand("references",
+      queryArgs => {      
+        StallionActions.gotoReferences();        
+      },
+      "references: Go to references",
+      ["references", "cite", "citation"]);
+
+      this.addCommand("title",
+      queryArgs => {      
+        StallionActions.gotoTitle(queryArgs[1]);
+      },
+      "title: Go to section by title",
+      ["title", "section", "name"]);
+
+      this.addCommand("preferences",
+      queryArgs => {      
+        StallionActions.openPreferencesWindow();        
+      },
+      "preferences: Open preferences window",
+      ["preferences", "settings"]);
 
       
+
 }
 
 }

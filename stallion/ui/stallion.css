@@ -240,7 +240,7 @@ width:100%;
     padding: 5px 0px 5px 5px;
     font-size:12px;
     width:100%;
-    font-weight: bold;
+  
     font-family: Corbel;
     text-shadow:0 1px 1px rgba(10, 10, 10, 0.95);
   }
@@ -326,4 +326,9 @@ width:100%;
 .stallionPopupContainer iframe {
   overflow: hidden;
   border: none;
+}
+
+
+.findbar{
+  top:2px;
 }
