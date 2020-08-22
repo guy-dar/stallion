@@ -12,8 +12,6 @@ class StallionPDFEditor{
             return;
         }
 
-        // var pdfDocument = pdfManager.pdfDocument;
-        
           var pageDict = pdfPage.pageDict;
           var trailer = pdfPage.xref.trailer;
           var startXRef = pdfDocument.startXRef;
@@ -30,7 +28,7 @@ class StallionPDFEditor{
           myComment.set('Subtype', new Name('Text'));
           myComment.set('Rect', rect);
           myComment.set('Contents', contents);
-          var commentRef = new Ref(pdfPage.xref.entries.length, 0); // GUY TODO: Check must be incremental + check no off by 1
+          var commentRef = new Ref(trailer.getRaw("Size"), 0); // GUY TODO: Check must be incremental + check no off by 1
           
           annots.push(commentRef);
           newPageDict.set('Annots', annots);
@@ -48,7 +46,8 @@ class StallionPDFEditor{
             .toUint8Array();
 
 
-            var blob = new Blob([extraData], {
+
+            var blob = new Blob([stream.bytes, extraData], {
             type: 'application/pdf'
           });
           return {

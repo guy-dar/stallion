@@ -3,11 +3,11 @@
 
 /* globals assert, error, Dict, Name, isArray, isArrayBuffer, isBool, isDict,
            isInt, isName, isNum, isString, isRef, Ref, stringToBytes */
-import { Dict, Name, isArrayBuffer,  isDict,
-  isName,   isRef, Ref, stringToBytes} from "../../src/core/primitives.js"
+import { Dict, Name,  isDict,
+  isName,   isRef, Ref} from "../../src/core/primitives.js"
 
 
-import {assert} from "../../src/shared/util.js";
+import {assert, isArrayBuffer, isBool, isNum, isString, stringToBytes} from "../../src/shared/util.js";
 
 
     'use strict';
@@ -23,9 +23,6 @@ import {assert} from "../../src/shared/util.js";
             * https://adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/PDF32000_2008.pdf
             */
 
-          function isNum(a){
-            return Number.isInteger(a);
-          }
           function isInt(a){
             return Number.isInteger(a);
           }
@@ -33,14 +30,6 @@ import {assert} from "../../src/shared/util.js";
             return Array.isArray(a);
           }
 
-          function isBool(a){
-            return (typeof a == "boolean")
-          }
-
-
-          function isString(a){
-            return (typeof a == "string")
-          }
 
             var PDFDataWriter = (function PDFDataWriterClosure() {
              // Char codes for 0...9A...F
@@ -520,7 +509,7 @@ import {assert} from "../../src/shared/util.js";
                 */
                appendTrailer: function PDFDataWriter_appendTrailer() {
                  assert(this.trailerDict, 'setTrailer must be called first');
-           
+                 this._updateTrailerSize()
                  if (this.shouldWriteXRefStream) {
                    this._appendXRefStream();
                  } else {
@@ -541,7 +530,24 @@ import {assert} from "../../src/shared/util.js";
            
                  return this;
                },
-           
+
+               /**
+                * Update trailer size with new references.
+                * @private
+                * @see {appendTrailer}
+                */
+               _updateTrailerSize: function PDFDataWriter_updateTrailerSize() {
+                  // GUY TODO: CHECK!!!
+                  var newRefs = Object.keys(this.newXRefInfo).map(a => {return parseInt(a, 10)});
+                  var maxNew = Math.max(...newRefs)
+                  console.log(newRefs);
+                  var newSize = Math.max(this.trailerDict.getRaw('Size'), maxNew + 1);
+                  this.trailerDict.set('Size', newSize);
+               },
+
+
+
+
                /**
                 * Append the XRef table (PDF32000, 7.5.4).
                 * @private
