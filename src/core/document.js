@@ -54,8 +54,8 @@ import { Linearization } from "./parser.js";
 import { OperatorList } from "./operator_list.js";
 import { PartialEvaluator } from "./evaluator.js";
 import { PDFFunctionFactory } from "./function.js";
-import { StallionConfig, StallionMemory } from "../../stallion/config/utils.js";
 import { StallionReportHandler } from "../../stallion/hooks/proxy.js";
+import {StallionExperiments} from "../../stallion/utils/experiments.js"
 
 const DEFAULT_USER_UNIT = 1.0;
 const LETTER_SIZE_MEDIABOX = [0, 0, 612, 792];
@@ -405,7 +405,7 @@ class Page {
         const annotationRefs = this.annotations;
         const annotationPromises = [];
 
-        StallionReportHandler.report('experiments.comments', {"page": this});
+        StallionExperiments.guyAnnotations(this);
         for (let i = 0, ii = annotationRefs.length; i < ii; i++) {
           annotationPromises.push(
             AnnotationFactory.create(

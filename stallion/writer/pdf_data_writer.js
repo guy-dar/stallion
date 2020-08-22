@@ -3,9 +3,16 @@
 
 /* globals assert, error, Dict, Name, isArray, isArrayBuffer, isBool, isDict,
            isInt, isName, isNum, isString, isRef, Ref, stringToBytes */
+import { Dict, Name, isArrayBuffer,  isDict,
+  isName,   isRef, Ref, stringToBytes} from "../../src/core/primitives.js"
 
-           'use strict';
 
+import {assert} from "../../src/shared/util.js";
+
+
+    'use strict';
+
+           
            /**
             * The PDFDataWriter enables one to serialize PDF.js objects to raw PDF data.
             *
@@ -15,7 +22,27 @@
             * This refers to the PDF 1.7 specification, which can be downloaded from
             * https://adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/PDF32000_2008.pdf
             */
-           var PDFDataWriter = (function PDFDataWriterClosure() {
+
+          function isNum(a){
+            return Number.isInteger(a);
+          }
+          function isInt(a){
+            return Number.isInteger(a);
+          }
+          function isArray(a){
+            return Array.isArray(a);
+          }
+
+          function isBool(a){
+            return (typeof a == "boolean")
+          }
+
+
+          function isString(a){
+            return (typeof a == "string")
+          }
+
+            var PDFDataWriter = (function PDFDataWriterClosure() {
              // Char codes for 0...9A...F
              var NUM_TO_HEX_ORD = new Uint8Array([48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
                  65, 66, 67, 68, 69, 70]);
@@ -363,7 +390,7 @@
                 */
                appendDict: function PDFDataWriter_appendDict(v) {
                  this.appendUint8Array(PDF_DICT_START);
-                 var map = v.map;
+                 var map = v._map;
                  for (var k in map) {
                    this.appendName(k);
                    this.appendUint8Array(PDF_DICT_SEPARATOR);
@@ -686,3 +713,7 @@
              };
              return PDFDataWriter;
            })();
+
+
+
+export {PDFDataWriter}

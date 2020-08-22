@@ -82,11 +82,6 @@ function setStallionWindowEvents(){
         })
     }
 
-
-
-
-
-
     extraLoadFunctions();
 }
 
@@ -106,7 +101,6 @@ function extraLoadFunctions(){
         var page = p.page
         console.log(page)
     })
-
 
     
 }
