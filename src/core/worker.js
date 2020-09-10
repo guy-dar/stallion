@@ -36,6 +36,7 @@ import { isNodeJS } from "../shared/is_node.js";
 import { MessageHandler } from "../shared/message_handler.js";
 import { PDFWorkerStream } from "./worker_stream.js";
 import { XRefParseException } from "./core_utils.js";
+import { StallionPDFEditor } from "../../stallion/writer/editor.js";
 
 var WorkerTask = (function WorkerTaskClosure() {
   // eslint-disable-next-line no-shadow
@@ -512,6 +513,14 @@ var WorkerMessageHandler = {
     handler.on("GetStats", function wphSetupGetStats(data) {
       return pdfManager.pdfDocument.xref.stats;
     });
+
+    handler.on("StallionCreateComment", function wphSetupStallionCreateComment({pageIndex, rect, contents}) {
+      return pdfManager.getPage(pageIndex).then(page => {
+          StallionPDFEditor.createComment(pdfManager.pdfDocument, page,
+            rect, contents);
+      });
+    });
+
 
     handler.on("GetAnnotations", function ({ pageIndex, intent }) {
       return pdfManager.getPage(pageIndex).then(function (page) {

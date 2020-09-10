@@ -1,9 +1,15 @@
 import {StallionConfig} from "../config/utils.js"
 import {StallionToastWidget, StallionWindowWidget} from "./widgets.js"
 import { StallionUIStateManager } from "../utils/ui_utils.js";
-import {PreferencesWindow} from "../ui/preferences.js"
+import {PreferencesWindow} from "../ui/preferences.js";
+import {getStallionCommentWindow} from "./comment_window.js";
 
 class StallionActions {
+
+    static openCommentWindow({x, y, pageIdx}){
+      getStallionCommentWindow({x, y, pageIdx});
+    }
+
     static toggleToolbar(){
         document.getElementById("toolbarContainer").classList.toggle("hidden");
     }

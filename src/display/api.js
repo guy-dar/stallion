@@ -631,6 +631,11 @@ class PDFDocumentProxy {
     return this._transport.getDestinations();
   }
 
+  stallionCreateComment(pageIndex, rect, contents) {
+    return this._transport.stallionCreateComment(pageIndex, rect, contents);
+  }
+
+
   /**
    * @param {string} id - The named destination to get.
    * @returns {Promise} A promise that is resolved with all information
@@ -696,6 +701,17 @@ class PDFDocumentProxy {
   getAttachments() {
     return this._transport.getAttachments();
   }
+
+
+  getRawDocumentForStallion(){
+    return this._transport.getRawDocumentForStallion();
+  }
+
+  getRawPageForStallion(pageIndex){
+    return this._transport.getRawPageForStallion(pageIndex);
+  }
+
+
 
   /**
    * @returns {Promise} A promise that is resolved with an {Array} of all the
@@ -2526,6 +2542,11 @@ class WorkerTransport {
     return this.messageHandler.sendWithPromise("GetDestinations", null);
   }
 
+
+  stallionCreateComment(pageIndex, rect, contents) {
+    return this.messageHandler.sendWithPromise("StallionCreateComment", {pageIndex, rect, contents});
+  }
+
   getDestination(id) {
     if (typeof id !== "string") {
       return Promise.reject(new Error("Invalid destination request."));
@@ -2555,11 +2576,22 @@ class WorkerTransport {
     return this.messageHandler.sendWithPromise("GetOpenAction", null);
   }
 
+  getRawPageForStallion(pageIndex){
+    console.log("HELLO 1")
+    return this.messageHandler.sendWithPromise("GetRawPageForStallion", {pageIndex});
+  }
+
+  getRawDocumentForStallion(){
+    return this.messageHandler.sendWithPromise("GetRawDocumentForStallion", null);
+  }
+
+
   getAttachments() {
     return this.messageHandler.sendWithPromise("GetAttachments", null);
   }
 
   getJavaScript() {
+    // GUY TODO: Check this is the right place. probably not
     if(StallionConfig.getValue("preventJS"))
       return null;
 

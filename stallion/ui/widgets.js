@@ -135,6 +135,13 @@ class StallionWindowWidget {
         fitCanvasToFrame: false};
   } 
 
+
+  setDimensions(w, h){
+    this.container.style.width = `${w}px`;
+    this.container.style.height = `${h}px`;
+  }
+
+
   hide(){
     StallionWindowWidget.openWindows.delete(this);
     this.container.remove();

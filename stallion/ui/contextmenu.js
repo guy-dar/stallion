@@ -2,6 +2,8 @@ import {makeEscapable, StallionLookAndFeel} from "./common.js";
 import {StallionUIStateManager} from "./ui_state_manager.js";
 import {StallionActions} from "./actions.js"
 import { StallionToastWidget } from "./widgets.js";
+import {StallionPageUtils} from "../utils/page_utils.js"
+
 var stallionContextMenuId = "stallionContextMenu"
 
 class StallionContextMenuItem {
@@ -44,7 +46,7 @@ class StallionContextMenu {
     _internalOnClickFunc(i){
         return e=>{
             e.preventDefault()
-            this._items[i].func();
+            this._items[i].func(this._menuParams);
             this.hide();
         };
     }
@@ -78,7 +80,9 @@ class StallionContextMenu {
         this.div.style.top = `${mouseY}px`;
 
         this.div.classList.remove("hidden")
-        console.log(this.div)
+        console.log(PDFViewerApplication.pdfDocument)
+        this._menuParams = {x: mouseX, y: mouseY, pageIdx:  PDFViewerApplication.page - 1}; // GUY TODO: Check off by 1
+        
     }
 
     hide(){
@@ -87,10 +91,9 @@ class StallionContextMenu {
 
     getAllItems(){
         return [
-            new StallionContextMenuItem("Comment", ()=>{
-                // GUY TODO: Fix
-                StallionToastWidget.log("Not implemented yet.")
-
+            new StallionContextMenuItem("Comment", (menuParams)=>{
+                var {x, y, pageIdx} = menuParams;
+                StallionActions.openCommentWindow({x, y, pageIdx});
             }),
 
             new StallionContextMenuItem("Peek Definition", ()=>{

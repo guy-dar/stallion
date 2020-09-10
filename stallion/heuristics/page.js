@@ -104,7 +104,6 @@ class PageHeuristics{
 
     finishedRenderingContext(curCtx,viewport, transform){
 
-        console.log(this.fontTracker);
         this.doc_heuristics._propagateDocumentStyle(this._fonts)
         
         if(!StallionConfig.isValue("textSelection", "none")){

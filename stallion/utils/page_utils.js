@@ -3,8 +3,8 @@ import {CSS_UNITS, SCROLLBAR_PADDING, VERTICAL_PADDING} from "../../web/ui_utils
 class StallionPageUtils{
 
     static evtMouse(evt, source = null){
-        // if(!source)
-        //     source = evt.target || evt.srcElement;
+        if(!source)
+            source = evt.target || evt.srcElement;
             
         var top = window.scrollY + source.getBoundingClientRect().top;
         var left = window.scrollX + source.getBoundingClientRect().left;

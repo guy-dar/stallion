@@ -540,7 +540,6 @@ import {assert, isArrayBuffer, isBool, isNum, isString, stringToBytes} from "../
                   // GUY TODO: CHECK!!!
                   var newRefs = Object.keys(this.newXRefInfo).map(a => {return parseInt(a, 10)});
                   var maxNew = Math.max(...newRefs)
-                  console.log(newRefs);
                   var newSize = Math.max(this.trailerDict.getRaw('Size'), maxNew + 1);
                   this.trailerDict.set('Size', newSize);
                },

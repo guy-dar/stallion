@@ -6,8 +6,7 @@ import { Ref, Dict, Name } from "../../src/core/primitives.js";
 class StallionPDFEditor{
 
 
-    static generateComment(pdfDocument, pdfPage, contents, rect){
- 
+    static createComment(pdfDocument, pdfPage, rect, contents){
         if(!StallionConfig.getValue("allowEditing")){
             return;
         }
@@ -46,12 +45,10 @@ class StallionPDFEditor{
             .toUint8Array();
 
 
-
-            var blob = new Blob([stream.bytes, extraData], {
+            var blob = new Blob([pdfDocument.stream.bytes, extraData], {
             type: 'application/pdf'
           });
           return {
-            blob, 
             pdfBlobUrl: URL.createObjectURL(blob),
           };
         
