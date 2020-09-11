@@ -1,6 +1,6 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig, StallionMemory} from "../config/utils.js"
-import {stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
+import {stallionRegexpMatch, StallionPageCoordinateTranslation } from "../utils/text.js";
 import {StallionPageUtils} from "../utils/page_utils.js";
 import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selection.js";
 
@@ -58,7 +58,7 @@ class PageHeuristics{
 
     reportTextAction(ctx, fontData, scaledX, scaledY){
         var font = this.helper.fontNormalizer(fontData);
-        var {x,y,w,h} = PageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
+        var {x,y,w,h} = StallionPageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         var newFontCtx = this.helper._generateFontContext(x, y, w, h, font);
         this.helper.incrementDict(this._fonts, this.helper._fontFullName(font));
@@ -98,7 +98,7 @@ class PageHeuristics{
             (font.name.indexOf('Bold') != -1)){    
             currentFontRange.push("bold")
             this.helper.addToRangeTracker(this._fontRanges, currentFontRange, 
-                PageCoordinateTranslation.canvasToDiv(ctx.canvas, x,y,w,h))               
+                StallionPageCoordinateTranslation.canvasToDiv(ctx.canvas, x,y,w,h))               
         }
         
 

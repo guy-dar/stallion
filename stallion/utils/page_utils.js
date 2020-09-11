@@ -13,6 +13,10 @@ class StallionPageUtils{
 
     }
 
+    static getPageCanvas(pageIndex){
+      return StallionPageUtils.getPageDiv(pageIndex).querySelector("canvas");
+    }
+
 
     static drawRect(x, y, w, h, reuse = true){
         var div = document.createElement("div")

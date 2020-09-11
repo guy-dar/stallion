@@ -516,7 +516,7 @@ var WorkerMessageHandler = {
 
     handler.on("StallionCreateComment", function wphSetupStallionCreateComment({pageIndex, rect, contents}) {
       return pdfManager.getPage(pageIndex).then(page => {
-          StallionPDFEditor.createComment(pdfManager.pdfDocument, page,
+          return StallionPDFEditor.createComment(pdfManager.pdfDocument, page,
             rect, contents);
       });
     });

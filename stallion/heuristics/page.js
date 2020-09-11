@@ -1,6 +1,6 @@
 import {HeuristicsHelper} from "./helper.js"
 import {StallionConfig, StallionMemory} from "../config/utils.js"
-import {stallionRegexpMatch, PageCoordinateTranslation } from "../utils/text.js";
+import {stallionRegexpMatch, StallionPageCoordinateTranslation } from "../utils/text.js";
 import {StallionPageUtils} from "../utils/page_utils.js";
 import {StallionSnippingSelection, StallionSmoothSelection} from "../ui/selection.js";
 
@@ -89,7 +89,7 @@ class PageHeuristics{
 
     reportTextAction(ctx, fontData, scaledX, scaledY, text, width){
         var font = this.helper.fontNormalizer(fontData);
-        var {x,y,w,h} = PageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
+        var {x,y,w,h} = StallionPageCoordinateTranslation.ctxToCanvas(ctx, scaledX, scaledY, font.fontSize, font.fontSize);
         // GUY TODO: !!!!!!!!!!!!!!!!! FIX ONCE YOU UNDERSTAND WHAT'S GOING ON!!!!!!!!!
         w = width;
         this.helper.incrementDict(this._fonts, this.helper._fontFullName(font));
